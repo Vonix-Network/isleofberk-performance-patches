@@ -1,6 +1,6 @@
 # Isle of Berk Performance Patches
 
-Release candidate: `0.1.2`.
+Release: `0.1.2`.
 
 **Standalone Forge companion / performance-patch mod** for **Isle of Berk 1.2.0**.  
 This is **not** a fork, reupload, or replacement of Isle of Berk.
