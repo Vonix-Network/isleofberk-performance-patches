@@ -1,0 +1,49 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="MIT"
+issueTrackerURL="https://github.com/Vonix-Network/isleofberk-performance-patches/issues"
+
+[[mods]]
+modId="isleofberkperformance"
+version="${version}"
+displayName="Isle of Berk Performance Patches"
+displayTest="IGNORE_ALL_VERSION"
+description='''
+Standalone Forge companion / performance-patch mod for Isle of Berk 1.2.0.
+This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
+isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
+include or replace the separate isleofberkdeadlockfix companion. Install that
+deadlock-fix JAR only if you want it, as its own optional mod.
+Only throttles two nearby-entity AI activation scans via configurable cadence.
+'''
+authors="Vonix-Network"
+
+[[dependencies.isleofberkperformance]]
+modId="forge"
+mandatory=true
+versionRange="[40.3.0,40.3.1)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.isleofberkperformance]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.18.2,1.18.3)"
+ordering="NONE"
+side="BOTH"
+
+# Exact Isle of Berk 1.2.0 only (Forge-valid half-open range ending before 1.2.0.1).
+[[dependencies.isleofberkperformance]]
+modId="isleofberk"
+mandatory=true
+versionRange="[1.2.0,1.2.0.1)"
+ordering="AFTER"
+side="BOTH"
+
+# Validated against GeckoLib 3.0.57; IoB requires geckolib3 at runtime.
+[[dependencies.isleofberkperformance]]
+modId="geckolib3"
+mandatory=true
+versionRange="[3.0.57,3.0.58)"
+ordering="AFTER"
+side="BOTH"

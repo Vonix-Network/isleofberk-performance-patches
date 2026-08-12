@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "network.vonix.isleofberkperformance.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "isleofberkperformance.refmap.json",
+  "mixins": [
+    "DragonBreedGoalMixin",
+    "IOBLookAtPlayerGoalMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

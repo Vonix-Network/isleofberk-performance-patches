@@ -1,0 +1,6 @@
+# Isle-of-Berk-Performance-Patches local build output
+.gradle/
+build/
+run/
+libs/
+.workflow/

@@ -1,0 +1,201 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '5.1.77'
+    id 'org.spongepowered.mixin' version '0.7.38'
+}
+
+def forgeVersion = project.findProperty('forgeVersion') ?: '40.3.0'
+def iobVersion = project.findProperty('iobVersion') ?: '1.2.0'
+version = project.findProperty('version') ?: '0.1.0'
+group = 'network.vonix.isleofberkperformance'
+// Companion performance-patch artifact name (not an IoB fork/replacement).
+archivesBaseName = 'isleof-berk-performance-patches'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.18.2'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods { isleofberkperformance { source sourceSets.main } }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods { isleofberkperformance { source sourceSets.main } }
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, 'isleofberkperformance.refmap.json'
+    config 'isleofberkperformance.mixins.json'
+}
+
+repositories {
+    mavenCentral()
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.18.2-${forgeVersion}"
+    // Compile against original IoB + GeckoLib; never shade/bundle them into this companion JAR.
+    compileOnly files("libs/isleofberk-${iobVersion}.jar", 'libs/geckolib-forge-1.18-3.0.57.jar')
+    runtimeOnly fg.deobf("local:isleofberk-${iobVersion}:${iobVersion}")
+    runtimeOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+processResources {
+    inputs.properties([version: project.version, iobVersion: iobVersion])
+    filesMatching('META-INF/mods.toml') {
+        // iobVersion kept for expand compatibility; mods.toml pins [1.2.0,1.2.0.1) literally.
+        expand(version: project.version, iobVersion: iobVersion)
+    }
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes([
+            'Specification-Title'     : 'isleof-berk-performance-patches',
+            'Specification-Vendor'    : 'Vonix-Network',
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : 'Isle of Berk Performance Patches (companion)',
+            'Implementation-Version'  : project.version,
+            'Implementation-Vendor'   : 'Vonix-Network',
+            'MixinConfigs'            : 'isleofberkperformance.mixins.json'
+        ])
+    }
+}
+jar.finalizedBy('reobfJar')
+
+/**
+ * Rejects a packaged primary JAR that bundles Isle of Berk implementation classes/resources
+ * or deadlock-fix package/resource markers. Companion-only scope enforcement.
+ * Descriptive mentions of the separate deadlock-fix mod in mods.toml are allowed.
+ */
+tasks.register('auditPackagedJar') {
+    group = 'verification'
+    description = 'Fails if the primary JAR bundles IoB classes/resources or deadlock-fix markers.'
+    dependsOn 'reobfJar'
+    doLast {
+        def libsDir = file("${buildDir}/libs")
+        def jars = libsDir.listFiles()?.findAll {
+            it.name.endsWith('.jar') && !it.name.endsWith('-sources.jar') && !it.name.endsWith('-javadoc.jar')
+        }
+        if (jars == null || jars.isEmpty()) {
+            throw new GradleException("auditPackagedJar: no primary JAR under ${libsDir}")
+        }
+        def primary = jars.sort { -it.lastModified() }.first()
+        def forbiddenPathPrefixes = [
+                'com/GACMD/isleofberk/',
+                'network/vonix/isleofberkdeadlockfix/'
+        ]
+        // Packaged deadlock-fix artifact markers (not prose about the separate optional mod).
+        def forbiddenExactResources = [
+                'isleofberkdeadlockfix.mixins.json',
+                'isleofberkdeadlockfix.refmap.json'
+        ] as Set
+        def forbiddenClassNameMarkers = [
+                'IsleOfBerkDeadlockFix',
+                'ADragonBaseMixin',
+                'AltFollowGoalMixin'
+        ]
+        def allowedClassPrefix = 'network/vonix/isleofberkperformance/'
+        def allowedNonClass = [
+                'pack.mcmeta',
+                'isleofberkperformance.mixins.json',
+                'isleofberkperformance.refmap.json',
+                'META-INF/mods.toml',
+                'META-INF/MANIFEST.MF',
+                'META-INF/MANIFEST.MF'
+        ] as Set
+
+        def violations = [] as List
+        def classEntries = [] as List
+        def resourceEntries = [] as List
+        java.util.zip.ZipFile zip = new java.util.zip.ZipFile(primary)
+        try {
+            zip.entries().each { entry ->
+                def normalized = entry.name.replace('\\', '/')
+                if (normalized.endsWith('/')) {
+                    return
+                }
+                forbiddenPathPrefixes.each { prefix ->
+                    if (normalized.startsWith(prefix)) {
+                        violations << "forbidden bundled path: ${normalized}"
+                    }
+                }
+                if (forbiddenExactResources.contains(normalized)) {
+                    violations << "forbidden deadlock-fix resource: ${normalized}"
+                }
+                // Any path segment that is the deadlock-fix package/mod id as a resource root.
+                if (normalized == 'isleofberkdeadlockfix' || normalized.startsWith('isleofberkdeadlockfix/')) {
+                    violations << "forbidden deadlock-fix marker path: ${normalized}"
+                }
+                if (normalized.endsWith('.class')) {
+                    classEntries << normalized
+                    if (!normalized.startsWith(allowedClassPrefix)) {
+                        violations << "unexpected class outside companion package: ${normalized}"
+                    }
+                    def simple = normalized.substring(normalized.lastIndexOf('/') + 1).replace('.class', '')
+                    forbiddenClassNameMarkers.each { marker ->
+                        if (simple == marker || simple.endsWith(marker)) {
+                            violations << "forbidden deadlock-fix class marker: ${normalized}"
+                        }
+                    }
+                } else {
+                    resourceEntries << normalized
+                    def ok = normalized.startsWith('META-INF/') || allowedNonClass.contains(normalized) ||
+                            normalized.startsWith('network/vonix/isleofberkperformance/')
+                    // Allow only companion metadata + empty package dirs already skipped.
+                    if (!ok && !normalized.startsWith('network/')) {
+                        // Still flag unexpected top-level resources that look like IoB assets.
+                        if (normalized.startsWith('assets/isleofberk') || normalized.startsWith('data/isleofberk')) {
+                            violations << "forbidden bundled IoB resource: ${normalized}"
+                        }
+                    }
+                }
+            }
+        } finally {
+            zip.close()
+        }
+
+        if (classEntries.isEmpty()) {
+            violations << 'primary JAR contains no companion classes'
+        }
+        if (!violations.isEmpty()) {
+            throw new GradleException("auditPackagedJar FAILED for ${primary.name}:\n  - " + violations.join('\n  - '))
+        }
+        logger.lifecycle(
+                "auditPackagedJar OK: ${primary.name} (${classEntries.size()} classes, ${resourceEntries.size()} resources, companion-only)"
+        )
+    }
+}
+
+tasks.named('build').configure {
+    dependsOn 'auditPackagedJar'
+}
+
+tasks.named('check').configure {
+    dependsOn 'auditPackagedJar'
+    dependsOn 'cadenceFixture'
+}
+
+tasks.register('cadenceFixture', JavaExec) {
+    group = 'verification'
+    description = 'Runs the deterministic cadence policy fixture.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.config.CadencePolicyFixture'
+    dependsOn testClasses
+}
