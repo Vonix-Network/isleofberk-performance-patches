@@ -90,13 +90,11 @@ tasks.register('auditPackagedJar') {
     dependsOn 'reobfJar'
     doLast {
         def libsDir = file("${buildDir}/libs")
-        def jars = libsDir.listFiles()?.findAll {
-            it.name.endsWith('.jar') && !it.name.endsWith('-sources.jar') && !it.name.endsWith('-javadoc.jar')
+        def expectedName = "${archivesBaseName}-${project.version}.jar"
+        def primary = file("${libsDir}/${expectedName}")
+        if (!primary.isFile()) {
+            throw new GradleException("auditPackagedJar: expected primary JAR missing: ${primary}")
         }
-        if (jars == null || jars.isEmpty()) {
-            throw new GradleException("auditPackagedJar: no primary JAR under ${libsDir}")
-        }
-        def primary = jars.sort { -it.lastModified() }.first()
         def forbiddenPathPrefixes = [
                 'com/GACMD/isleofberk/',
                 'network/vonix/isleofberkdeadlockfix/'

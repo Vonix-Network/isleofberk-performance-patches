@@ -23,7 +23,7 @@ public final class PerformanceConfig {
         );
         lookAtScanInterval = builder.comment(
                         "Ticks between IOBLookAtPlayerGoal nearby-player activation scans.",
-                        "1 preserves upstream cadence. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
+                        "1 preserves upstream cadence. Values above 1 are opt-in tuning. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
                         "On skipped ticks lookAt is cleared so a stale target cannot keep the goal active."
                 )
                 .defineInRange(
@@ -34,7 +34,7 @@ public final class PerformanceConfig {
                 );
         breedScanInterval = builder.comment(
                         "Ticks between DragonBreedGoal nearby-partner activation scans.",
-                        "1 preserves upstream cadence. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
+                        "1 preserves upstream cadence. Values above 1 are opt-in tuning. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
                         "On skipped ticks partner is cleared so a stale partner cannot keep the goal active."
                 )
                 .defineInRange(

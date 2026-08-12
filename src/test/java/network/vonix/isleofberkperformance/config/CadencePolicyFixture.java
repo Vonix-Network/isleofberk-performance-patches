@@ -71,6 +71,8 @@ public final class CadencePolicyFixture {
         require(CadencePolicy.INTERVAL_DEFAULT >= CadencePolicy.INTERVAL_MIN
                         && CadencePolicy.INTERVAL_DEFAULT <= CadencePolicy.INTERVAL_MAX,
                 "default interval within safe bounds");
+        require(CadencePolicy.INTERVAL_DEFAULT == 1,
+                "default interval preserves upstream cadence");
 
         System.out.println("CadencePolicyFixture: PASS");
     }

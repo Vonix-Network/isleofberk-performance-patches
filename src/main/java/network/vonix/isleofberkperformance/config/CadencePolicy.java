@@ -9,8 +9,8 @@ public final class CadencePolicy {
     public static final int INTERVAL_MIN = 1;
     /** Inclusive maximum: hard cap against accidental multi-minute scan freezes. */
     public static final int INTERVAL_MAX = 200;
-    /** Default balances fewer scans without extreme lag; override to 1 for baseline. */
-    public static final int INTERVAL_DEFAULT = 5;
+    /** Default preserves upstream cadence. Higher values are explicitly opt-in tuning. */
+    public static final int INTERVAL_DEFAULT = 1;
 
     private CadencePolicy() {}
 

@@ -16,7 +16,7 @@ Project independence from `isleofberk-deadlockfix`:
 - does not include the `ADragonBase.isWaterBelow()` world-generation guard;
 - does not include the Variant Loader adapter;
 - does not modify world-generation or spawn-rule behavior;
-- only throttles two optional AI nearby-entity activation scans through configurable cadence.
+Adds a narrow client renderer lookup optimization and retains two configurable AI activation-scan controls.
 
 ## Current scope
 
@@ -29,14 +29,20 @@ Server config: `config/isleofberkperformance-server.toml`
 ```toml
 # Safe range: 1..200 inclusive.
 # 1 preserves upstream cadence (every eligible canUse pass).
-# Default 5 reduces scan frequency; UUID phase staggering spreads work across ticks.
-lookAtScanInterval = 5
-breedScanInterval = 5
+# Default 1 preserves upstream cadence. Values above 1 are opt-in tuning;
+# UUID phase staggering spreads work across ticks.
+lookAtScanInterval = 1
+breedScanInterval = 1
 ```
 
-Set either value to `1` for an upstream-cadence compatibility baseline. Higher values are tuning candidates, not universal guarantees; measure the target workload before deployment.
+Set either value above `1` only as explicit tuning. Higher values change AI activation timing and shared RNG consumption; they are not universal guarantees. Measure the target workload before deployment.
 
-## Compatibility boundary
+The client renderer patch applies only to the twelve dragon renderer `getRenderType` methods that redundantly resolve a texture already supplied by GeckoLib. It does not alter texture selection or render layers.
+
+```text
+The twelve client renderer mixins target only the exact Forge 40.3.0 / IoB 1.2.0 renderer descriptors. A missing target or changed invocation fails the required mixin injection instead of silently degrading.
+```
+
 
 | Component | Supported target |
 |---|---|
@@ -45,7 +51,7 @@ Set either value to `1` for an upstream-cadence compatibility baseline. Higher v
 | Isle of Berk | **exactly 1.2.0** (`[1.2.0,1.2.0.1)`); original JAR required |
 | GeckoLib | 3.0.57 validation dependency (`[3.0.57,3.0.58)`) |
 | Java | 17 |
-| Side | Server/common (BOTH); not client-only |
+| Side | Common AI/config plus client-only renderer mixins |
 
 The Modrinth project record currently exposes Isle of Berk 1.18.2 with latest upstream version `1.2.0`; no newer replacement was found during this audit. Re-check the upstream project before release. If a newer IoB version becomes the deployment target, this artifact is blocked until its bytecode and behavior are re-audited.
 

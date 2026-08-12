@@ -14,7 +14,7 @@ This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
 isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
 include or replace the separate isleofberkdeadlockfix companion. Install that
 deadlock-fix JAR only if you want it, as its own optional mod.
-Only throttles two nearby-entity AI activation scans via configurable cadence.
+Adds a narrow client renderer lookup optimization and retains two configurable AI activation-scan controls.
 '''
 authors="Vonix-Network"
 
