@@ -49,7 +49,8 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:1.18.2-${forgeVersion}"
     // Compile against original IoB + GeckoLib; never shade/bundle them into this companion JAR.
-    compileOnly files("libs/isleofberk-${iobVersion}.jar", 'libs/geckolib-forge-1.18-3.0.57.jar')
+    compileOnly fg.deobf("local:isleofberk-${iobVersion}:${iobVersion}")
+    compileOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     runtimeOnly fg.deobf("local:isleofberk-${iobVersion}:${iobVersion}")
     runtimeOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -115,7 +116,6 @@ tasks.register('auditPackagedJar') {
                 'isleofberkperformance.mixins.json',
                 'isleofberkperformance.refmap.json',
                 'META-INF/mods.toml',
-                'META-INF/MANIFEST.MF',
                 'META-INF/MANIFEST.MF'
         ] as Set
 
@@ -154,14 +154,8 @@ tasks.register('auditPackagedJar') {
                     }
                 } else {
                     resourceEntries << normalized
-                    def ok = normalized.startsWith('META-INF/') || allowedNonClass.contains(normalized) ||
-                            normalized.startsWith('network/vonix/isleofberkperformance/')
-                    // Allow only companion metadata + empty package dirs already skipped.
-                    if (!ok && !normalized.startsWith('network/')) {
-                        // Still flag unexpected top-level resources that look like IoB assets.
-                        if (normalized.startsWith('assets/isleofberk') || normalized.startsWith('data/isleofberk')) {
-                            violations << "forbidden bundled IoB resource: ${normalized}"
-                        }
+                    if (!allowedNonClass.contains(normalized)) {
+                        violations << "unexpected resource outside companion allowlist: ${normalized}"
                     }
                 }
             }

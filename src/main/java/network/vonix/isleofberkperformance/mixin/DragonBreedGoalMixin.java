@@ -11,7 +11,7 @@ import network.vonix.isleofberkperformance.config.CadencePolicy;
 import network.vonix.isleofberkperformance.config.PerformanceConfig;
 
 /** Throttles only the partner search; breeding continuation and execution are untouched. */
-@Mixin(value = DragonBreedGoal.class, remap = false)
+@Mixin(value = DragonBreedGoal.class)
 public abstract class DragonBreedGoalMixin {
     @Shadow(remap = false) protected ADragonBase animal;
     @Shadow(remap = false) protected ADragonBase partner;
@@ -20,7 +20,7 @@ public abstract class DragonBreedGoalMixin {
      * On cadence skip: clear partner (no stale partner) and cancel canUse as false.
      * Interval 1 never skips (upstream cadence). Phase is animal UUID.
      */
-    @Inject(method = "m_8036_()Z", at = @At("HEAD"), cancellable = true, require = 1, remap = false)
+    @Inject(method = "canUse()Z", at = @At("HEAD"), cancellable = true, require = 1)
     private void vonix$throttlePartnerScan(CallbackInfoReturnable<Boolean> cir) {
         if (!CadencePolicy.shouldRun(animal.tickCount, PerformanceConfig.breedScanInterval.get(), animal.getUUID())) {
             partner = null;

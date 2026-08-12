@@ -1,6 +1,6 @@
 # Isle of Berk Performance Patches
 
-Release candidate: `0.1.1`.
+Release candidate: `0.1.2`.
 
 **Standalone Forge companion / performance-patch mod** for **Isle of Berk 1.2.0**.  
 This is **not** a fork, reupload, or replacement of Isle of Berk.
@@ -15,8 +15,9 @@ Project independence from `isleofberk-deadlockfix`:
 
 - does not include the `ADragonBase.isWaterBelow()` world-generation guard;
 - does not include the Variant Loader adapter;
-- does not modify world-generation or spawn-rule behavior;
-Adds a narrow client renderer lookup optimization and retains two configurable AI activation-scan controls.
+- does not modify world-generation or spawn-rule behavior.
+
+The client renderer batch reuses the exact texture argument already supplied to `getRenderType` and returns the same `RenderType.entityCutoutNoCull(texture)` layer.
 
 ## Current scope
 

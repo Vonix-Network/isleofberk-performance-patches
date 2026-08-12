@@ -12,7 +12,7 @@ import network.vonix.isleofberkperformance.config.CadencePolicy;
 import network.vonix.isleofberkperformance.config.PerformanceConfig;
 
 /** Throttles only the optional look-at player scan; upstream look/tick behavior is unchanged. */
-@Mixin(value = IOBLookAtPlayerGoal.class, remap = false)
+@Mixin(value = IOBLookAtPlayerGoal.class)
 public abstract class IOBLookAtPlayerGoalMixin {
     @Shadow(remap = false) protected ADragonBase dragon;
     @Shadow(remap = false) protected Entity lookAt;
@@ -21,7 +21,7 @@ public abstract class IOBLookAtPlayerGoalMixin {
      * On cadence skip: clear lookAt (no stale target) and cancel canUse as false.
      * Interval 1 never skips (upstream cadence). Phase is dragon UUID.
      */
-    @Inject(method = "m_8036_()Z", at = @At("HEAD"), cancellable = true, require = 1, remap = false)
+    @Inject(method = "canUse()Z", at = @At("HEAD"), cancellable = true, require = 1)
     private void vonix$throttlePlayerScan(CallbackInfoReturnable<Boolean> cir) {
         if (!CadencePolicy.shouldRun(dragon.tickCount, PerformanceConfig.lookAtScanInterval.get(), dragon.getUUID())) {
             lookAt = null;
