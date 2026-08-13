@@ -1,10 +1,11 @@
 # 0.3.1-rc.1 release-candidate evidence
 
-This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. Independent Sol accepted the exact pre-commit artifact with no P0/P1. GitHub publication remains pending and is not authorized by this document.
+This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. The candidate source/docs are committed at `9d7ce9eb8b3e62a5991061d4bc57b42d92dbbc38`. Prior independent Sol ACCEPT applies to the exact unpublished artifact bytes with no P0/P1; a fresh Sol review is required after this documentation change. GitHub publication remains pending and is not authorized by this document.
 
 ## Release identity
 
 - Candidate version: `0.3.1-rc.1` (unpublished successor to immutable [v0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0))
+- Candidate source commit: `9d7ce9eb8b3e62a5991061d4bc57b42d92dbbc38` (`Release 0.3.1-rc.1 candidate`)
 - Artifact: `isleof-berk-performance-patches-0.3.1-rc.1.jar`
 - Size: 47,478 bytes
 - SHA-256: `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`
@@ -58,19 +59,19 @@ The release does not add `distanceToSqr` substitutions, deadlock/getChunkNow beh
 - `configFixture`: required COMMON keys, defaults, and comments present.
 - `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed.
 - Prior production/SRG Forge runtime evidence still applies to the unchanged companion bytecode/entry contents (six common mixins applied; server reached `Done` without `MixinApplyError`, `InvalidInjection`, `InvalidInjectionException`, or `AbstractMethodError`). That run is not a hash pin for this reproducible artifact.
-- Independent Routera/Codex Sol review of this exact pre-commit artifact (`openai/gpt-5.6-sol`): ACCEPT. No P0 or P1 findings. Previous candidate reviews were not reused.
+- Independent Routera/Codex Sol review of these exact unpublished artifact bytes (`openai/gpt-5.6-sol`): prior ACCEPT. No P0 or P1 findings. Previous candidate reviews were not reused. That ACCEPT applies only to the exact bytes identified below. A fresh Sol review is required after this documentation change.
 - GitHub prerelease/publication: pending. Do not treat this document as a published release.
 
 ### Versioned final-gate evidence
 
 - Candidate artifact: `build/libs/isleof-berk-performance-patches-0.3.1-rc.1.jar`, 47,478 bytes, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9` after `canonicalizeReobfJar`.
 - Two clean offline builds from the same tree matched this hash. Durable hash/`cmp` evidence is retained in `/tmp/iob-0.3.1-rc.1-final-evidence.txt` because the referenced build logs (`/tmp/iob-parent-repro-a.log`, `/tmp/iob-parent-repro-b.log`) record only `BUILD SUCCESSFUL` and do not themselves print digests.
-- Independent Sol ACCEPT applies only to these exact unpublished bytes. Publication is not claimed.
+- Independent Sol ACCEPT applies only to these exact unpublished bytes. A fresh Sol review is required after this documentation change. Publication is not claimed and is not authorized by this document.
 
 ### Sol P2/P3 hygiene disposition
 
 - P2 reproducibility evidence: resolved for parent review by retaining both clean-build log paths, both hash lines, retained byte-identical copies, and `cmp PASS` in `/tmp/iob-0.3.1-rc.1-final-evidence.txt`. The logs themselves were not rewritten.
-- P2 dirty-tree provenance: parent-owned. The source candidate remains dirty against `ec3afbf`; immutable commit/tag provenance is pending parent action. This worker did not commit.
+- P2 provenance: the candidate source/docs are committed at `9d7ce9eb8b3e62a5991061d4bc57b42d92dbbc38` (`Release 0.3.1-rc.1 candidate`). Tag and GitHub publication remain pending and are not authorized by this document. This worker did not commit, tag, or publish.
 - Stale `config/isleofberkperformance.toml` 0.3.0 reference wording: resolved in-tree. Keys, defaults, format, and runtime values are unchanged.
 
 No quantitative performance claim is made because matched before/after profiling was not performed.

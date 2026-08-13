@@ -17,7 +17,7 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 
 ### 0.3.1-rc.1 release-candidate integrity
 
-The unpublished `0.3.1-rc.1` candidate is a successor to, and does not replace, the immutable 0.3.0 release. Independent Sol accepted the exact pre-commit artifact; GitHub publication remains pending. The hash below is the local canonical artifact after `reobfJar` + `canonicalizeReobfJar`.
+The unpublished `0.3.1-rc.1` candidate is a successor to, and does not replace, the immutable 0.3.0 release. Independent Sol accepted the exact unpublished candidate artifact bytes; GitHub publication remains pending. The hash below is the local canonical artifact after `reobfJar` + `canonicalizeReobfJar`.
 
 ```text
 File:   isleof-berk-performance-patches-0.3.1-rc.1.jar

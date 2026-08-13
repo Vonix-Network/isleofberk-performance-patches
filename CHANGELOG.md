@@ -4,7 +4,7 @@ All notable release changes for Isle of Berk Performance Patches are recorded he
 
 ## [0.3.1-rc.1] — release candidate (unpublished)
 
-Successor release candidate. The published 0.3.0 artifact remains immutable. Independent Sol accepted the exact pre-commit artifact; GitHub publication remains pending.
+Successor release candidate. The published 0.3.0 artifact remains immutable. Independent Sol accepted the exact unpublished candidate artifact bytes; GitHub publication remains pending.
 
 - Pin egg hatch-check and ShockEffect particle `ModifyConstant` injectors to the verified ordinals; the ShockEffect damage 20 is still untouched.
 - Harden AI redirect counts to the pinned invoke counts (`moveTo` 1 and 5, `circleEntity` 2).
