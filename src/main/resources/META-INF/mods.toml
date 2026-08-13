@@ -7,14 +7,14 @@ issueTrackerURL="https://github.com/Vonix-Network/isleofberk-performance-patches
 modId="isleofberkperformance"
 version="${version}"
 displayName="Isle of Berk Performance Patches"
-displayTest="IGNORE_ALL_VERSION"
+displayTest="MATCH_VERSION"
 description='''
-Standalone Forge companion / performance-patch mod for Isle of Berk 1.2.0.
+Standalone Forge Mixin companion for Isle of Berk 1.2.0.
 This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
 isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
 include or replace the separate isleofberkdeadlockfix companion. Install that
 deadlock-fix JAR only if you want it, as its own optional mod.
-Adds a narrow client renderer lookup optimization and retains two configurable AI activation-scan controls.
+Applies exact client renderer/fixed-resource transformations plus documented configurable AI, egg, and shock visual cadence controls.
 '''
 authors="Vonix-Network"
 

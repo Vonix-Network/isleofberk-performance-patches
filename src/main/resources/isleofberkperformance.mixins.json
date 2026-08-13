@@ -5,8 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
-    "DragonBreedGoalMixin",
-    "IOBLookAtPlayerGoalMixin"
+    "DragonFlyAndAttackAirbourneTargetGoalMixin",
+    "UntamedDragonCircleFlightGoalMixin",
+    "DragonFollowPlayerFlyingMixin",
+    "ADragonEggBaseMixin",
+    "ShockEffectMixin"
   ],
   "client": [
     "GronckleRenderMixin",
@@ -20,7 +23,25 @@
     "StingerRenderMixin",
     "TerribleTerrorRenderMixin",
     "TripleStrykeRendererMixin",
-    "ZippleBackRendererMixin"
+    "ZippleBackRendererMixin",
+    "DeadlyNadderModelMixin",
+    "GronckleModelMixin",
+    "LightFuryModelMixin",
+    "MonstrousNightmareModelMixin",
+    "NightFuryModelMixin",
+    "NightLightModelMixin",
+    "SkrillModelMixin",
+    "SpeedStingerModelMixin",
+    "SpeedStingerLeaderModelMixin",
+    "StingerModelMixin",
+    "TerribleTerrorModelMixin",
+    "TripleStrykeModelMixin",
+    "ZippleBackModelMixin",
+    "FireBoltModelMixin",
+    "FuryBoltModelMixin",
+    "SmallEggModelMixin",
+    "MediumEggModelMixin",
+    "LargeEggModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

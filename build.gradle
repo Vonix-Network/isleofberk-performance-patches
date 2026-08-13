@@ -57,10 +57,10 @@ dependencies {
 }
 
 processResources {
-    inputs.properties([version: project.version, iobVersion: iobVersion])
+    inputs.properties([version: project.version])
     filesMatching('META-INF/mods.toml') {
-        // iobVersion kept for expand compatibility; mods.toml pins [1.2.0,1.2.0.1) literally.
-        expand(version: project.version, iobVersion: iobVersion)
+        // mods.toml pins the original Isle of Berk dependency to [1.2.0,1.2.0.1).
+        expand(version: project.version)
     }
 }
 
@@ -181,13 +181,41 @@ tasks.named('build').configure {
 
 tasks.named('check').configure {
     dependsOn 'auditPackagedJar'
-    dependsOn 'cadenceFixture'
+    dependsOn 'rendererBytecodeFixture'
+    dependsOn 'configFixture'
 }
 
-tasks.register('cadenceFixture', JavaExec) {
+tasks.register('configFixture') {
     group = 'verification'
-    description = 'Runs the deterministic cadence policy fixture.'
+    description = 'Checks the deterministic common-config fixture and documented optimized defaults.'
+    doLast {
+        def fixture = file("${projectDir}/config/isleofberkperformance.toml")
+        if (!fixture.isFile()) {
+            throw new GradleException("configFixture: missing ${fixture}")
+        }
+        def text = fixture.getText('UTF-8')
+        [
+                'ai_move_throttling_enabled = true',
+                'ai_move_interval_ticks = 4',
+                'egg_hatch_check_interval_ticks = 20',
+                'shock_particle_interval_ticks = 8',
+                'Upstream/normal behavior in Isle of Berk 1.2.0: 20 ticks.',
+                'Upstream/normal behavior in Isle of Berk 1.2.0: 8 ticks.',
+                'Damage remains fixed at 20 ticks'
+        ].each { required ->
+            if (!text.contains(required)) {
+                throw new GradleException("configFixture: required text missing: ${required}")
+            }
+        }
+        logger.lifecycle('configFixture: PASS (COMMON keys/defaults/comments present)')
+    }
+}
+
+tasks.register('rendererBytecodeFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks pinned original renderer and fixed-resource model bytecode before applying client mixins.'
     classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.config.CadencePolicyFixture'
+    mainClass = 'network.vonix.isleofberkperformance.verification.RendererBytecodeFixture'
+    args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
     dependsOn testClasses
 }

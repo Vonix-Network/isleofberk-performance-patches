@@ -3,48 +3,71 @@ package network.vonix.isleofberkperformance.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 /**
- * Server config for the two throttled IoB AI activation scans.
- * Bounds come from {@link CadencePolicy} so misconfiguration cannot set zero/negative intervals
- * or extreme multi-minute freezes.
+ * Common-side controls for cadence changes that intentionally affect gameplay or visual timing.
+ * Forge owns loading/reloading the values from config/isleofberkperformance.toml.
  */
 public final class PerformanceConfig {
     public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.IntValue lookAtScanInterval;
-    public static final ForgeConfigSpec.IntValue breedScanInterval;
+
+    public static final ForgeConfigSpec.BooleanValue AI_MOVE_THROTTLING_ENABLED;
+    public static final ForgeConfigSpec.IntValue AI_MOVE_INTERVAL_TICKS;
+    public static final ForgeConfigSpec.IntValue EGG_HATCH_CHECK_INTERVAL_TICKS;
+    public static final ForgeConfigSpec.IntValue SHOCK_PARTICLE_INTERVAL_TICKS;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment(
-                "Isle of Berk Performance Patches (companion, not a fork).",
-                "Controls only nearby-entity scan cadence for two AI goals.",
-                "1 = preserve upstream cadence on every eligible canUse pass.",
-                "Values >1 throttle scans; UUID phase staggering spreads work across ticks.",
-                "Safe range: " + CadencePolicy.INTERVAL_MIN + ".." + CadencePolicy.INTERVAL_MAX + " ticks inclusive."
+                "Isle of Berk Performance Patches common configuration.",
+                "These controls intentionally change gameplay timing or visual cadence.",
+                "For AI movement, set an interval to 1 to disable that cadence optimization and use every eligible request.",
+                "Damage cadence is not configurable and remains fixed at 20 ticks."
         );
-        lookAtScanInterval = builder.comment(
-                        "Ticks between IOBLookAtPlayerGoal nearby-player activation scans.",
-                        "1 preserves upstream cadence. Values above 1 are opt-in tuning. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
-                        "On skipped ticks lookAt is cleared so a stale target cannot keep the goal active."
+        builder.push("performance");
+
+        AI_MOVE_THROTTLING_ENABLED = builder
+                .comment(
+                        "Whether repeated AI navigation movement requests are throttled.",
+                        "Upstream/normal behavior: false (no throttle; movement requests may be issued every tick).",
+                        "Optimized default: true. Tradeoff: navigation requests are less frequent and movement response can be less immediate."
                 )
-                .defineInRange(
-                        "lookAtScanInterval",
-                        CadencePolicy.INTERVAL_DEFAULT,
-                        CadencePolicy.INTERVAL_MIN,
-                        CadencePolicy.INTERVAL_MAX
-                );
-        breedScanInterval = builder.comment(
-                        "Ticks between DragonBreedGoal nearby-partner activation scans.",
-                        "1 preserves upstream cadence. Values above 1 are opt-in tuning. Default " + CadencePolicy.INTERVAL_DEFAULT + ".",
-                        "On skipped ticks partner is cleared so a stale partner cannot keep the goal active."
+                .define("ai_move_throttling_enabled", true);
+        AI_MOVE_INTERVAL_TICKS = builder
+                .comment(
+                        "AI movement-request interval in ticks when throttling is enabled.",
+                        "Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.",
+                        "Tradeoff: larger intervals reduce AI/navigation work but can make following or flight corrections less responsive.",
+                        "1 disables cadence optimization for this control."
                 )
-                .defineInRange(
-                        "breedScanInterval",
-                        CadencePolicy.INTERVAL_DEFAULT,
-                        CadencePolicy.INTERVAL_MIN,
-                        CadencePolicy.INTERVAL_MAX
-                );
+                .defineInRange("ai_move_interval_ticks", 4, 1, 20);
+        EGG_HATCH_CHECK_INTERVAL_TICKS = builder
+                .comment(
+                        "Server-side egg temperature and hatch-progress check interval in ticks.",
+                        "Upstream/normal behavior in Isle of Berk 1.2.0: 20 ticks. Optimized default: 20 ticks.",
+                        "Upstream/normal behavior is already 20 ticks; retaining 20 preserves its hatch timing granularity.",
+                        "Lower values check more often and can change hatch timing while increasing server work."
+                )
+                .defineInRange("egg_hatch_check_interval_ticks", 20, 1, 200);
+        SHOCK_PARTICLE_INTERVAL_TICKS = builder
+                .comment(
+                        "Shock-effect particle packet interval in ticks (visual cadence only).",
+                        "Upstream/normal behavior in Isle of Berk 1.2.0: 8 ticks. Optimized default: 8 ticks.",
+                        "Upstream/normal behavior is already 8 ticks; retaining 8 preserves its visual cadence.",
+                        "Lower values send more packets and make shock visuals denser at higher network/client cost.",
+                        "Damage remains fixed at the upstream 20-tick cadence and is not changed by this key."
+                )
+                .defineInRange("shock_particle_interval_ticks", 8, 1, 200);
+        builder.pop();
+
         SPEC = builder.build();
     }
 
     private PerformanceConfig() {}
+
+    public static boolean shouldRunAiMove() {
+        return !AI_MOVE_THROTTLING_ENABLED.get() || AI_MOVE_INTERVAL_TICKS.get() <= 1;
+    }
+
+    public static boolean shouldRunAiMove(int moveTick) {
+        return shouldRunAiMove() || moveTick % AI_MOVE_INTERVAL_TICKS.get() == 0;
+    }
 }

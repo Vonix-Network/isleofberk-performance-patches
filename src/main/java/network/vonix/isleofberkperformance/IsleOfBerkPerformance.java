@@ -1,7 +1,6 @@
 package network.vonix.isleofberkperformance;
 
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -18,10 +17,9 @@ public final class IsleOfBerkPerformance {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public IsleOfBerkPerformance() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PerformanceConfig.SPEC);
-        MinecraftForge.EVENT_BUS.register(this);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PerformanceConfig.SPEC, "isleofberkperformance.toml");
         LOGGER.info(
-                "Isle of Berk Performance Patches loaded (companion only; keep original isleofberk-1.2.0.jar; deadlock-fix not included)"
+                "Isle of Berk Performance Patches loaded (companion only; keep original isleofberk-1.2.0.jar)"
         );
     }
 }

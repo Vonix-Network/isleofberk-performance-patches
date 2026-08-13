@@ -1,77 +1,50 @@
-# Isle of Berk Performance Patches
+Standalone Forge Mixin companion for Isle of Berk 1.2.0 on Minecraft 1.18.2, Forge 40.3.0, Java 17, and GeckoLib 3.0.57.
 
-Release: `0.1.2`.
+## Scope
 
-**Standalone Forge companion / performance-patch mod** for **Isle of Berk 1.2.0**.  
-This is **not** a fork, reupload, or replacement of Isle of Berk.
+Keep the original `isleofberk-1.2.0.jar` installed. This 0.3.0 release contains only Vonix-owned Mixin classes and metadata; it does not fork, replace, or bundle Isle of Berk or the separate `isleofberkdeadlockfix` mod.
 
-## Required install layout
+It retains twelve exact client renderer transformations and 36 fixed-resource model transformations. It additionally exposes the gameplay/visual cadence paths as common Forge config controls: three exact flight/follow AI movement request gates, egg hatch checks, and ShockEffect particle packets. AI interval `1` disables AI cadence throttling. The pinned IoB 1.2.0 egg and shock defaults are already `20` and `8`; those values preserve upstream timing. Lower egg/shock values intentionally increase check/packet frequency. Shock damage remains fixed at 20 ticks.
 
-1. **Keep the original `isleofberk-1.2.0.jar` installed.** This patch does not ship IoB classes or resources and will not load without the real mod.
-2. Install **this** JAR (`isleof-berk-performance-patches-*.jar`) alongside it.
-3. Optionally install the separate **`isleofberkdeadlockfix`** mod if you want that fix. It is a different artifact; do not merge jars and do not assume one validates the other.
+## Config
 
-Project independence from `isleofberk-deadlockfix`:
+Forge registers `config/isleofberkperformance.toml` as a COMMON config. The generated TOML comments document upstream/normal behavior, optimized defaults, and tradeoffs:
 
-- does not include the `ADragonBase.isWaterBelow()` world-generation guard;
-- does not include the Variant Loader adapter;
-- does not modify world-generation or spawn-rule behavior.
+| Key | Optimized default | Upstream/normal | Effect |
+|---|---:|---:|---|
+| `ai_move_throttling_enabled` | `true` | `false` | Gates repeated flight/follow navigation requests. |
+| `ai_move_interval_ticks` | `4` | `1` | AI movement-request cadence; `1` disables optimization. |
+| `egg_hatch_check_interval_ticks` | `20` | `20` | IoB 1.2.0 already checks egg warmth/cold every 20 ticks; lower values increase work and alter timing granularity. |
+| `shock_particle_interval_ticks` | `8` | `8` | IoB 1.2.0 already sends shock particles every 8 ticks; lower values increase network/client work and visual density. |
 
-The client renderer batch reuses the exact texture argument already supplied to `getRenderType` and returns the same `RenderType.entityCutoutNoCull(texture)` layer.
+## Explicit exclusions
 
-## Current scope
+This companion does not alter damage cadence, target selection, combat, RNG order, network protocol, deadlock/safety/chunk access, `getChunkNow`, `scratchPosDeadlockFix`, Variant Loader compatibility, taming or spawn behavior, worldgen, pathfinder algorithms, particle static shared arrays, or dynamic model/texture/layer selection. Packet handler local caching is deferred in this release.
 
-`IOBLookAtPlayerGoal` and `DragonBreedGoal` both perform nearby-entity searches during goal activation. The performance patch leaves owner/target selection, goal continuation, navigation, breeding execution, and render behavior unchanged. It only prevents those activation scans from running on every eligible goal-selector pass.
+All historical Vonix waves through `1.2.1-vonix.13` were audited. Source-fork hunks are intentionally not copied into this companion; [CANDIDATE-REPORT.md](CANDIDATE-REPORT.md) records each family and wave disposition.
 
-When a scan tick is skipped, cached `lookAt` / `partner` references are cleared so a stale target cannot keep the goal active.
+## Install
 
-Server config: `config/isleofberkperformance-server.toml`
+1. Keep the original `isleofberk-1.2.0.jar` in `mods`.
+2. Add this companion jar alongside it.
+3. Keep `isleofberkdeadlockfix` separate and optional.
 
-```toml
-# Safe range: 1..200 inclusive.
-# 1 preserves upstream cadence (every eligible canUse pass).
-# Default 1 preserves upstream cadence. Values above 1 are opt-in tuning;
-# UUID phase staggering spreads work across ticks.
-lookAtScanInterval = 1
-breedScanInterval = 1
-```
+The common gameplay mixins should be installed with the same companion version on both client and server for multiplayer. Renderer/model mixins load only on the client. The companion does not alter the Isle of Berk network protocol.
 
-Set either value above `1` only as explicit tuning. Higher values change AI activation timing and shared RNG consumption; they are not universal guarantees. Measure the target workload before deployment.
+## Build and verification
 
-The client renderer patch applies only to the twelve dragon renderer `getRenderType` methods that redundantly resolve a texture already supplied by GeckoLib. It does not alter texture selection or render layers.
-
-```text
-The twelve client renderer mixins target only the exact Forge 40.3.0 / IoB 1.2.0 renderer descriptors. A missing target or changed invocation fails the required mixin injection instead of silently degrading.
-```
-
-
-| Component | Supported target |
-|---|---|
-| Minecraft | 1.18.2 |
-| Forge | exact lane `[40.3.0,40.3.1)`; verified with 40.3.0 |
-| Isle of Berk | **exactly 1.2.0** (`[1.2.0,1.2.0.1)`); original JAR required |
-| GeckoLib | 3.0.57 validation dependency (`[3.0.57,3.0.58)`) |
-| Java | 17 |
-| Side | Common AI/config plus client-only renderer mixins |
-
-The Modrinth project record currently exposes Isle of Berk 1.18.2 with latest upstream version `1.2.0`; no newer replacement was found during this audit. Re-check the upstream project before release. If a newer IoB version becomes the deployment target, this artifact is blocked until its bytecode and behavior are re-audited.
-
-## Build, fixture, and package audit
+Requires JDK 17:
 
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
   PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH \
-  ./gradlew clean build --no-daemon --rerun-tasks
-./gradlew cadenceFixture --no-daemon
+  /root/.gradle/wrapper/dists/gradle-7.5.1-bin/7jzzequgds1hbszbhq3npc5ng/gradle-7.5.1/bin/gradle clean check build --offline --no-daemon --rerun-tasks
 ```
 
-`build` runs `auditPackagedJar`, which fails if the primary JAR contains:
+`rendererBytecodeFixture` checks the pinned original jar's twelve renderer bodies and 36 fixed-resource model methods. `auditPackagedJar` rejects bundled Isle of Berk/deadlockfix classes and resources and rejects non-companion package contents.
 
-- any `com/GACMD/isleofberk/**` implementation classes or resources;
-- any `isleofberkdeadlockfix` markers (classes, mixin config, refmap, or mod id strings).
+Expected artifact after a successful Gradle run: `build/libs/isleof-berk-performance-patches-0.3.0.jar`.
 
-The release candidate must additionally pass exact packaged-JAR runtime testing, controlled before/after measurements, and independent review. Compilation or server readiness alone is not a performance claim.
+## License
 
-## Relationship to the deadlock fix
-
-Install this only as a separately reviewed performance candidate. Keep original `isleofberk-1.2.0.jar`. Optionally install `isleofberkdeadlockfix` as its own mod. Do not merge the two jars or assume one validates the other.
+The companion's Vonix-owned source and metadata are MIT licensed. Isle of Berk remains a separate dependency and is not redistributed here.
