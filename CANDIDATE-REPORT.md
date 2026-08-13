@@ -1,11 +1,11 @@
 # 0.3.1-rc.1 release-candidate evidence
 
-This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. The exact committed HEAD named by this document is `2f2fb138885b6d6ff7fdd070fa02fb350fcb23ca`. This successor updates that identity and the ZIP `0x5855` extra-field canonicalizer; a fresh independent Sol review is required after this successor. GitHub publication remains pending and is not authorized by this document.
+This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. The exact committed HEAD named by this document is `037002913f2f0f1892e27a9d6477d2251d9a5677`. Prior independent reviews rejected predecessor trees; this unpublished candidate requires a fresh independent Sol review. GitHub publication remains pending and is not authorized by this document.
 
 ## Release identity
 
 - Candidate version: `0.3.1-rc.1` (unpublished successor to immutable [v0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0))
-- Candidate source commit: `2f2fb138885b6d6ff7fdd070fa02fb350fcb23ca` (`Document committed release candidate provenance`)
+- Candidate source commit: `037002913f2f0f1892e27a9d6477d2251d9a5677` (`Harden ZIP metadata canonicalization`)
 - Artifact: `isleof-berk-performance-patches-0.3.1-rc.1.jar`
 - Size: 47,478 bytes
 - SHA-256: `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`
@@ -52,28 +52,28 @@ This document records the implemented scope, audited exclusions, and release-can
 
 The release does not add `distanceToSqr` substitutions, deadlock/getChunkNow behavior, network-protocol changes, spawn/worldgen changes, shared static particle arrays, pathfinder algorithm substitutions, original Isle of Berk classes/resources, or deadlock-fix classes/resources.
 
-## Acceptance evidence
+## Candidate evidence
 
 - Java 17 Gradle clean `check build --offline --no-daemon --rerun-tasks`: `BUILD SUCCESSFUL` twice from the same tree; the two JARs are byte-identical (`sha256sum` and `cmp`).
 - `auditPackagedJar` and `mappingFixture` inspect the canonical post-`reobfJar` artifact.
 - `configFixture`: required COMMON keys, defaults, and comments present.
 - `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed.
-- `infoZipUxExtraFixture`: synthetic read-only Info-ZIP `0x5855` extra field with sentinel UID/GID; only timestamp bytes change; truncated layouts fail closed.
-- Prior production/SRG Forge runtime evidence still applies to the unchanged companion bytecode/entry contents (six common mixins applied; server reached `Done` without `MixinApplyError`, `InvalidInjection`, `InvalidInjectionException`, or `AbstractMethodError`). That run is not a hash pin for this reproducible artifact. Runtime evidence is limited to the unmodified `latest.log` and `debug.log` under `/root/iob-0.3.1-rc.1-production-gate-committed-final/logs/`. `/tmp/iob-grok-0.3.1-rc.1-committed-runtime.log` is disqualified/invalid: it is contaminated by embedded worker prose and is not a complete raw console log. No replacement console log was fabricated.
-- Fresh independent Sol review of HEAD `2f2fb138885b6d6ff7fdd070fa02fb350fcb23ca` plus artifact SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9` rejected that exact candidate with no P0 or P1. Findings were the stale commit identity in this document, `0x5855` extra-field over-zeroing, and the contaminated console log. This successor addresses those findings. A fresh Sol review is required after this successor. Publication is not claimed and is not authorized.
+- `infoZipUxExtraFixture`: deterministic synthetic extra fields for Info-ZIP `0x5455` UT, NTFS `0x000a`, and Info-ZIP `0x5855` UX; only selected timestamp bytes change; flags, reserved prefix, UID/GID, other attributes, and trailing/unknown bytes are preserved; malformed, truncated, zero-length, and short timestamp layouts fail closed.
+- Prior production/SRG Forge runtime evidence still applies to the unchanged companion bytecode/entry contents (six common mixins applied; server reached `Done` without `MixinApplyError`, `InvalidInjection`, `InvalidInjectionException`, or `AbstractMethodError`). That run is not a hash pin for this reproducible artifact. Runtime evidence is limited to the unmodified `/root/iob-0.3.1-rc.1-production-gate-successor-final/logs/latest.log` and `/root/iob-0.3.1-rc.1-production-gate-successor-final/logs/debug.log`. `/tmp/iob-grok-0.3.1-rc.1-committed-runtime.log` is disqualified/invalid: it is contaminated by embedded worker prose and is not a complete raw console log. No replacement console log was fabricated.
+- Fresh independent Sol review of HEAD `037002913f2f0f1892e27a9d6477d2251d9a5677` plus artifact SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9` rejected that exact candidate with no P0. Findings were the stale predecessor HEAD and runtime paths in this document, unsupported acceptance wording in README/CHANGELOG, and incomplete UT/NTFS/UX extra-field canonicalization. This uncommitted repair addresses those findings. Prior reviews rejected predecessors. A fresh Sol review is required. Publication is not claimed and is not authorized.
 - GitHub prerelease/publication: pending. Do not treat this document as a published release.
 
 ### Versioned final-gate evidence
 
 - Candidate artifact: `build/libs/isleof-berk-performance-patches-0.3.1-rc.1.jar`, 47,478 bytes, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9` after `canonicalizeReobfJar`.
 - Two clean offline builds from the same tree matched this hash. Durable hash/`cmp` evidence is retained in `/tmp/iob-0.3.1-rc.1-final-evidence.txt` because the referenced build logs (`/tmp/iob-parent-repro-a.log`, `/tmp/iob-parent-repro-b.log`) record only `BUILD SUCCESSFUL` and do not themselves print digests.
-- Independent Sol REJECT of the exact previous candidate (HEAD `2f2fb138885b6d6ff7fdd070fa02fb350fcb23ca`, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`) had no P0/P1. A fresh Sol review is required after this successor. Publication is not claimed and is not authorized by this document.
+- Independent Sol REJECT of this exact candidate (HEAD `037002913f2f0f1892e27a9d6477d2251d9a5677`, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`) had no P0. Prior reviews rejected predecessors. A fresh Sol review is required after this repair. Publication is not claimed and is not authorized by this document.
 
 ### Sol P2/P3 hygiene disposition
 
 - P2 reproducibility evidence: resolved for parent review by retaining both clean-build log paths, both hash lines, retained byte-identical copies, and `cmp PASS` in `/tmp/iob-0.3.1-rc.1-final-evidence.txt`. The logs themselves were not rewritten.
-- P2 provenance: the exact committed HEAD named here is `2f2fb138885b6d6ff7fdd070fa02fb350fcb23ca` (`Document committed release candidate provenance`). This successor also has uncommitted repairs on `build.gradle` and this document; it is not a published identity. Tag and GitHub publication remain pending and are not authorized by this document. This worker did not commit, tag, or publish.
-- P3 contaminated console log: `/tmp/iob-grok-0.3.1-rc.1-committed-runtime.log` is disqualified/invalid and is not used as runtime evidence. Use only the unmodified `latest.log` and `debug.log` under `/root/iob-0.3.1-rc.1-production-gate-committed-final/logs/`.
+- P2 provenance: the exact committed HEAD named here is `037002913f2f0f1892e27a9d6477d2251d9a5677` (`Harden ZIP metadata canonicalization`). This working tree also has uncommitted repairs on README.md, CHANGELOG.md, build.gradle, and this document; it is not a published identity. Tag and GitHub publication remain pending and are not authorized by this document. This worker did not commit, tag, or publish.
+- P3 contaminated console log: `/tmp/iob-grok-0.3.1-rc.1-committed-runtime.log` is disqualified/invalid and is not used as runtime evidence. Use only the unmodified `/root/iob-0.3.1-rc.1-production-gate-successor-final/logs/latest.log` and `/root/iob-0.3.1-rc.1-production-gate-successor-final/logs/debug.log`.
 - Stale `config/isleofberkperformance.toml` 0.3.0 reference wording: resolved in-tree. Keys, defaults, format, and runtime values are unchanged.
 
 No quantitative performance claim is made because matched before/after profiling was not performed.

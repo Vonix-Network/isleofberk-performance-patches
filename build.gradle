@@ -324,13 +324,15 @@ tasks.register('mixinLifecycleFixture', JavaExec) {
 
 /**
  * Deterministic read-only extra-field fixture. Does not mutate the release JAR.
- * Builds a synthetic Info-ZIP 0x5855 (UX) payload with sentinel UID/GID and
- * proves canonicalizeReobfZipMetadata / zeroZipTimestampExtra change only
- * timestamp bytes. Truncated 0x5855 layouts fail closed.
+ * Builds synthetic Info-ZIP 0x5455 (UT), NTFS 0x000a, and Info-ZIP 0x5855 (UX)
+ * payloads and proves canonicalizeReobfZipMetadata / zeroZipTimestampExtra
+ * change only selected timestamp bytes. Flags, reserved prefix, UID/GID,
+ * other attributes, and trailing/unknown bytes are preserved. Malformed,
+ * truncated, zero-length, and short timestamp layouts fail closed.
  */
 tasks.register('infoZipUxExtraFixture') {
     group = 'verification'
-    description = 'Checks Info-ZIP 0x5855 timestamps are canonicalized while UID/GID bytes are preserved.'
+    description = 'Checks UT/NTFS/UX timestamps are canonicalized while non-timestamp bytes are preserved.'
     doLast {
         runInfoZipUxExtraFixture()
     }
@@ -365,37 +367,66 @@ static void zeroZipTimestampExtra(byte[] bytes, int offset, int length) {
         int id = zipU16(bytes, offset + cursor)
         int size = zipU16(bytes, offset + cursor + 2)
         if (cursor + 4 + size > length) {
+            if (id == 0x5455) {
+                throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5455 extra field")
+            }
+            if (id == 0x000a) {
+                throw new GradleException("canonicalizeReobfJar: truncated NTFS 0x000a extra field")
+            }
             if (id == 0x5855) {
                 throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5855 extra field")
             }
             break
         }
         int payload = offset + cursor + 4
-        if (id == 0x5455 && size >= 1) {
-            // UT extra: keep flags, zero unix timestamps.
-            for (int i = 1; i < size; i++) {
-                bytes[payload + i] = 0
+        if (id == 0x5455) {
+            // UT extra: flags bits 0x01/0x02/0x04 select mtime/atime/ctime.
+            // Zero only selected timestamp bytes; preserve flags and trailing/unknown bytes.
+            if (size < 1) {
+                throw new GradleException("canonicalizeReobfJar: Info-ZIP 0x5455 extra field missing flags")
+            }
+            int flags = bytes[payload] & 0xff
+            int tsCursor = 1
+            [0x01, 0x02, 0x04].each { bit ->
+                if ((flags & bit) != 0) {
+                    if (tsCursor + 4 > size) {
+                        throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5455 timestamp")
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        bytes[payload + tsCursor + i] = 0
+                    }
+                    tsCursor += 4
+                }
             }
         } else if (id == 0x5855) {
             // Info-ZIP Unix extra (UX): AcTime(4) + ModTime(4) [+ UID(2) + GID(2)].
             // Canonicalize only timestamp bytes; preserve UID/GID and any trailing bytes.
-            if (size > 0 && size < 8) {
+            if (size < 8) {
                 throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5855 timestamp payload")
             }
-            int timestampBytes = Math.min(size, 8)
-            for (int i = 0; i < timestampBytes; i++) {
+            for (int i = 0; i < 8; i++) {
                 bytes[payload + i] = 0
             }
-        } else if (id == 0x000a && size >= 4) {
+        } else if (id == 0x000a) {
+            // NTFS extra: 4-byte reserved prefix, then tag/size/payload records.
+            if (size < 4) {
+                throw new GradleException("canonicalizeReobfJar: NTFS 0x000a extra field missing reserved prefix")
+            }
             int tagCursor = 4
-            while (tagCursor + 4 <= size) {
+            while (tagCursor < size) {
+                if (tagCursor + 4 > size) {
+                    throw new GradleException("canonicalizeReobfJar: malformed NTFS 0x000a attribute header")
+                }
                 int tag = zipU16(bytes, payload + tagCursor)
                 int tagSize = zipU16(bytes, payload + tagCursor + 2)
                 if (tagCursor + 4 + tagSize > size) {
-                    break
+                    throw new GradleException("canonicalizeReobfJar: truncated NTFS 0x000a attribute record")
                 }
                 if (tag == 1) {
-                    for (int i = 0; i < tagSize; i++) {
+                    if (tagSize < 24) {
+                        throw new GradleException("canonicalizeReobfJar: NTFS 0x000a tag-1 timestamp payload too short")
+                    }
+                    for (int i = 0; i < 24; i++) {
                         bytes[payload + tagCursor + 4 + i] = 0
                     }
                 }
@@ -534,6 +565,26 @@ static byte[] zipExtraBlock(int id, byte[] payload) {
     return block
 }
 
+static byte[] zipNtfsAttribute(int tag, byte[] attrPayload) {
+    byte[] rec = new byte[4 + attrPayload.length]
+    zipW16(rec, 0, tag)
+    zipW16(rec, 2, attrPayload.length)
+    System.arraycopy(attrPayload, 0, rec, 4, attrPayload.length)
+    return rec
+}
+
+static byte[] fillZipBytes(int length, int startValue) {
+    byte[] out = new byte[length]
+    for (int i = 0; i < length; i++) {
+        out[i] = (byte) ((startValue + i) & 0xff)
+    }
+    return out
+}
+
+static byte[] zipSingleByte(int value) {
+    return [(byte) (value & 0xff)] as byte[]
+}
+
 static byte[] infoZipUxPayload(byte[] atime, byte[] mtime, byte[] uid, byte[] gid) {
     return concatZipBytes(atime, mtime, uid, gid)
 }
@@ -649,19 +700,100 @@ static void expectGradleFailure(String label, String needle, Closure action) {
     }
 }
 
+static void assertUtSelectedTimestamps(int flags, int selectedCount, byte[] trailing, String label) {
+    byte[] timestamps = fillZipBytes(selectedCount * 4, 0xA0)
+    byte[] extra = zipExtraBlock(0x5455, concatZipBytes(zipSingleByte(flags), timestamps, trailing))
+    int beforeLen = extra.length
+    zeroZipTimestampExtra(extra, 0, extra.length)
+    if (extra.length != beforeLen) {
+        throw new GradleException("infoZipUxExtraFixture: ${label}: extra-field length changed")
+    }
+    byte[] after = findZipExtraPayload(extra, extra.length, 0x5455)
+    requireZipBytes("${label} flags", sliceZipBytes(after, 0, 1), zipSingleByte(flags))
+    requireZipBytes("${label} timestamps", sliceZipBytes(after, 1, 1 + timestamps.length), new byte[timestamps.length])
+    if (trailing.length > 0) {
+        requireZipBytes("${label} trailing", sliceZipBytes(after, 1 + timestamps.length, after.length), trailing)
+    }
+}
+
 static void runInfoZipUxExtraFixture() {
     byte[] atime = [0x11, 0x22, 0x33, 0x44] as byte[]
     byte[] mtime = [0x55, 0x66, 0x77, 0x88] as byte[]
     byte[] uid = [0xDE, 0xC0] as byte[]
     byte[] gid = [0xEF, 0xBE] as byte[]
     byte[] zero8 = new byte[8]
-    byte[] utFlags = [0x07] as byte[]
-    byte[] utTimestamps = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C] as byte[]
+    byte[] utTrailing = [0xC0, 0xFF, 0xEE] as byte[]
     byte[] unknownPayload = [0xFF, 0xEE] as byte[]
+    byte[] ntfsReserved = [0x11, 0x22, 0x33, 0x44] as byte[]
+    byte[] ntfsTag1Ts = fillZipBytes(24, 0x30)
+    byte[] ntfsTag1Sentinel = [0xCA, 0xFE, 0xBA, 0xBE] as byte[]
+    byte[] ntfsOtherPayload = [0xAB, 0xCD, 0xEF, 0x01] as byte[]
+    byte[] uxTrailing = [0x99, 0x88] as byte[]
 
+    // UT: flags + selected timestamps + trailing sentinel; unknown flag bits do not consume bytes.
+    assertUtSelectedTimestamps(0x07, 3, utTrailing, 'UT flags 0x07 mtime/atime/ctime')
+    assertUtSelectedTimestamps(0x01, 1, utTrailing, 'UT flags 0x01 mtime only')
+    assertUtSelectedTimestamps(0x02, 1, utTrailing, 'UT flags 0x02 atime only')
+    assertUtSelectedTimestamps(0x04, 1, utTrailing, 'UT flags 0x04 ctime only')
+    assertUtSelectedTimestamps(0x03, 2, utTrailing, 'UT flags 0x03 mtime+atime')
+    assertUtSelectedTimestamps(0x00, 0, utTrailing, 'UT flags 0x00 no timestamps')
+    assertUtSelectedTimestamps(0x09, 1, utTrailing, 'UT flags 0x09 unknown bit + mtime')
+    assertUtSelectedTimestamps(0x08, 0, utTrailing, 'UT flags 0x08 unknown bit only')
+
+    expectGradleFailure('UT missing flags', 'Info-ZIP 0x5455 extra field missing flags') {
+        zeroZipTimestampExtra(zipExtraBlock(0x5455, new byte[0]), 0, 4)
+    }
+    expectGradleFailure('UT truncated selected mtime', 'truncated Info-ZIP 0x5455 timestamp') {
+        zeroZipTimestampExtra(zipExtraBlock(0x5455, concatZipBytes(zipSingleByte(0x01), [0x11, 0x22] as byte[])), 0, 7)
+    }
+    expectGradleFailure('UT truncated selected ctime', 'truncated Info-ZIP 0x5455 timestamp') {
+        zeroZipTimestampExtra(zipExtraBlock(0x5455, concatZipBytes(zipSingleByte(0x07), fillZipBytes(8, 0x40))), 0, 13)
+    }
+
+    // NTFS: reserved prefix, tag 1 24-byte timestamps + trailing sentinel, other attribute.
+    byte[] ntfsPayload = concatZipBytes(
+            ntfsReserved,
+            zipNtfsAttribute(1, concatZipBytes(ntfsTag1Ts, ntfsTag1Sentinel)),
+            zipNtfsAttribute(2, ntfsOtherPayload)
+    )
+    byte[] ntfsExtra = zipExtraBlock(0x000a, ntfsPayload)
+    int ntfsBeforeLen = ntfsExtra.length
+    zeroZipTimestampExtra(ntfsExtra, 0, ntfsExtra.length)
+    if (ntfsExtra.length != ntfsBeforeLen) {
+        throw new GradleException('infoZipUxExtraFixture: NTFS extra-field length changed')
+    }
+    byte[] ntfsAfter = findZipExtraPayload(ntfsExtra, ntfsExtra.length, 0x000a)
+    requireZipBytes('NTFS reserved', sliceZipBytes(ntfsAfter, 0, 4), ntfsReserved)
+    byte[] ntfsTag1Header = new byte[4]
+    zipW16(ntfsTag1Header, 0, 1)
+    zipW16(ntfsTag1Header, 2, ntfsTag1Ts.length + ntfsTag1Sentinel.length)
+    requireZipBytes('NTFS tag-1 header', sliceZipBytes(ntfsAfter, 4, 8), ntfsTag1Header)
+    requireZipBytes('NTFS tag-1 timestamps', sliceZipBytes(ntfsAfter, 8, 32), new byte[24])
+    requireZipBytes('NTFS tag-1 trailing', sliceZipBytes(ntfsAfter, 32, 36), ntfsTag1Sentinel)
+    requireZipBytes('NTFS other attribute', sliceZipBytes(ntfsAfter, 36, ntfsAfter.length), zipNtfsAttribute(2, ntfsOtherPayload))
+
+    expectGradleFailure('NTFS missing reserved prefix', 'NTFS 0x000a extra field missing reserved prefix') {
+        zeroZipTimestampExtra(zipExtraBlock(0x000a, [0x11, 0x22] as byte[]), 0, 6)
+    }
+    expectGradleFailure('NTFS malformed attribute header', 'malformed NTFS 0x000a attribute header') {
+        zeroZipTimestampExtra(zipExtraBlock(0x000a, concatZipBytes(ntfsReserved, [0x01, 0x00] as byte[])), 0, 10)
+    }
+    expectGradleFailure('NTFS truncated attribute record', 'truncated NTFS 0x000a attribute record') {
+        byte[] truncatedRec = new byte[4 + 4 + 10]
+        System.arraycopy(ntfsReserved, 0, truncatedRec, 0, 4)
+        zipW16(truncatedRec, 4, 1)
+        zipW16(truncatedRec, 6, 24)
+        System.arraycopy(fillZipBytes(10, 0x50), 0, truncatedRec, 8, 10)
+        zeroZipTimestampExtra(zipExtraBlock(0x000a, truncatedRec), 0, 4 + truncatedRec.length)
+    }
+    expectGradleFailure('NTFS tag-1 payload too short', 'NTFS 0x000a tag-1 timestamp payload too short') {
+        zeroZipTimestampExtra(zipExtraBlock(0x000a, concatZipBytes(ntfsReserved, zipNtfsAttribute(1, fillZipBytes(16, 0x60)))), 0, 28)
+    }
+
+    // Combined extra stream: UT + UX + unknown blocks; only timestamps change.
     byte[] extra = concatZipBytes(
-            zipExtraBlock(0x5455, concatZipBytes(utFlags, utTimestamps)),
-            zipExtraBlock(0x5855, infoZipUxPayload(atime, mtime, uid, gid)),
+            zipExtraBlock(0x5455, concatZipBytes(zipSingleByte(0x07), fillZipBytes(12, 0x01), utTrailing)),
+            zipExtraBlock(0x5855, concatZipBytes(infoZipUxPayload(atime, mtime, uid, gid), uxTrailing)),
             zipExtraBlock(0xCAFE, new byte[0]),
             zipExtraBlock(0x9999, unknownPayload)
     )
@@ -669,22 +801,28 @@ static void runInfoZipUxExtraFixture() {
     zeroZipTimestampExtra(extra, 0, extra.length)
 
     byte[] utAfter = findZipExtraPayload(extra, extra.length, 0x5455)
-    requireZipBytes('0x5455 flags', sliceZipBytes(utAfter, 0, 1), utFlags)
-    requireZipBytes('0x5455 timestamps', sliceZipBytes(utAfter, 1, utAfter.length), new byte[utTimestamps.length])
+    requireZipBytes('0x5455 flags', sliceZipBytes(utAfter, 0, 1), zipSingleByte(0x07))
+    requireZipBytes('0x5455 timestamps', sliceZipBytes(utAfter, 1, 13), new byte[12])
+    requireZipBytes('0x5455 trailing', sliceZipBytes(utAfter, 13, utAfter.length), utTrailing)
 
     byte[] uxAfter = findZipExtraPayload(extra, extra.length, 0x5855)
-    if (uxAfter == null || uxAfter.length != 12) {
+    if (uxAfter == null || uxAfter.length != 14) {
         throw new GradleException("infoZipUxExtraFixture: 0x5855 payload missing or resized")
     }
     requireZipBytes('0x5855 timestamps', sliceZipBytes(uxAfter, 0, 8), zero8)
     requireZipBytes('0x5855 UID', sliceZipBytes(uxAfter, 8, 10), uid)
     requireZipBytes('0x5855 GID', sliceZipBytes(uxAfter, 10, 12), gid)
+    requireZipBytes('0x5855 trailing', sliceZipBytes(uxAfter, 12, 14), uxTrailing)
 
     requireZipBytes('0xCAFE', findZipExtraPayload(extra, extra.length, 0xCAFE), new byte[0])
     requireZipBytes('unknown 0x9999', findZipExtraPayload(extra, extra.length, 0x9999), unknownPayload)
 
     if (extra.length != before.length) {
         throw new GradleException('infoZipUxExtraFixture: extra-field length changed')
+    }
+
+    expectGradleFailure('zero-length 0x5855 timestamp payload', 'truncated Info-ZIP 0x5855 timestamp payload') {
+        zeroZipTimestampExtra(zipExtraBlock(0x5855, new byte[0]), 0, 4)
     }
 
     byte[] shortTs = zipExtraBlock(0x5855, [0x11, 0x22, 0x33, 0x44] as byte[])
@@ -703,13 +841,18 @@ static void runInfoZipUxExtraFixture() {
         zeroZipTimestampExtra(truncated, 0, truncated.length)
     }
 
+    byte[] zipExtra = concatZipBytes(
+            zipExtraBlock(0x5455, concatZipBytes(zipSingleByte(0x07), fillZipBytes(12, 0x01), utTrailing)),
+            zipExtraBlock(0x000a, ntfsPayload),
+            zipExtraBlock(0x5855, concatZipBytes(infoZipUxPayload(atime, mtime, uid, gid), uxTrailing))
+    )
     byte[] payload = 'sentinel-ux-payload\n'.getBytes('UTF-8')
     int dosTime = (12 << 11) | (34 << 5) | 28
     int dosDate = (30 << 9) | (6 << 5) | 15
     byte[] zipBytes = buildMinimalStoredZip(
             'ux-sentinel.txt',
             payload,
-            zipExtraBlock(0x5855, infoZipUxPayload(atime, mtime, uid, gid)),
+            zipExtra,
             dosTime,
             dosDate
     )
@@ -735,24 +878,55 @@ static void runInfoZipUxExtraFixture() {
     int cdTime = zipU16(afterZip, cdOff + 12)
     int cdDate = zipU16(afterZip, cdOff + 14)
     if (cdTime != 0 || cdDate != ((0 << 9) | (2 << 5) | 1)) {
-        throw new GradleException("infoZipUxExtraFixture: DOS timestamp not canonicalized (${cdDate}/${cdTime})")
+        throw new GradleException("infoZipUxExtraFixture: central DOS timestamp not canonicalized (${cdDate}/${cdTime})")
+    }
+    if (extraLen != zipExtra.length) {
+        throw new GradleException("infoZipUxExtraFixture: central extra-field length changed")
     }
     byte[] cdExtra = new byte[extraLen]
     System.arraycopy(afterZip, cdOff + 46 + nameLen, cdExtra, 0, extraLen)
+    byte[] cdUt = findZipExtraPayload(cdExtra, extraLen, 0x5455)
+    requireZipBytes('central ZIP 0x5455 flags', sliceZipBytes(cdUt, 0, 1), zipSingleByte(0x07))
+    requireZipBytes('central ZIP 0x5455 timestamps', sliceZipBytes(cdUt, 1, 13), new byte[12])
+    requireZipBytes('central ZIP 0x5455 trailing', sliceZipBytes(cdUt, 13, cdUt.length), utTrailing)
+    byte[] cdNtfs = findZipExtraPayload(cdExtra, extraLen, 0x000a)
+    requireZipBytes('central ZIP NTFS reserved', sliceZipBytes(cdNtfs, 0, 4), ntfsReserved)
+    requireZipBytes('central ZIP NTFS tag-1 timestamps', sliceZipBytes(cdNtfs, 8, 32), new byte[24])
+    requireZipBytes('central ZIP NTFS tag-1 trailing', sliceZipBytes(cdNtfs, 32, 36), ntfsTag1Sentinel)
+    requireZipBytes('central ZIP NTFS other attribute', sliceZipBytes(cdNtfs, 36, cdNtfs.length), zipNtfsAttribute(2, ntfsOtherPayload))
     byte[] cdUx = findZipExtraPayload(cdExtra, extraLen, 0x5855)
-    requireZipBytes('ZIP 0x5855 timestamps', sliceZipBytes(cdUx, 0, 8), zero8)
-    requireZipBytes('ZIP 0x5855 UID', sliceZipBytes(cdUx, 8, 10), uid)
-    requireZipBytes('ZIP 0x5855 GID', sliceZipBytes(cdUx, 10, 12), gid)
+    requireZipBytes('central ZIP 0x5855 timestamps', sliceZipBytes(cdUx, 0, 8), zero8)
+    requireZipBytes('central ZIP 0x5855 UID', sliceZipBytes(cdUx, 8, 10), uid)
+    requireZipBytes('central ZIP 0x5855 GID', sliceZipBytes(cdUx, 10, 12), gid)
+    requireZipBytes('central ZIP 0x5855 trailing', sliceZipBytes(cdUx, 12, 14), uxTrailing)
 
     int localOff = (int) zipU32(afterZip, cdOff + 42)
+    int localTime = zipU16(afterZip, localOff + 10)
+    int localDate = zipU16(afterZip, localOff + 12)
+    if (localTime != 0 || localDate != ((0 << 9) | (2 << 5) | 1)) {
+        throw new GradleException("infoZipUxExtraFixture: local DOS timestamp not canonicalized (${localDate}/${localTime})")
+    }
     int localNameLen = zipU16(afterZip, localOff + 26)
     int localExtraLen = zipU16(afterZip, localOff + 28)
+    if (localExtraLen != zipExtra.length) {
+        throw new GradleException("infoZipUxExtraFixture: local extra-field length changed")
+    }
     byte[] localExtra = new byte[localExtraLen]
     System.arraycopy(afterZip, localOff + 30 + localNameLen, localExtra, 0, localExtraLen)
+    byte[] localUt = findZipExtraPayload(localExtra, localExtraLen, 0x5455)
+    requireZipBytes('local ZIP 0x5455 flags', sliceZipBytes(localUt, 0, 1), zipSingleByte(0x07))
+    requireZipBytes('local ZIP 0x5455 timestamps', sliceZipBytes(localUt, 1, 13), new byte[12])
+    requireZipBytes('local ZIP 0x5455 trailing', sliceZipBytes(localUt, 13, localUt.length), utTrailing)
+    byte[] localNtfs = findZipExtraPayload(localExtra, localExtraLen, 0x000a)
+    requireZipBytes('local ZIP NTFS reserved', sliceZipBytes(localNtfs, 0, 4), ntfsReserved)
+    requireZipBytes('local ZIP NTFS tag-1 timestamps', sliceZipBytes(localNtfs, 8, 32), new byte[24])
+    requireZipBytes('local ZIP NTFS tag-1 trailing', sliceZipBytes(localNtfs, 32, 36), ntfsTag1Sentinel)
+    requireZipBytes('local ZIP NTFS other attribute', sliceZipBytes(localNtfs, 36, localNtfs.length), zipNtfsAttribute(2, ntfsOtherPayload))
     byte[] localUx = findZipExtraPayload(localExtra, localExtraLen, 0x5855)
     requireZipBytes('local ZIP 0x5855 timestamps', sliceZipBytes(localUx, 0, 8), zero8)
     requireZipBytes('local ZIP 0x5855 UID', sliceZipBytes(localUx, 8, 10), uid)
     requireZipBytes('local ZIP 0x5855 GID', sliceZipBytes(localUx, 10, 12), gid)
+    requireZipBytes('local ZIP 0x5855 trailing', sliceZipBytes(localUx, 12, 14), uxTrailing)
 
     java.util.zip.ZipFile zip = new java.util.zip.ZipFile(fixtureZip)
     try {
@@ -763,7 +937,7 @@ static void runInfoZipUxExtraFixture() {
         zip.close()
         fixtureZip.delete()
     }
-    println 'infoZipUxExtraFixture: PASS (0x5855 timestamps canonicalized; sentinel UID/GID preserved; fail-closed)'
+    println 'infoZipUxExtraFixture: PASS (0x5455/0x000a/0x5855 timestamps canonicalized; flags/UID/GID/trailing preserved; fail-closed)'
 }
 
 static String extractSpecDefault(String spec, String defineCall, String fallback) {
