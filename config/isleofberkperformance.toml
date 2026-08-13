@@ -1,4 +1,4 @@
-# Deterministic common-config reference for the 0.3.0 release.
+# Deterministic common-config reference for the 0.3.1-rc.1 release candidate.
 # Forge generates/updates this file from the registered COMMON spec at runtime.
 # The comments below intentionally mirror the generated comments and defaults.
 
@@ -8,6 +8,7 @@
 ai_move_throttling_enabled = true
 
 # Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.
+# The first eligible request after a goal starts runs immediately; later eligible requests use this interval.
 # 1 disables cadence optimization; larger values reduce navigation work but can reduce responsiveness.
 ai_move_interval_ticks = 4
 

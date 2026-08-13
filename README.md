@@ -15,6 +15,16 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 - [Version 0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0)
 - [Download the 0.3.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v0.3.0/isleof-berk-performance-patches-0.3.0.jar)
 
+### 0.3.1-rc.1 release-candidate integrity
+
+The unpublished `0.3.1-rc.1` candidate is a successor to, and does not replace, the immutable 0.3.0 release. Independent Sol accepted the exact pre-commit artifact; GitHub publication remains pending. The hash below is the local canonical artifact after `reobfJar` + `canonicalizeReobfJar`.
+
+```text
+File:   isleof-berk-performance-patches-0.3.1-rc.1.jar
+Size:   47,478 bytes
+SHA256: 7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9
+```
+
 ### 0.3.0 artifact integrity
 
 ```text
@@ -40,7 +50,7 @@ The original Isle of Berk JAR and GeckoLib are required dependencies. The compan
 1. Install Forge 40.3.0 for Minecraft 1.18.2.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge 3.0.57.
-4. Put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory.
+4. For the stable release, put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory. The `0.3.1-rc.1` candidate is unpublished; if testing it, use the exact local canonical JAR below rather than a GitHub prerelease.
 5. Start the game once to generate `config/isleofberkperformance.toml`.
 6. For multiplayer, install the same companion version on the client and server.
 
@@ -64,7 +74,7 @@ Forge registers `config/isleofberkperformance.toml` as a COMMON configuration. C
 | Key | Optimized default | Upstream/normal value | Effect |
 |---|---:|---:|---|
 | `ai_move_throttling_enabled` | `true` | `false` | Throttles repeated flight/follow navigation requests. |
-| `ai_move_interval_ticks` | `4` | `1` | Runs an eligible AI movement request every 4 ticks by default. `1` disables AI cadence throttling. |
+| `ai_move_interval_ticks` | `4` | `1` | After a goal starts, the first eligible request runs immediately; later eligible requests use this interval. `1` disables AI cadence throttling. |
 | `egg_hatch_check_interval_ticks` | `20` | `20` | The pinned IoB 1.2.0 behavior already checks egg warmth/hatch progress every 20 ticks. Lower values increase work and change timing granularity. |
 | `shock_particle_interval_ticks` | `8` | `8` | The pinned IoB 1.2.0 behavior already sends shock particles every 8 ticks. Lower values increase packet/client work and visual density. |
 
@@ -110,6 +120,8 @@ PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH \
 ```
 
 The exact original Isle of Berk dependency is required locally for the bytecode fixture and is intentionally not committed or redistributed.
+
+`reobfJar` remains required. The following `canonicalizeReobfJar` task rewrites only ZIP timestamps and timestamp extra fields on that reobfuscated JAR so two clean builds from the same tree are byte-identical. Audit and mapping fixtures inspect that canonical artifact.
 
 ## Documentation
 

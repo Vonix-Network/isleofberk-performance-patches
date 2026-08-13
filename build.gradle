@@ -7,6 +7,8 @@ plugins {
 
 def forgeVersion = project.findProperty('forgeVersion') ?: '40.3.0'
 def iobVersion = project.findProperty('iobVersion') ?: '1.2.0'
+def serverRunDir = project.findProperty('serverRunDir')
+def runtimeArtifact = project.findProperty('runtimeArtifact')
 version = project.findProperty('version') ?: '0.1.0'
 group = 'network.vonix.isleofberkperformance'
 // Companion performance-patch artifact name (not an IoB fork/replacement).
@@ -26,12 +28,14 @@ minecraft {
             mods { isleofberkperformance { source sourceSets.main } }
         }
         server {
-            workingDirectory project.file('run')
+            workingDirectory project.file(serverRunDir ?: 'run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods { isleofberkperformance { source sourceSets.main } }
+            if (!runtimeArtifact) {
+                mods { isleofberkperformance { source sourceSets.main } }
+            }
         }
     }
 }
@@ -78,7 +82,37 @@ jar {
         ])
     }
 }
+
+// Keep release artifacts byte-for-byte reproducible across clean builds.
+tasks.withType(Jar).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
 jar.finalizedBy('reobfJar')
+
+/**
+ * ForgeGradle reobfJar (RenameJarInPlace / SpecialSource JarOutputStream) always
+ * rewrites ZIP timestamps and may rewrite extra fields. Gradle Jar reproducibility
+ * settings do not apply to that in-place rename. This task only canonicalizes ZIP
+ * metadata: entry contents, order, manifest, refmap, and bytecode stay unchanged.
+ */
+tasks.register('canonicalizeReobfJar') {
+    group = 'build'
+    description = 'Canonicalize ZIP timestamps/extra metadata on the reobfuscated primary JAR.'
+    dependsOn 'reobfJar'
+    doLast {
+        def primary = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
+        canonicalizeReobfZipMetadata(primary)
+        logger.lifecycle("canonicalizeReobfJar: deterministic ZIP metadata written for ${primary.name}")
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'reobfJar') {
+        task.finalizedBy 'canonicalizeReobfJar'
+    }
+}
 
 /**
  * Rejects a packaged primary JAR that bundles Isle of Berk implementation classes/resources
@@ -88,7 +122,7 @@ jar.finalizedBy('reobfJar')
 tasks.register('auditPackagedJar') {
     group = 'verification'
     description = 'Fails if the primary JAR bundles IoB classes/resources or deadlock-fix markers.'
-    dependsOn 'reobfJar'
+    dependsOn 'canonicalizeReobfJar'
     doLast {
         def libsDir = file("${buildDir}/libs")
         def expectedName = "${archivesBaseName}-${project.version}.jar"
@@ -181,24 +215,84 @@ tasks.named('build').configure {
 
 tasks.named('check').configure {
     dependsOn 'auditPackagedJar'
+    dependsOn 'mappingFixture'
     dependsOn 'rendererBytecodeFixture'
+    dependsOn 'gameplayBytecodeFixture'
     dependsOn 'configFixture'
+    dependsOn 'aiMoveCadenceFixture'
+    dependsOn 'mixinLifecycleFixture'
+}
+
+tasks.register('mappingFixture') {
+    group = 'verification'
+    description = 'Checks the WrappedGoal official-to-SRG accessor mapping in the packaged artifact.'
+    dependsOn 'canonicalizeReobfJar'
+    doLast {
+        def primary = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
+        def refmap = new java.util.zip.ZipFile(primary).withCloseable { zip ->
+            def entry = zip.getEntry('isleofberkperformance.refmap.json')
+            if (entry == null) {
+                throw new GradleException("mappingFixture: packaged refmap missing from ${primary}")
+            }
+            zip.getInputStream(entry).getText('UTF-8')
+        }
+        if (!refmap.contains('WrappedGoal;m_8056_') || !refmap.contains('WrappedGoal;m_8041_')) {
+            throw new GradleException('mappingFixture: packaged refmap is missing the SRG WrappedGoal start/stop selectors')
+        }
+        if (refmap.contains('WrappedGoal;getGoal')) {
+            throw new GradleException('mappingFixture: packaged refmap contains an unmapped WrappedGoal selector')
+        }
+
+        def srg = file("${buildDir}/createMcpToSrg/output.tsrg").getText('UTF-8')
+        if (!srg.contains('getGoal ()Lnet/minecraft/world/entity/ai/goal/Goal; m_26015_')) {
+            throw new GradleException('mappingFixture: pinned official-to-SRG mapping does not contain getGoal -> m_26015_')
+        }
+        def classBytes = new java.util.zip.ZipFile(primary).withCloseable { zip ->
+            def entry = zip.getEntry('network/vonix/isleofberkperformance/mixin/WrappedGoalMixin.class')
+            if (entry == null) {
+                throw new GradleException('mappingFixture: packaged WrappedGoalMixin.class is missing')
+            }
+            zip.getInputStream(entry).bytes
+        }
+        def classText = new String(classBytes, 'ISO-8859-1')
+        if (!classText.contains('m_26015_')) {
+            throw new GradleException('mappingFixture: packaged WrappedGoalMixin.class does not invoke m_26015_')
+        }
+        if (classText.contains('getGoal')) {
+            throw new GradleException('mappingFixture: packaged WrappedGoalMixin.class retains the unmapped getGoal accessor')
+        }
+        logger.lifecycle('mappingFixture: PASS (official getGoal -> SRG m_26015_; refmap and packaged bytecode verified)')
+    }
 }
 
 tasks.register('configFixture') {
     group = 'verification'
-    description = 'Checks the deterministic common-config fixture and documented optimized defaults.'
+    description = 'Checks the deterministic common-config fixture against PerformanceConfig.SPEC defaults.'
     doLast {
         def fixture = file("${projectDir}/config/isleofberkperformance.toml")
+        def configSource = file("${projectDir}/src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java")
         if (!fixture.isFile()) {
             throw new GradleException("configFixture: missing ${fixture}")
         }
+        if (!configSource.isFile()) {
+            throw new GradleException("configFixture: missing ${configSource}")
+        }
         def text = fixture.getText('UTF-8')
+        def spec = configSource.getText('UTF-8')
+
+        def expected = [
+                ai_move_throttling_enabled: extractSpecDefault(spec, 'define("ai_move_throttling_enabled"', 'true'),
+                ai_move_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("ai_move_interval_ticks"', '4'),
+                egg_hatch_check_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("egg_hatch_check_interval_ticks"', '20'),
+                shock_particle_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("shock_particle_interval_ticks"', '8')
+        ]
+        expected.each { key, value ->
+            def assignment = "${key} = ${value}"
+            if (!text.contains(assignment)) {
+                throw new GradleException("configFixture: fixture/SPEC mismatch for ${assignment}")
+            }
+        }
         [
-                'ai_move_throttling_enabled = true',
-                'ai_move_interval_ticks = 4',
-                'egg_hatch_check_interval_ticks = 20',
-                'shock_particle_interval_ticks = 8',
                 'Upstream/normal behavior in Isle of Berk 1.2.0: 20 ticks.',
                 'Upstream/normal behavior in Isle of Berk 1.2.0: 8 ticks.',
                 'Damage remains fixed at 20 ticks'
@@ -207,8 +301,200 @@ tasks.register('configFixture') {
                 throw new GradleException("configFixture: required text missing: ${required}")
             }
         }
-        logger.lifecycle('configFixture: PASS (COMMON keys/defaults/comments present)')
+        logger.lifecycle("configFixture: PASS (COMMON keys match PerformanceConfig.SPEC defaults ${expected})")
     }
+}
+
+tasks.register('aiMoveCadenceFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks the first-request-then-interval AI cadence predicate.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.AiMoveCadenceFixture'
+    dependsOn testClasses
+}
+
+tasks.register('mixinLifecycleFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks that target canUse/start/stop methods remain untouched and reset stays in WrappedGoal.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.MixinLifecycleFixture'
+    dependsOn testClasses
+}
+
+static int zipU16(byte[] bytes, int offset) {
+    return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8)
+}
+
+static long zipU32(byte[] bytes, int offset) {
+    return (bytes[offset] & 0xffL) |
+            ((bytes[offset + 1] & 0xffL) << 8) |
+            ((bytes[offset + 2] & 0xffL) << 16) |
+            ((bytes[offset + 3] & 0xffL) << 24)
+}
+
+static void zipW16(byte[] bytes, int offset, int value) {
+    bytes[offset] = (byte) (value & 0xff)
+    bytes[offset + 1] = (byte) ((value >> 8) & 0xff)
+}
+
+static void zeroZipTimestampExtra(byte[] bytes, int offset, int length) {
+    int cursor = 0
+    while (cursor + 4 <= length) {
+        int id = zipU16(bytes, offset + cursor)
+        int size = zipU16(bytes, offset + cursor + 2)
+        if (cursor + 4 + size > length) {
+            break
+        }
+        int payload = offset + cursor + 4
+        if (id == 0x5455 && size >= 1) {
+            // UT extra: keep flags, zero unix timestamps.
+            for (int i = 1; i < size; i++) {
+                bytes[payload + i] = 0
+            }
+        } else if (id == 0x5855) {
+            for (int i = 0; i < size; i++) {
+                bytes[payload + i] = 0
+            }
+        } else if (id == 0x000a && size >= 4) {
+            int tagCursor = 4
+            while (tagCursor + 4 <= size) {
+                int tag = zipU16(bytes, payload + tagCursor)
+                int tagSize = zipU16(bytes, payload + tagCursor + 2)
+                if (tagCursor + 4 + tagSize > size) {
+                    break
+                }
+                if (tag == 1) {
+                    for (int i = 0; i < tagSize; i++) {
+                        bytes[payload + tagCursor + 4 + i] = 0
+                    }
+                }
+                tagCursor += 4 + tagSize
+            }
+        }
+        cursor += 4 + size
+    }
+}
+
+static void canonicalizeReobfZipMetadata(File jarFile) {
+    if (!jarFile.isFile()) {
+        throw new GradleException("canonicalizeReobfJar: expected reobfuscated JAR missing: ${jarFile}")
+    }
+    byte[] bytes = jarFile.bytes
+    if (bytes.length < 22) {
+        throw new GradleException("canonicalizeReobfJar: ${jarFile.name} is too small to be a ZIP")
+    }
+
+    int eocd = -1
+    int minEocd = Math.max(0, bytes.length - 22 - 0xFFFF)
+    for (int i = bytes.length - 22; i >= minEocd; i--) {
+        if (zipU32(bytes, i) == 0x06054b50L) {
+            eocd = i
+            break
+        }
+    }
+    if (eocd < 0) {
+        throw new GradleException("canonicalizeReobfJar: ZIP end-of-central-directory not found in ${jarFile.name}")
+    }
+    int commentLen = zipU16(bytes, eocd + 20)
+    if (eocd + 22 + commentLen != bytes.length) {
+        throw new GradleException("canonicalizeReobfJar: ZIP64 or trailing data is not supported for ${jarFile.name}")
+    }
+    if (eocd >= 20 && zipU32(bytes, eocd - 20) == 0x07064b50L) {
+        throw new GradleException("canonicalizeReobfJar: ZIP64 locator is not supported for ${jarFile.name}")
+    }
+
+    int entryCount = zipU16(bytes, eocd + 10)
+    long cdSize = zipU32(bytes, eocd + 12)
+    long cdOffset = zipU32(bytes, eocd + 16)
+    if (cdOffset + cdSize != eocd) {
+        throw new GradleException("canonicalizeReobfJar: central directory bounds are invalid in ${jarFile.name}")
+    }
+
+    def before = [] as List
+    // DOS 1980-02-01 00:00:00; same fixed date Gradle uses for reproducible JARs.
+    int dosTime = 0
+    int dosDate = (0 << 9) | (2 << 5) | 1
+    int pos = (int) cdOffset
+    for (int n = 0; n < entryCount; n++) {
+        if (pos + 46 > bytes.length || zipU32(bytes, pos) != 0x02014b50L) {
+            throw new GradleException("canonicalizeReobfJar: central directory entry ${n} is invalid")
+        }
+        int nameLen = zipU16(bytes, pos + 28)
+        int extraLen = zipU16(bytes, pos + 30)
+        int fileCommentLen = zipU16(bytes, pos + 32)
+        long localOffset = zipU32(bytes, pos + 42)
+        int local = (int) localOffset
+        if (local + 30 > bytes.length || zipU32(bytes, local) != 0x04034b50L) {
+            throw new GradleException("canonicalizeReobfJar: local header for entry ${n} is invalid")
+        }
+        int localNameLen = zipU16(bytes, local + 26)
+        int localExtraLen = zipU16(bytes, local + 28)
+        String name = new String(bytes, pos + 46, nameLen, 'UTF-8')
+        if (localNameLen != nameLen || new String(bytes, local + 30, localNameLen, 'UTF-8') != name) {
+            throw new GradleException("canonicalizeReobfJar: local/central name mismatch for ${name}")
+        }
+        before << [
+                name          : name,
+                crc           : zipU32(bytes, pos + 16),
+                compressed    : zipU32(bytes, pos + 20),
+                uncompressed  : zipU32(bytes, pos + 24)
+        ]
+
+        zipW16(bytes, pos + 12, dosTime)
+        zipW16(bytes, pos + 14, dosDate)
+        zeroZipTimestampExtra(bytes, pos + 46 + nameLen, extraLen)
+
+        zipW16(bytes, local + 10, dosTime)
+        zipW16(bytes, local + 12, dosDate)
+        zeroZipTimestampExtra(bytes, local + 30 + localNameLen, localExtraLen)
+
+        pos += 46 + nameLen + extraLen + fileCommentLen
+    }
+    if (pos != eocd) {
+        throw new GradleException("canonicalizeReobfJar: central directory size mismatch in ${jarFile.name}")
+    }
+
+    jarFile.bytes = bytes
+
+    java.util.zip.ZipFile zip = new java.util.zip.ZipFile(jarFile)
+    try {
+        def after = [] as List
+        zip.entries().each { entry ->
+            after << [
+                    name         : entry.name,
+                    crc          : entry.crc & 0xffffffffL,
+                    compressed   : entry.compressedSize & 0xffffffffL,
+                    uncompressed : entry.size & 0xffffffffL
+            ]
+            zip.getInputStream(entry).withCloseable { stream ->
+                byte[] buf = new byte[8192]
+                while (stream.read(buf) != -1) {
+                    // Force CRC validation of unchanged entry contents.
+                }
+            }
+        }
+        if (after != before) {
+            throw new GradleException("canonicalizeReobfJar: entry contents/order changed while rewriting ZIP metadata")
+        }
+    } finally {
+        zip.close()
+    }
+}
+
+static String extractSpecDefault(String spec, String defineCall, String fallback) {
+    def matcher = (spec =~ /(?s)${java.util.regex.Pattern.quote(defineCall)},\s*(true|false)\s*\)/)
+    if (!matcher.find()) {
+        throw new GradleException("configFixture: PerformanceConfig.SPEC default not found for ${defineCall} (expected ${fallback})")
+    }
+    return matcher.group(1)
+}
+
+static String extractSpecRangeDefault(String spec, String defineCall, String fallback) {
+    def matcher = (spec =~ /(?s)${java.util.regex.Pattern.quote(defineCall)},\s*(-?\d+)\s*,/)
+    if (!matcher.find()) {
+        throw new GradleException("configFixture: PerformanceConfig.SPEC default not found for ${defineCall} (expected ${fallback})")
+    }
+    return matcher.group(1)
 }
 
 tasks.register('rendererBytecodeFixture', JavaExec) {
@@ -216,6 +502,15 @@ tasks.register('rendererBytecodeFixture', JavaExec) {
     description = 'Checks pinned original renderer and fixed-resource model bytecode before applying client mixins.'
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'network.vonix.isleofberkperformance.verification.RendererBytecodeFixture'
+    args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
+    dependsOn testClasses
+}
+
+tasks.register('gameplayBytecodeFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks pinned original AI, egg, and shock bytecode counts before applying common mixins.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.GameplayBytecodeFixture'
     args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
     dependsOn testClasses
 }

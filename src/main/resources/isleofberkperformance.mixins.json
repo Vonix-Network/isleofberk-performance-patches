@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
+    "WrappedGoalMixin",
     "DragonFlyAndAttackAirbourneTargetGoalMixin",
     "UntamedDragonCircleFlightGoalMixin",
     "DragonFollowPlayerFlyingMixin",

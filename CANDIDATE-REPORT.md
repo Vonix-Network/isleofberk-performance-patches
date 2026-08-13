@@ -1,14 +1,15 @@
-# 0.3.0 release evidence
+# 0.3.1-rc.1 release-candidate evidence
 
-This document records the implemented scope, audited exclusions, and acceptance evidence for the 0.3.0 standalone companion release. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion.
+This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. Independent Sol accepted the exact pre-commit artifact with no P0/P1. GitHub publication remains pending and is not authorized by this document.
 
 ## Release identity
 
-- Release: [v0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0)
-- Artifact: `isleof-berk-performance-patches-0.3.0.jar`
-- Size: 46,187 bytes
-- SHA-256: `c28dfc2871d97b654933f1b0d9023dd54f9319064274c3d1dd3ac2dc026efb56`
+- Candidate version: `0.3.1-rc.1` (unpublished successor to immutable [v0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0))
+- Artifact: `isleof-berk-performance-patches-0.3.1-rc.1.jar`
+- Size: 47,478 bytes
+- SHA-256: `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`
 - Target: Minecraft 1.18.2, Forge 40.3.0, Java 17, Isle of Berk 1.2.0, GeckoLib 3.0.57
+- Packaging: `reobfJar` is unchanged; `canonicalizeReobfJar` then rewrites only ZIP timestamps and timestamp extra fields so clean builds are byte-identical. Entry contents, order, manifest, refmap, and bytecode are not modified.
 
 ## Implemented surface
 
@@ -16,7 +17,7 @@ This document records the implemented scope, audited exclusions, and acceptance 
 |---|---|---|
 | Renderer argument reuse | Implemented | Twelve exact client renderer bodies; resolved texture arguments are reused. |
 | Fixed model/egg/projectile resources | Implemented | Thirty-six exact constructor-only resource methods; dynamic resources remain untouched. |
-| AI movement-request cadence | Implemented | Three exact flight/follow goals; `@Unique` counters reset at the available lifecycle boundaries and only navigation/circle calls are gated. |
+| AI movement-request cadence | Implemented | Three exact flight/follow goals; `@Unique` counters reset by the common `WrappedGoal` start/stop transition hook. Target `canUse()`/`start()`/`stop()` methods remain untouched. Vanilla `canContinueToUse()` delegates to `canUse()`, so `canUse()` is not a reset point. The first eligible request after start runs immediately, then every configured interval. Only navigation/circle calls are gated. |
 | Egg hatch-check cadence | Implemented | The exact upstream 20-tick constant is redirected to the COMMON config interval; hatch state updates, side effects, and order remain in the original method. |
 | Shock particle cadence | Implemented | The exact particle 8-tick constant is configurable; the separate 20-tick damage constant is untouched. |
 | Packet particle-handler local caching | Deferred | Client-only caching remains outside this release because it is not required for the documented companion boundary. |
@@ -52,12 +53,24 @@ The release does not add `distanceToSqr` substitutions, deadlock/getChunkNow beh
 
 ## Acceptance evidence
 
-- Java 17 Gradle clean `check build --offline --no-daemon --rerun-tasks`: `BUILD SUCCESSFUL`.
-- `auditPackagedJar`: companion-only archive; no bundled Isle of Berk or deadlock-fix content.
+- Java 17 Gradle clean `check build --offline --no-daemon --rerun-tasks`: `BUILD SUCCESSFUL` twice from the same tree; the two JARs are byte-identical (`sha256sum` and `cmp`).
+- `auditPackagedJar` and `mappingFixture` inspect the canonical post-`reobfJar` artifact.
 - `configFixture`: required COMMON keys, defaults, and comments present.
 - `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed.
-- Fresh Forge server runtime: all five common gameplay mixins applied; server reached `Done (12.028s)` without `MixinApplyError` or `InvalidInjectionException`.
-- Independent GPT-5.6-SOL review: `PASS`; no P0 or P1 findings.
-- GitHub release asset was downloaded and matched the pinned local SHA-256 byte-for-byte.
+- Prior production/SRG Forge runtime evidence still applies to the unchanged companion bytecode/entry contents (six common mixins applied; server reached `Done` without `MixinApplyError`, `InvalidInjection`, `InvalidInjectionException`, or `AbstractMethodError`). That run is not a hash pin for this reproducible artifact.
+- Independent Routera/Codex Sol review of this exact pre-commit artifact (`openai/gpt-5.6-sol`): ACCEPT. No P0 or P1 findings. Previous candidate reviews were not reused.
+- GitHub prerelease/publication: pending. Do not treat this document as a published release.
+
+### Versioned final-gate evidence
+
+- Candidate artifact: `build/libs/isleof-berk-performance-patches-0.3.1-rc.1.jar`, 47,478 bytes, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9` after `canonicalizeReobfJar`.
+- Two clean offline builds from the same tree matched this hash. Durable hash/`cmp` evidence is retained in `/tmp/iob-0.3.1-rc.1-final-evidence.txt` because the referenced build logs (`/tmp/iob-parent-repro-a.log`, `/tmp/iob-parent-repro-b.log`) record only `BUILD SUCCESSFUL` and do not themselves print digests.
+- Independent Sol ACCEPT applies only to these exact unpublished bytes. Publication is not claimed.
+
+### Sol P2/P3 hygiene disposition
+
+- P2 reproducibility evidence: resolved for parent review by retaining both clean-build log paths, both hash lines, retained byte-identical copies, and `cmp PASS` in `/tmp/iob-0.3.1-rc.1-final-evidence.txt`. The logs themselves were not rewritten.
+- P2 dirty-tree provenance: parent-owned. The source candidate remains dirty against `ec3afbf`; immutable commit/tag provenance is pending parent action. This worker did not commit.
+- Stale `config/isleofberkperformance.toml` 0.3.0 reference wording: resolved in-tree. Keys, defaults, format, and runtime values are unchanged.
 
 No quantitative performance claim is made because matched before/after profiling was not performed.
