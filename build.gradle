@@ -221,6 +221,7 @@ tasks.named('check').configure {
     dependsOn 'configFixture'
     dependsOn 'aiMoveCadenceFixture'
     dependsOn 'mixinLifecycleFixture'
+    dependsOn 'infoZipUxExtraFixture'
 }
 
 tasks.register('mappingFixture') {
@@ -321,6 +322,20 @@ tasks.register('mixinLifecycleFixture', JavaExec) {
     dependsOn testClasses
 }
 
+/**
+ * Deterministic read-only extra-field fixture. Does not mutate the release JAR.
+ * Builds a synthetic Info-ZIP 0x5855 (UX) payload with sentinel UID/GID and
+ * proves canonicalizeReobfZipMetadata / zeroZipTimestampExtra change only
+ * timestamp bytes. Truncated 0x5855 layouts fail closed.
+ */
+tasks.register('infoZipUxExtraFixture') {
+    group = 'verification'
+    description = 'Checks Info-ZIP 0x5855 timestamps are canonicalized while UID/GID bytes are preserved.'
+    doLast {
+        runInfoZipUxExtraFixture()
+    }
+}
+
 static int zipU16(byte[] bytes, int offset) {
     return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8)
 }
@@ -337,12 +352,22 @@ static void zipW16(byte[] bytes, int offset, int value) {
     bytes[offset + 1] = (byte) ((value >> 8) & 0xff)
 }
 
+static void zipW32(byte[] bytes, int offset, long value) {
+    bytes[offset] = (byte) (value & 0xff)
+    bytes[offset + 1] = (byte) ((value >> 8) & 0xff)
+    bytes[offset + 2] = (byte) ((value >> 16) & 0xff)
+    bytes[offset + 3] = (byte) ((value >> 24) & 0xff)
+}
+
 static void zeroZipTimestampExtra(byte[] bytes, int offset, int length) {
     int cursor = 0
     while (cursor + 4 <= length) {
         int id = zipU16(bytes, offset + cursor)
         int size = zipU16(bytes, offset + cursor + 2)
         if (cursor + 4 + size > length) {
+            if (id == 0x5855) {
+                throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5855 extra field")
+            }
             break
         }
         int payload = offset + cursor + 4
@@ -352,7 +377,13 @@ static void zeroZipTimestampExtra(byte[] bytes, int offset, int length) {
                 bytes[payload + i] = 0
             }
         } else if (id == 0x5855) {
-            for (int i = 0; i < size; i++) {
+            // Info-ZIP Unix extra (UX): AcTime(4) + ModTime(4) [+ UID(2) + GID(2)].
+            // Canonicalize only timestamp bytes; preserve UID/GID and any trailing bytes.
+            if (size > 0 && size < 8) {
+                throw new GradleException("canonicalizeReobfJar: truncated Info-ZIP 0x5855 timestamp payload")
+            }
+            int timestampBytes = Math.min(size, 8)
+            for (int i = 0; i < timestampBytes; i++) {
                 bytes[payload + i] = 0
             }
         } else if (id == 0x000a && size >= 4) {
@@ -479,6 +510,260 @@ static void canonicalizeReobfZipMetadata(File jarFile) {
     } finally {
         zip.close()
     }
+}
+
+static byte[] concatZipBytes(byte[]... parts) {
+    int total = 0
+    for (int i = 0; i < parts.length; i++) {
+        total += parts[i].length
+    }
+    byte[] out = new byte[total]
+    int pos = 0
+    for (int i = 0; i < parts.length; i++) {
+        System.arraycopy(parts[i], 0, out, pos, parts[i].length)
+        pos += parts[i].length
+    }
+    return out
+}
+
+static byte[] zipExtraBlock(int id, byte[] payload) {
+    byte[] block = new byte[4 + payload.length]
+    zipW16(block, 0, id)
+    zipW16(block, 2, payload.length)
+    System.arraycopy(payload, 0, block, 4, payload.length)
+    return block
+}
+
+static byte[] infoZipUxPayload(byte[] atime, byte[] mtime, byte[] uid, byte[] gid) {
+    return concatZipBytes(atime, mtime, uid, gid)
+}
+
+static byte[] findZipExtraPayload(byte[] extra, int extraLength, int wantedId) {
+    int cursor = 0
+    while (cursor + 4 <= extraLength) {
+        int id = zipU16(extra, cursor)
+        int size = zipU16(extra, cursor + 2)
+        if (cursor + 4 + size > extraLength) {
+            throw new GradleException("infoZipUxExtraFixture: truncated extra field 0x${Integer.toHexString(id)}")
+        }
+        if (id == wantedId) {
+            byte[] payload = new byte[size]
+            System.arraycopy(extra, cursor + 4, payload, 0, size)
+            return payload
+        }
+        cursor += 4 + size
+    }
+    return null
+}
+
+static byte[] sliceZipBytes(byte[] src, int from, int toExclusive) {
+    if (src == null || from < 0 || toExclusive < from || toExclusive > src.length) {
+        throw new GradleException("infoZipUxExtraFixture: invalid slice ${from}..${toExclusive} of ${src == null ? -1 : src.length}")
+    }
+    byte[] out = new byte[toExclusive - from]
+    System.arraycopy(src, from, out, 0, out.length)
+    return out
+}
+
+static void requireZipBytes(String label, byte[] actual, byte[] expected) {
+    if (actual == null) {
+        throw new GradleException("infoZipUxExtraFixture: ${label}: missing bytes")
+    }
+    if (actual.length != expected.length) {
+        throw new GradleException("infoZipUxExtraFixture: ${label}: length ${actual.length} != ${expected.length}")
+    }
+    for (int i = 0; i < expected.length; i++) {
+        if (actual[i] != expected[i]) {
+            throw new GradleException("infoZipUxExtraFixture: ${label}: byte ${i} changed")
+        }
+    }
+}
+
+static byte[] buildMinimalStoredZip(String name, byte[] payload, byte[] extra, int dosTime, int dosDate) {
+    byte[] nameBytes = name.getBytes('UTF-8')
+    def crc32 = new java.util.zip.CRC32()
+    crc32.update(payload)
+    long crc = crc32.value
+    int nameLen = nameBytes.length
+    int extraLen = extra.length
+    int localLen = 30 + nameLen + extraLen + payload.length
+    int cdLen = 46 + nameLen + extraLen
+    byte[] zip = new byte[localLen + cdLen + 22]
+    int p = 0
+    zipW32(zip, p, 0x04034b50L); p += 4
+    zipW16(zip, p, 20); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, dosTime); p += 2
+    zipW16(zip, p, dosDate); p += 2
+    zipW32(zip, p, crc); p += 4
+    zipW32(zip, p, payload.length); p += 4
+    zipW32(zip, p, payload.length); p += 4
+    zipW16(zip, p, nameLen); p += 2
+    zipW16(zip, p, extraLen); p += 2
+    System.arraycopy(nameBytes, 0, zip, p, nameLen); p += nameLen
+    System.arraycopy(extra, 0, zip, p, extraLen); p += extraLen
+    System.arraycopy(payload, 0, zip, p, payload.length); p += payload.length
+    int cdOff = p
+    zipW32(zip, p, 0x02014b50L); p += 4
+    zipW16(zip, p, 20); p += 2
+    zipW16(zip, p, 20); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, dosTime); p += 2
+    zipW16(zip, p, dosDate); p += 2
+    zipW32(zip, p, crc); p += 4
+    zipW32(zip, p, payload.length); p += 4
+    zipW32(zip, p, payload.length); p += 4
+    zipW16(zip, p, nameLen); p += 2
+    zipW16(zip, p, extraLen); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW32(zip, p, 0L); p += 4
+    zipW32(zip, p, 0L); p += 4
+    System.arraycopy(nameBytes, 0, zip, p, nameLen); p += nameLen
+    System.arraycopy(extra, 0, zip, p, extraLen); p += extraLen
+    zipW32(zip, p, 0x06054b50L); p += 4
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 0); p += 2
+    zipW16(zip, p, 1); p += 2
+    zipW16(zip, p, 1); p += 2
+    zipW32(zip, p, cdLen); p += 4
+    zipW32(zip, p, cdOff); p += 4
+    zipW16(zip, p, 0); p += 2
+    return zip
+}
+
+static void expectGradleFailure(String label, String needle, Closure action) {
+    try {
+        action.call()
+        throw new GradleException("infoZipUxExtraFixture: ${label} did not fail closed")
+    } catch (GradleException ex) {
+        if (ex.message != null && ex.message.contains('did not fail closed')) {
+            throw ex
+        }
+        if (ex.message == null || !ex.message.contains(needle)) {
+            throw new GradleException("infoZipUxExtraFixture: ${label}: unexpected failure: ${ex.message}")
+        }
+    }
+}
+
+static void runInfoZipUxExtraFixture() {
+    byte[] atime = [0x11, 0x22, 0x33, 0x44] as byte[]
+    byte[] mtime = [0x55, 0x66, 0x77, 0x88] as byte[]
+    byte[] uid = [0xDE, 0xC0] as byte[]
+    byte[] gid = [0xEF, 0xBE] as byte[]
+    byte[] zero8 = new byte[8]
+    byte[] utFlags = [0x07] as byte[]
+    byte[] utTimestamps = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C] as byte[]
+    byte[] unknownPayload = [0xFF, 0xEE] as byte[]
+
+    byte[] extra = concatZipBytes(
+            zipExtraBlock(0x5455, concatZipBytes(utFlags, utTimestamps)),
+            zipExtraBlock(0x5855, infoZipUxPayload(atime, mtime, uid, gid)),
+            zipExtraBlock(0xCAFE, new byte[0]),
+            zipExtraBlock(0x9999, unknownPayload)
+    )
+    byte[] before = extra.clone()
+    zeroZipTimestampExtra(extra, 0, extra.length)
+
+    byte[] utAfter = findZipExtraPayload(extra, extra.length, 0x5455)
+    requireZipBytes('0x5455 flags', sliceZipBytes(utAfter, 0, 1), utFlags)
+    requireZipBytes('0x5455 timestamps', sliceZipBytes(utAfter, 1, utAfter.length), new byte[utTimestamps.length])
+
+    byte[] uxAfter = findZipExtraPayload(extra, extra.length, 0x5855)
+    if (uxAfter == null || uxAfter.length != 12) {
+        throw new GradleException("infoZipUxExtraFixture: 0x5855 payload missing or resized")
+    }
+    requireZipBytes('0x5855 timestamps', sliceZipBytes(uxAfter, 0, 8), zero8)
+    requireZipBytes('0x5855 UID', sliceZipBytes(uxAfter, 8, 10), uid)
+    requireZipBytes('0x5855 GID', sliceZipBytes(uxAfter, 10, 12), gid)
+
+    requireZipBytes('0xCAFE', findZipExtraPayload(extra, extra.length, 0xCAFE), new byte[0])
+    requireZipBytes('unknown 0x9999', findZipExtraPayload(extra, extra.length, 0x9999), unknownPayload)
+
+    if (extra.length != before.length) {
+        throw new GradleException('infoZipUxExtraFixture: extra-field length changed')
+    }
+
+    byte[] shortTs = zipExtraBlock(0x5855, [0x11, 0x22, 0x33, 0x44] as byte[])
+    expectGradleFailure('short 0x5855 timestamp payload', 'truncated Info-ZIP 0x5855 timestamp payload') {
+        zeroZipTimestampExtra(shortTs, 0, shortTs.length)
+    }
+
+    byte[] truncated = new byte[8]
+    zipW16(truncated, 0, 0x5855)
+    zipW16(truncated, 2, 12)
+    truncated[4] = (byte) 0x11
+    truncated[5] = (byte) 0x22
+    truncated[6] = (byte) 0x33
+    truncated[7] = (byte) 0x44
+    expectGradleFailure('truncated 0x5855 extra field', 'truncated Info-ZIP 0x5855 extra field') {
+        zeroZipTimestampExtra(truncated, 0, truncated.length)
+    }
+
+    byte[] payload = 'sentinel-ux-payload\n'.getBytes('UTF-8')
+    int dosTime = (12 << 11) | (34 << 5) | 28
+    int dosDate = (30 << 9) | (6 << 5) | 15
+    byte[] zipBytes = buildMinimalStoredZip(
+            'ux-sentinel.txt',
+            payload,
+            zipExtraBlock(0x5855, infoZipUxPayload(atime, mtime, uid, gid)),
+            dosTime,
+            dosDate
+    )
+    File fixtureZip = File.createTempFile('iob-infozip-ux-extra-', '.zip')
+    fixtureZip.deleteOnExit()
+    fixtureZip.bytes = zipBytes
+    canonicalizeReobfZipMetadata(fixtureZip)
+
+    byte[] afterZip = fixtureZip.bytes
+    int eocd = -1
+    for (int i = afterZip.length - 22; i >= 0; i--) {
+        if (zipU32(afterZip, i) == 0x06054b50L) {
+            eocd = i
+            break
+        }
+    }
+    if (eocd < 0) {
+        throw new GradleException('infoZipUxExtraFixture: fixture ZIP EOCD missing after canonicalize')
+    }
+    int cdOff = (int) zipU32(afterZip, eocd + 16)
+    int nameLen = zipU16(afterZip, cdOff + 28)
+    int extraLen = zipU16(afterZip, cdOff + 30)
+    int cdTime = zipU16(afterZip, cdOff + 12)
+    int cdDate = zipU16(afterZip, cdOff + 14)
+    if (cdTime != 0 || cdDate != ((0 << 9) | (2 << 5) | 1)) {
+        throw new GradleException("infoZipUxExtraFixture: DOS timestamp not canonicalized (${cdDate}/${cdTime})")
+    }
+    byte[] cdExtra = new byte[extraLen]
+    System.arraycopy(afterZip, cdOff + 46 + nameLen, cdExtra, 0, extraLen)
+    byte[] cdUx = findZipExtraPayload(cdExtra, extraLen, 0x5855)
+    requireZipBytes('ZIP 0x5855 timestamps', sliceZipBytes(cdUx, 0, 8), zero8)
+    requireZipBytes('ZIP 0x5855 UID', sliceZipBytes(cdUx, 8, 10), uid)
+    requireZipBytes('ZIP 0x5855 GID', sliceZipBytes(cdUx, 10, 12), gid)
+
+    int localOff = (int) zipU32(afterZip, cdOff + 42)
+    int localNameLen = zipU16(afterZip, localOff + 26)
+    int localExtraLen = zipU16(afterZip, localOff + 28)
+    byte[] localExtra = new byte[localExtraLen]
+    System.arraycopy(afterZip, localOff + 30 + localNameLen, localExtra, 0, localExtraLen)
+    byte[] localUx = findZipExtraPayload(localExtra, localExtraLen, 0x5855)
+    requireZipBytes('local ZIP 0x5855 timestamps', sliceZipBytes(localUx, 0, 8), zero8)
+    requireZipBytes('local ZIP 0x5855 UID', sliceZipBytes(localUx, 8, 10), uid)
+    requireZipBytes('local ZIP 0x5855 GID', sliceZipBytes(localUx, 10, 12), gid)
+
+    java.util.zip.ZipFile zip = new java.util.zip.ZipFile(fixtureZip)
+    try {
+        def entry = zip.entries().nextElement()
+        byte[] readBack = zip.getInputStream(entry).bytes
+        requireZipBytes('fixture ZIP payload', readBack, payload)
+    } finally {
+        zip.close()
+        fixtureZip.delete()
+    }
+    println 'infoZipUxExtraFixture: PASS (0x5855 timestamps canonicalized; sentinel UID/GID preserved; fail-closed)'
 }
 
 static String extractSpecDefault(String spec, String defineCall, String fallback) {
