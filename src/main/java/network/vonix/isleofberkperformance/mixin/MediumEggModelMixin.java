@@ -8,14 +8,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Reuses fixed egg model resources; dynamic egg texture selection remains untouched. */
+/** Reuses the constructor-constant egg animation. Variant Loader remaps egg geo/texture, so those methods are not cancelled. */
 @Mixin(value = MediumEggModel.class, remap = false)
 public abstract class MediumEggModelMixin {
-    private static final ResourceLocation MODEL = new ResourceLocation("isleofberk", "geo/egg/medium_egg_model.geo.json");
     private static final ResourceLocation ANIMATION = new ResourceLocation("isleofberk", "animations/egg/nightfury.animation.json");
-
-    @Inject(method = "getModelLocation(Lcom/GACMD/isleofberk/entity/eggs/entity/base/medium/ADragonMediumEggBase;)Lnet/minecraft/resources/ResourceLocation;", at = @At("HEAD"), cancellable = true, require = 1, remap = false)
-    private void vonix$reuseModel(ADragonMediumEggBase entity, CallbackInfoReturnable<ResourceLocation> cir) { cir.setReturnValue(MODEL); }
 
     @Inject(method = "getAnimationFileLocation(Lcom/GACMD/isleofberk/entity/eggs/entity/base/medium/ADragonMediumEggBase;)Lnet/minecraft/resources/ResourceLocation;", at = @At("HEAD"), cancellable = true, require = 1, remap = false)
     private void vonix$reuseAnimation(ADragonMediumEggBase entity, CallbackInfoReturnable<ResourceLocation> cir) { cir.setReturnValue(ANIMATION); }

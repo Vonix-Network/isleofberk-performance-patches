@@ -8,7 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/** Exact bytecode gate for renderer substitutions and fixed-resource model methods. */
+/**
+ * Exact bytecode gate for renderer substitutions and remaining constructor-constant
+ * resource methods. Dragon geo/anim/texture lookups and egg geo/texture lookups are
+ * remapped by Variant Loader and must not be treated as fixed resources.
+ */
 public final class RendererBytecodeFixture {
     private static final List<String> RENDERERS = List.of(
             "com.GACMD.isleofberk.entity.dragons.gronckle.GronckleRender",
@@ -25,42 +29,30 @@ public final class RendererBytecodeFixture {
             "com.GACMD.isleofberk.entity.dragons.zippleback.ZippleBackRenderer"
     );
 
+    private static final List<String> FORBIDDEN_DRAGON_MODEL_MIXINS = List.of(
+            "DeadlyNadderModelMixin",
+            "GronckleModelMixin",
+            "LightFuryModelMixin",
+            "MonstrousNightmareModelMixin",
+            "NightFuryModelMixin",
+            "NightLightModelMixin",
+            "SkrillModelMixin",
+            "SpeedStingerModelMixin",
+            "SpeedStingerLeaderModelMixin",
+            "StingerModelMixin",
+            "TerribleTerrorModelMixin",
+            "TripleStrykeModelMixin",
+            "ZippleBackModelMixin"
+    );
+
     private static final List<FixedResource> FIXED_RESOURCES = List.of(
-            fixed("com.GACMD.isleofberk.entity.dragons.deadlynadder.DeadlyNadderModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.deadlynadder.DeadlyNadder", "geo/dragons/deadly_nadder.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.deadlynadder.DeadlyNadderModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.deadlynadder.DeadlyNadder", "animations/dragons/deadly_nadder.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.gronckle.GronckleModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.gronckle.Gronckle", "geo/dragons/gronckle.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.gronckle.GronckleModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.gronckle.Gronckle", "animations/dragons/gronckle.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.lightfury.LightFuryModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.lightfury.LightFury", "geo/dragons/light_fury.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.lightfury.LightFuryModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.lightfury.LightFury", "animations/dragons/light_fury.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.montrous_nightmare.MonstrousNightmareModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.montrous_nightmare.MonstrousNightmare", "geo/dragons/nightmare.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.montrous_nightmare.MonstrousNightmareModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.montrous_nightmare.MonstrousNightmare", "animations/dragons/nightmare.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.nightfury.NightFuryModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.nightfury.NightFury", "geo/dragons/night_fury.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.nightfury.NightFuryModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.nightfury.NightFury", "animations/dragons/night_fury.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.nightlight.NightLightModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.nightlight.NightLight", "geo/dragons/night_light.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.nightlight.NightLightModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.nightlight.NightLight", "animations/dragons/night_fury.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.skrill.SkrillModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.skrill.Skrill", "geo/dragons/skrill.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.skrill.SkrillModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.skrill.Skrill", "animations/dragons/skrill.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.speedstinger.SpeedStingerModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.speedstinger.SpeedStinger", "geo/dragons/speed_stinger.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.speedstinger.SpeedStingerModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.speedstinger.SpeedStinger", "animations/dragons/speed_stinger.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.speedstingerleader.SpeedStingerLeaderModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.speedstingerleader.SpeedStingerLeader", "geo/dragons/speed_stinger.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.speedstingerleader.SpeedStingerLeaderModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.speedstingerleader.SpeedStingerLeader", "animations/dragons/speed_stinger.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.stinger.StingerModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.stinger.Stinger", "geo/dragons/stinger.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.stinger.StingerModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.stinger.Stinger", "animations/dragons/stinger.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.terrible_terror.TerribleTerrorModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.terrible_terror.TerribleTerror", "animations/dragons/terrible_terror.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.triple_stryke.TripleStrykeModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.triple_stryke.TripleStryke", "geo/dragons/triple_stryke.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.triple_stryke.TripleStrykeModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.triple_stryke.TripleStryke", "animations/dragons/triple_stryke.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.zippleback.ZippleBackModel", "getModelLocation", "com.GACMD.isleofberk.entity.dragons.zippleback.ZippleBack", "geo/dragons/zippleback.geo.json"),
-            fixed("com.GACMD.isleofberk.entity.dragons.zippleback.ZippleBackModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.dragons.zippleback.ZippleBack", "animations/dragons/zippleback.animation.json"),
             fixed("com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBoltModel", "getModelLocation", "com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBolt", "geo/projectile/projectile.medium.geo.json"),
             fixed("com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBoltModel", "getTextureLocation", "com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBolt", "textures/projectile/fireball.png"),
             fixed("com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBoltModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.projectile.proj_user.fire_bolt.FireBolt", "animations/projectile/projectile.medium.animation.json"),
             fixed("com.GACMD.isleofberk.entity.projectile.proj_user.furybolt.FuryBoltModel", "getModelLocation", "com.GACMD.isleofberk.entity.projectile.proj_user.furybolt.FuryBolt", "geo/projectile/fury.bolt.geo.json"),
             fixed("com.GACMD.isleofberk.entity.projectile.proj_user.furybolt.FuryBoltModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.projectile.proj_user.furybolt.FuryBolt", "animations/projectile/fury_bolt.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.eggs.entity.base.small.SmallEggModel", "getModelLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.small.ADragonSmallEggBase", "geo/egg/small_egg_model.geo.json"),
             fixed("com.GACMD.isleofberk.entity.eggs.entity.base.small.SmallEggModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.small.ADragonSmallEggBase", "animations/dragons/nightfury.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.eggs.entity.base.medium.MediumEggModel", "getModelLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.medium.ADragonMediumEggBase", "geo/egg/medium_egg_model.geo.json"),
             fixed("com.GACMD.isleofberk.entity.eggs.entity.base.medium.MediumEggModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.medium.ADragonMediumEggBase", "animations/egg/nightfury.animation.json"),
-            fixed("com.GACMD.isleofberk.entity.eggs.entity.base.large.ADragonLargeEggModel", "getModelLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.large.ADragonLargeEggBase", "geo/egg/large_egg_model.geo.json"),
             fixed("com.GACMD.isleofberk.entity.eggs.entity.base.large.ADragonLargeEggModel", "getAnimationFileLocation", "com.GACMD.isleofberk.entity.eggs.entity.base.large.ADragonLargeEggBase", "animations/egg/nightfury.animation.json")
     );
 
@@ -74,6 +66,8 @@ public final class RendererBytecodeFixture {
         if (!Files.isRegularFile(jar)) {
             throw new IOException("original dependency jar missing: " + jar);
         }
+        rejectDragonModelMixins(Path.of("src/main/resources/isleofberkperformance.mixins.json"));
+        rejectCancelledVariantLookups(Path.of("src/main/java/network/vonix/isleofberkperformance/mixin"));
         for (String renderer : RENDERERS) {
             String output = javap(jar, renderer);
             String body = methodBody(output, "getRenderType(");
@@ -88,6 +82,38 @@ public final class RendererBytecodeFixture {
                     resource.owner() + "#" + resource.method() + " exact method body:\n" + normalized);
         }
         System.out.println("RendererBytecodeFixture: PASS (" + RENDERERS.size() + " renderers, " + FIXED_RESOURCES.size() + " fixed-resource methods)");
+    }
+
+    private static void rejectDragonModelMixins(Path mixinsJson) throws IOException {
+        require(Files.isRegularFile(mixinsJson), "companion mixin config missing: " + mixinsJson);
+        String json = Files.readString(mixinsJson);
+        for (String mixin : FORBIDDEN_DRAGON_MODEL_MIXINS) {
+            require(!json.contains('"' + mixin + '"'), "Variant Loader remaps dragon geo/anim; " + mixin + " must not be registered");
+        }
+    }
+
+    private static void rejectCancelledVariantLookups(Path mixinDir) throws IOException {
+        require(Files.isDirectory(mixinDir), "companion mixin directory missing: " + mixinDir);
+        try (var paths = Files.list(mixinDir)) {
+            for (Path path : paths.toList()) {
+                if (!path.getFileName().toString().endsWith(".java")) {
+                    continue;
+                }
+                String source = Files.readString(path);
+                boolean cancelsResource = source.contains("getModelLocation")
+                        || source.contains("getAnimationFileLocation")
+                        || source.contains("getTextureLocation");
+                if (!cancelsResource) {
+                    continue;
+                }
+                require(!source.contains("entity.dragons."),
+                        path.getFileName() + " must not cancel dragon geo/anim/texture lookups remapped by Variant Loader");
+                require(!source.contains("method = \"getModelLocation") || !source.contains("entity.eggs."),
+                        path.getFileName() + " must not cancel egg getModelLocation remapped by Variant Loader");
+                require(!source.contains("method = \"getTextureLocation") || !source.contains("entity.eggs."),
+                        path.getFileName() + " must not cancel egg getTextureLocation remapped by Variant Loader");
+            }
+        }
     }
 
     private static FixedResource fixed(String owner, String method, String parameter, String path) {

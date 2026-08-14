@@ -15,6 +15,16 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 - [Version 0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0)
 - [Download the 0.3.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v0.3.0/isleof-berk-performance-patches-0.3.0.jar)
 
+### 0.3.1-rc.3 release-candidate integrity
+
+Successor to `0.3.1-rc.2`. Stops pinning stock dragon geo/anim (and egg geo) so Variant Loader / variant packs can remap those resources. Compile pin remains Forge 40.3.0. The immutable 0.3.0 release is unchanged.
+
+```text
+File:   isleof-berk-performance-patches-0.3.1-rc.3.jar
+Size:   32,876 bytes
+SHA256: ce8c4ed8232f5631c0c83aaf9bd57eef63db9fa829e55156398821c52117d0e3
+```
+
 ### 0.3.1-rc.2 release-candidate integrity
 
 Successor to `0.3.1-rc.1`. Widens the declared Forge range to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load. Compile pin remains 40.3.0. The immutable 0.3.0 release is unchanged.
@@ -50,7 +60,7 @@ The original Isle of Berk JAR and GeckoLib are required dependencies. The compan
 1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge 3.0.57.
-4. For the stable release, put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory. The `0.3.1-rc.1` candidate is unpublished; if testing it, use the exact local canonical JAR below rather than a GitHub prerelease.
+4. For the stable release, put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory. Latest remains 0.3.0. The `0.3.1-rc.3` GitHub prerelease is a visual-compat candidate only: install that exact JAR on both client and server if testing Variant Loader / HybridsPlus dragons. It is not a proven performance release.
 5. Start the game once to generate `config/isleofberkperformance.toml`.
 6. For multiplayer, install the same companion version on the client and server.
 
@@ -62,7 +72,7 @@ The optional `isleofberk-deadlockfix` mod remains a separate artifact. Do not me
 - Configurable egg hatch-check cadence.
 - Configurable ShockEffect particle cadence, while ShockEffect damage cadence remains fixed at 20 ticks.
 - Twelve narrow client renderer argument-reuse transformations.
-- Thirty-six fixed-resource model, egg, and projectile transformations.
+- Eight constructor-constant egg-animation and projectile resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
 - Strict target descriptors and production refmap mappings for the pinned Isle of Berk 1.2.0 bytecode.
 
 These are narrow companion mixins. The original Isle of Berk behavior remains the source of all non-targeted logic.

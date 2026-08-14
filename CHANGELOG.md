@@ -2,6 +2,15 @@
 
 All notable release changes for Isle of Berk Performance Patches are recorded here.
 
+## [0.3.1-rc.3] — release candidate
+
+- Stop cancelling dragon `getModelLocation` / `getAnimationFileLocation` (and do not pin dragon textures). Variant Loader 2.6.4/2.7.0 overwrites those lookups via `BaseDragonModelMixin`, per-species model mixins, and `ModelRedirectUtil`; a HEAD-cancellable stock `ResourceLocation` prevented variant geo/anim from applying and exploded remapped dragons.
+- Stop cancelling egg `getModelLocation`. Variant Loader remaps egg geo/texture through `DragonEggModelHelper`; egg animation remains constructor-constant and is still reused.
+- Keep the twelve renderer `getRenderType` argument-reuse mixins and the FireBolt/FuryBolt constructor-constant projectile mixins. Variant Loader does not remap those projectile methods.
+- Renderer fixture now gates 12 renderers and 8 remaining fixed-resource methods, and rejects reintroduction of dragon geo/anim HEAD-cancels.
+
+Release-candidate artifact is rebuilt from the publication commit; record the final SHA-256 after that rebuild. GitHub prerelease only. Latest remains 0.3.0. No runtime client retest of exploded variants is claimed. No MSPT/FPS claim. Publication does not authorize live-server deploy.
+
 ## [0.3.1-rc.2] — release candidate
 
 - Widen the declared Forge dependency from `[40.3.0,40.3.1)` to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load the companion.
