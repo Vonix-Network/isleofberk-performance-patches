@@ -15,14 +15,14 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 - [Version 0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0)
 - [Download the 0.3.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v0.3.0/isleof-berk-performance-patches-0.3.0.jar)
 
-### 0.3.1-rc.1 release-candidate integrity
+### 0.3.1-rc.2 release-candidate integrity
 
-The unpublished `0.3.1-rc.1` candidate is a successor to, and does not replace, the immutable 0.3.0 release. Prior independent reviews rejected predecessor trees; this candidate requires a fresh independent Sol review and is not accepted. GitHub publication remains pending and is not authorized. The hash below is the local canonical artifact after `reobfJar` + `canonicalizeReobfJar`.
+Successor to `0.3.1-rc.1`. Widens the declared Forge range to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load. Compile pin remains 40.3.0. The immutable 0.3.0 release is unchanged.
 
 ```text
-File:   isleof-berk-performance-patches-0.3.1-rc.1.jar
-Size:   47,478 bytes
-SHA256: 7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9
+File:   isleof-berk-performance-patches-0.3.1-rc.2.jar
+Size:   47,481 bytes
+SHA256: 4025c814d00319df43f408f5d1f2055c6bdd00c053bb02bcfb6469932fe0ba5e
 ```
 
 ### 0.3.0 artifact integrity
@@ -38,7 +38,7 @@ SHA256: c28dfc2871d97b654933f1b0d9023dd54f9319064274c3d1dd3ac2dc026efb56
 | Component | Supported version |
 |---|---|
 | Minecraft | 1.18.2 |
-| Forge | 40.3.0; version range `[40.3.0,40.3.1)` |
+| Forge | 40.3.x; compile pin 40.3.0; accepted range `[40.3.0,40.4.0)` |
 | Isle of Berk | Exactly 1.2.0; version range `[1.2.0,1.2.0.1)` |
 | GeckoLib | 3.0.57; version range `[3.0.57,3.0.58)` |
 | Java | 17 |
@@ -47,7 +47,7 @@ The original Isle of Berk JAR and GeckoLib are required dependencies. The compan
 
 ## Installation
 
-1. Install Forge 40.3.0 for Minecraft 1.18.2.
+1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge 3.0.57.
 4. For the stable release, put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory. The `0.3.1-rc.1` candidate is unpublished; if testing it, use the exact local canonical JAR below rather than a GitHub prerelease.

@@ -2,7 +2,12 @@
 
 All notable release changes for Isle of Berk Performance Patches are recorded here.
 
-## [0.3.1-rc.1] — release candidate (unpublished)
+## [0.3.1-rc.2] — release candidate
+
+- Widen the declared Forge dependency from `[40.3.0,40.3.1)` to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load the companion.
+- Compile pin remains Forge 40.3.0. This is a metadata compatibility fix, not a mixin/runtime rewrite.
+
+## [0.3.1-rc.1] — release candidate
 
 Successor release candidate. The published 0.3.0 artifact remains immutable. Prior independent reviews rejected predecessor trees; this unpublished candidate requires a fresh independent Sol review and is not accepted. GitHub publication remains pending and is not authorized.
 
