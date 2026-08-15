@@ -10,6 +10,7 @@ Stable promotion of the current companion tree.
 - Forge accepted range remains `[40.3.0,40.4.0)` for live 1.18.2 Forge 40.3.x, including 40.3.12. Compile pin remains 40.3.0.
 - Server AI / egg / shock cadence mixins, renderer argument reuse, egg-animation intern, and FireBolt / FuryBolt intern are unchanged.
 - This is the GitHub Latest. Earlier `0.3.x` tags stay immutable. No MSPT/FPS claim.
+- Artifact: 32,865 bytes, SHA-256 `15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2`.
 
 ## [0.3.1-rc.3] — release candidate
 

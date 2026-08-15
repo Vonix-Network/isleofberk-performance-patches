@@ -21,8 +21,8 @@ Stable promotion of the current companion. Forge compile pin remains 40.3.0. Ear
 
 ```text
 File:   isleof-berk-performance-patches-1.0.0.jar
-Size:   recorded after the publication rebuild
-SHA256: recorded after the publication rebuild
+Size:   32,865 bytes
+SHA256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
 ```
 
 ### 0.3.1-rc.3 release-candidate integrity
