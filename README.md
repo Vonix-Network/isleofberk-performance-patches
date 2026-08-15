@@ -12,12 +12,22 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 ## Download
 
 - [Latest GitHub release](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/latest)
-- [Version 0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0)
-- [Download the 0.3.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v0.3.0/isleof-berk-performance-patches-0.3.0.jar)
+- [Version 1.0.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.0.0)
+- [Download the 1.0.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v1.0.0/isleof-berk-performance-patches-1.0.0.jar)
+
+### 1.0.0 artifact integrity
+
+Stable promotion of the current companion. Forge compile pin remains 40.3.0. Earlier `0.3.x` tags stay immutable.
+
+```text
+File:   isleof-berk-performance-patches-1.0.0.jar
+Size:   recorded after the publication rebuild
+SHA256: recorded after the publication rebuild
+```
 
 ### 0.3.1-rc.3 release-candidate integrity
 
-Successor to `0.3.1-rc.2`. Stops pinning stock dragon geo/anim (and egg geo) so Variant Loader / variant packs can remap those resources. Compile pin remains Forge 40.3.0. The immutable 0.3.0 release is unchanged.
+Successor to `0.3.1-rc.2`. Stops pinning stock dragon geo/anim (and egg geo) so Variant Loader / variant packs can remap those resources. Compile pin remains Forge 40.3.0. Promoted into 1.0.0.
 
 ```text
 File:   isleof-berk-performance-patches-0.3.1-rc.3.jar
@@ -60,7 +70,7 @@ The original Isle of Berk JAR and GeckoLib are required dependencies. The compan
 1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge 3.0.57.
-4. For the stable release, put `isleof-berk-performance-patches-0.3.0.jar` in the same `mods` directory. Latest remains 0.3.0. The `0.3.1-rc.3` GitHub prerelease is a visual-compat candidate only: install that exact JAR on both client and server if testing Variant Loader / HybridsPlus dragons. It is not a proven performance release.
+4. For the stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. Latest is 1.0.0. Install the same jar on both client and server.
 5. Start the game once to generate `config/isleofberkperformance.toml`.
 6. For multiplayer, install the same companion version on the client and server.
 
@@ -107,7 +117,7 @@ The historical Vonix waves through `1.2.1-vonix.13` were audited. The companion 
 
 ## Verification
 
-The 0.3.0 release was checked against the pinned original dependency with Java 17 and Gradle 7.5.1:
+The 1.0.0 release is the current companion tree, rebuilt after the version promotion. Historical 0.3.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1:
 
 - `BUILD SUCCESSFUL`
 - `auditPackagedJar`: companion-only archive; no bundled Isle of Berk or deadlock-fix content
