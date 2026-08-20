@@ -1,4 +1,4 @@
-# Deterministic common-config reference for the current companion candidate.
+# Deterministic common-config reference for the stable companion release.
 # Forge generates/updates this file from the registered COMMON spec at runtime.
 # The comments below intentionally mirror the generated comments and defaults.
 

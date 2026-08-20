@@ -46,7 +46,7 @@ public final class PerformanceWaveFixture {
         verifyBoundedLifecycleModel();
         verifyCompanionActivation(companion);
         verifyPackagedMixinBytecode(companion);
-        verifyCandidateProvenance(note);
+        verifyReleaseProvenance(note);
 
         System.out.println("PerformanceWaveFixture: PASS (IoB pin, follow stop cleanup, bounded formation map, unchanged scan shapes, activation, provenance)");
     }
@@ -135,10 +135,10 @@ public final class PerformanceWaveFixture {
         }
     }
 
-    private static void verifyCandidateProvenance(Path note) throws IOException {
+    private static void verifyReleaseProvenance(Path note) throws IOException {
         String text = Files.readString(note, StandardCharsets.UTF_8);
         for (String required : new String[] {
-                "candidate-only", PINNED_IOB_SHA256, "P01", "implemented", "P02", "BLOCKED",
+                "stable release 1.0.1", PINNED_IOB_SHA256, "P01", "implemented", "P02", "BLOCKED",
                 "BaseLinearFlightProjectile", "BLOCKED", "MessageDragonFlapSounds", "DEFERRED",
                 "no external effects"
         }) {

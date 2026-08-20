@@ -6,13 +6,13 @@
 
 A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.18.2**. It reduces selected repeated AI, particle, egg-check, renderer, and projectile work without replacing Isle of Berk or bundling its classes.
 
-> **Status:** `1.0.1-rc.1` is a local release-candidate build. It has passed the repository build and deterministic fixtures and has booted in the disposable Claws of Berk server runtime. It is not a published GitHub release and has no quantitative performance claim until matched profiling is completed.
+> **Status:** `1.0.1` is the stable GitHub release. It passed the Java 17 repository gates and exact packaged Forge runtime checks described below. The project remains a companion patch: the original Isle of Berk JAR is required. No universal RAM/MSPT/FPS percentage is promised; workload-specific results may vary.
 
 ## What this project does
 
 The companion applies narrow, targeted transformations to Isle of Berk's existing code:
 
-- **AI movement-request throttling:** reduces repeated navigation requests in three pinned dragon flight/follow goals. Each goal makes one cadence decision at the beginning of its tick and reuses that decision for the gated calls in that tick.
+- **AI movement-request throttling:** reduces repeated navigation requests in three pinned dragon flight/follow goals. Each goal makes one allow/deny cadence decision at `tick HEAD` and reuses that decision for the gated calls in that tick.
 - **Egg-check scheduling:** exposes the pinned egg hatch/warmth check interval through the common Forge configuration surface.
 - **Shock particle scheduling:** exposes the particle cadence while leaving ShockEffect damage cadence fixed at 20 ticks.
 - **Renderer allocation reduction:** reuses selected render-type arguments in twelve exact client renderer targets.
@@ -65,7 +65,7 @@ For multiplayer, install the same companion JAR on the client and server. Client
 1. Install Forge for Minecraft 1.18.2.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge `3.0.57`.
-4. Install `isleof-berk-performance-patches-1.0.1-rc.1.jar`.
+4. Install `isleof-berk-performance-patches-1.0.1.jar`.
 5. Install the same companion version on both client and server for multiplayer.
 6. Start once to generate `config/isleofberkperformance.toml`.
 
@@ -84,35 +84,43 @@ The companion registers `config/isleofberkperformance.toml` as a Forge `COMMON` 
 
 The generated configuration comments describe the trade-offs. Changing cadence values can intentionally change timing or visual frequency.
 
-## Candidate artifact
+## Release artifact
 
 ```text
-File:   isleof-berk-performance-patches-1.0.1-rc.1.jar
-SHA256: 57b880f636fff7d8c1f69b310465ac13964817812586651a5531142043ab5577
+File:   isleof-berk-performance-patches-1.0.1.jar
+SHA256: recorded in RELEASE-REPORT.md and the GitHub release asset
 ```
 
-This is a local release candidate. Do not rename a `1.0.0` JAR and treat it as `1.0.1-rc.1`.
+This stable artifact is a companion patch and does not replace or redistribute Isle of Berk.
+
+Predecessor integrity pin:
+
+```text
+File:   isleof-berk-performance-patches-1.0.0.jar
+SHA256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
+```
 
 ## Verification
 
-The candidate was built with Java 17 using:
+The release was built with Java 17 using:
 
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
-./gradlew clean check build --no-daemon --rerun-tasks
+./gradlew clean check build --offline --no-daemon --rerun-tasks
 ```
 
-Verified repository gates include:
+Verified release gates include:
 
-- clean build and test;
+- clean Java 17 build and test;
 - AI cadence and lifecycle fixtures;
 - configuration snapshot fixture;
 - renderer and mapping fixtures;
-- package and provenance checks;
+- package, provenance, and companion-only scope checks;
 - performance-wave fixture;
-- absence of the removed AI predicate path.
+- absence of the removed AI predicate path;
+- exact packaged Forge runtime launch with the original dependency stack.
 
-The exact candidate also booted in the disposable Forge runtime with the Claws of Berk dependency stack and reached `Done`. A clean boot proves compatibility/startup only; matched before/after profiling is still required before claiming a measured performance improvement.
+The packaged runtime reached `Done` with the release JAR loaded and no Mixin application or linkage errors in the recorded gate. These gates establish compatibility and packaging, not a universal RAM/MSPT/FPS percentage. Performance varies with world, entity population, JVM, render settings, and configuration.
 
 ## Building from source
 

@@ -1,6 +1,6 @@
-# Safe Performance Wave 2026-08-19
+# Historical implementation scope note — included in stable release 1.0.1
 
-Status: candidate-only. This note records companion-source evidence only; it makes no acceptance, deployment, or publication claim and has no external effects.
+This note records the safe performance wave that is included in the stable companion artifact. It is not a standalone RAM/MSPT/FPS measurement. It records no external effects.
 
 The exact Isle of Berk 1.2.0 input is SHA-256 `a4b17befb1350d6d4cd07d7fdfcb2b3cec37a5c501e1f4fb811946f3e971dfc0`.
 
@@ -26,4 +26,4 @@ The exact packet handler remains unchanged: decode allocates a message and handl
 
 ## Gates
 
-`performanceWaveFixture` verifies the pinned original digest, exact descriptors, active-map lifecycle model, unchanged scan shapes, packaged activation, no bundled IoB classes, and this candidate-only provenance note. Existing package, ZIP-integrity, and identity gates remain part of `check`.
+`performanceWaveFixture` verifies the pinned original digest, exact descriptors, active-map lifecycle model, unchanged scan shapes, packaged activation, no bundled IoB classes, and the stable-release provenance note. Existing package, ZIP-integrity, and identity gates remain part of `check`.
