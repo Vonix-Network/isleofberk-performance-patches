@@ -1299,6 +1299,7 @@ tasks.register('releaseIdentityFixture') {
                 'config/isleofberkperformance.toml',
                 'README.md',
                 'CHANGELOG.md',
+                'PERFORMANCE-WAVE-20260819.md',
                 'CANDIDATE-REPORT.md',
                 'RELEASE-REPORT.md'
         ])

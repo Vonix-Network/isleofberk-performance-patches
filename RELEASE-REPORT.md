@@ -49,6 +49,15 @@ This is a bounded boot-RSS observation, not a universal RAM, MSPT, FPS, or gamep
 - Observed mean RSS difference: `32.3%` lower for `1.0.1`; pairwise run comparisons ranged from `21.0%` to `42.1%` lower.
 - Interpretation: the requested nearly-50% RAM result was not independently reproduced by this bounded smoke protocol. A real user-workload claim still requires matched entity population, workload, warm-up, duration, JVM/hardware, and profiler methodology.
 
+## Packaged runtime evidence
+
+- Runtime: fresh disposable Forge `1.18.2-40.3.12` server, Java `17.0.19`, no source-set injection, fresh world.
+- Mods staged: exactly Isle of Berk `1.2.0`, GeckoLib Forge `3.0.57`, Variant Loader `2.6.4`, and this stable companion JAR.
+- Launch log preflight marker: `isleof-berk-performance-patches-1.0.1.jar`, `37550` bytes, SHA-256 `df44f3788408f903df9e86dc25248220f1089504261e46a7190dcb3e8845f20a`.
+- Runtime log: `/root/work/iob-minimal-runtime-1.0.1-20260820/logs/release-launch.log`; SHA-256 `92088e11971d44c0b10931592649b69bd8c3db79eef74dc10d4e5e41813dfd68`; size `41369` bytes.
+- Observed: stable companion loaded, `Done` reached, clean stop, zero Mixin application errors, linkage errors, `ERROR`, `FATAL`, or uncaught exception markers.
+- Limitation: this is a dedicated-server packaged boot gate; no client visual/user-play-path gate is asserted.
+
 ## Verification
 
 Command:
