@@ -1,152 +1,131 @@
 # Isle of Berk Performance Patches
 
-[![Release](https://img.shields.io/github/v/release/Vonix-Network/isleofberk-performance-patches?label=release)](https://github.com/Vonix-Network/isleofberk-performance-patches/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.18.2-62b47a)](https://www.minecraft.net/)
 [![Forge](https://img.shields.io/badge/Forge-40.3.x-orange)](https://files.minecraftforge.net/net/minecraftforge/forge/)
 [![Java](https://img.shields.io/badge/Java-17-red)](https://adoptium.net/)
 
-A standalone Forge Mixin companion that applies Vonix performance patches to **Isle of Berk 1.2.0** on **Minecraft 1.18.2**.
+A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.18.2**. It reduces selected repeated AI, particle, egg-check, renderer, and projectile work without replacing Isle of Berk or bundling its classes.
 
-> **This is a companion, not a fork or replacement.** Keep the original `isleofberk-1.2.0.jar` installed. This project does not redistribute Isle of Berk classes or resources and does not include the separate `isleofberk-deadlockfix` mod.
+> **Status:** `1.0.1-rc.1` is a local release-candidate build. It has passed the repository build and deterministic fixtures and has booted in the disposable Claws of Berk server runtime. It is not a published GitHub release and has no quantitative performance claim until matched profiling is completed.
 
-## Download
+## What this project does
 
-- [Latest GitHub release](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/latest)
-- [Version 1.0.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.0.0)
-- [Download the 1.0.0 JAR](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/download/v1.0.0/isleof-berk-performance-patches-1.0.0.jar)
+The companion applies narrow, targeted transformations to Isle of Berk's existing code:
 
-### 1.0.0 artifact integrity
+- **AI movement-request throttling:** reduces repeated navigation requests in three pinned dragon flight/follow goals. Each goal makes one cadence decision at the beginning of its tick and reuses that decision for the gated calls in that tick.
+- **Egg-check scheduling:** exposes the pinned egg hatch/warmth check interval through the common Forge configuration surface.
+- **Shock particle scheduling:** exposes the particle cadence while leaving ShockEffect damage cadence fixed at 20 ticks.
+- **Renderer allocation reduction:** reuses selected render-type arguments in twelve exact client renderer targets.
+- **Fixed-resource allocation reduction:** reuses constants in eight pinned egg-animation and projectile constructor paths.
+- **Variant Loader compatibility:** leaves dynamic dragon and egg model, texture, animation, and layer selection available for Variant Loader and other variant packs instead of forcing stock resources.
 
-Stable promotion of the current companion. Forge compile pin remains 40.3.0. Earlier `0.3.x` tags stay immutable.
+The project is a **companion**, not a fork, replacement, or redistribution of Isle of Berk. The original Isle of Berk JAR remains required.
 
-```text
-File:   isleof-berk-performance-patches-1.0.0.jar
-Size:   32,865 bytes
-SHA256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
-```
+## What it fixes or reduces
 
-### 0.3.1-rc.3 release-candidate integrity
+| Area | Result |
+| --- | --- |
+| Repeated flight/follow navigation calls | Configurable cadence gate for three exact AI goals |
+| Repeated egg warmth/hatch checks | Configurable check interval |
+| Repeated ShockEffect particles | Configurable particle interval |
+| Renderer argument allocations | Narrow reuse in twelve client renderers |
+| Egg-animation and projectile constructor constants | Narrow reuse in eight fixed-resource paths |
+| Variant dragon/egg resource selection | Preserved for Variant Loader remapping |
 
-Successor to `0.3.1-rc.2`. Stops pinning stock dragon geo/anim (and egg geo) so Variant Loader / variant packs can remap those resources. Compile pin remains Forge 40.3.0. Promoted into 1.0.0.
+These are performance-focused reductions, not gameplay-system replacements. The companion does **not** claim to make every Isle of Berk path asynchronous or automatically improve every workload.
 
-```text
-File:   isleof-berk-performance-patches-0.3.1-rc.3.jar
-Size:   32,876 bytes
-SHA256: ce8c4ed8232f5631c0c83aaf9bd57eef63db9fa829e55156398821c52117d0e3
-```
+## What it deliberately does not change
 
-### 0.3.1-rc.2 release-candidate integrity
+The companion does not change:
 
-Successor to `0.3.1-rc.1`. Widens the declared Forge range to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load. Compile pin remains 40.3.0. The immutable 0.3.0 release is unchanged.
+- damage cadence, combat rules, target selection, RNG order, or progression;
+- network protocol, packet formats, or synchronization contracts;
+- deadlock or chunk-access safety behavior;
+- spawning, world generation, or structure placement;
+- pathfinder algorithms or projectile scratch-state semantics;
+- dynamic model, texture, animation, or layer selection;
+- Isle of Berk classes or resources bundled in the companion.
 
-```text
-File:   isleof-berk-performance-patches-0.3.1-rc.2.jar
-Size:   47,481 bytes
-SHA256: 4025c814d00319df43f408f5d1f2055c6bdd00c053bb02bcfb6469932fe0ba5e
-```
-
-### 0.3.0 artifact integrity
-
-```text
-File:   isleof-berk-performance-patches-0.3.0.jar
-Size:   46,187 bytes
-SHA256: c28dfc2871d97b654933f1b0d9023dd54f9319064274c3d1dd3ac2dc026efb56
-```
+Deadlock Fix is a separate mod. Threaded Horizons is a separate mod. This project does not include or replace either one.
 
 ## Compatibility
 
-| Component | Supported version |
-|---|---|
-| Minecraft | 1.18.2 |
-| Forge | 40.3.x; compile pin 40.3.0; accepted range `[40.3.0,40.4.0)` |
-| Isle of Berk | Exactly 1.2.0; version range `[1.2.0,1.2.0.1)` |
-| GeckoLib | 3.0.57; version range `[3.0.57,3.0.58)` |
-| Java | 17 |
+| Component | Supported value |
+| --- | --- |
+| Minecraft | `1.18.2` |
+| Forge | `40.3.x`; declared range `[40.3.0,40.4.0)` |
+| Isle of Berk | exactly `1.2.0` |
+| GeckoLib | `3.0.57` |
+| Java | `17` |
 
-The original Isle of Berk JAR and GeckoLib are required dependencies. The companion's common gameplay mixins should be installed with the same companion version on both client and server for multiplayer. Renderer and model mixins load on the client only.
+For multiplayer, install the same companion JAR on the client and server. Client renderer mixins are client-side; common gameplay mixins require matching companion versions.
 
 ## Installation
 
-1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
+1. Install Forge for Minecraft 1.18.2.
 2. Install the original `isleofberk-1.2.0.jar`.
-3. Install GeckoLib Forge 3.0.57.
-4. For the stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. Latest is 1.0.0. Install the same jar on both client and server.
-5. Start the game once to generate `config/isleofberkperformance.toml`.
-6. For multiplayer, install the same companion version on the client and server.
+3. Install GeckoLib Forge `3.0.57`.
+4. Install `isleof-berk-performance-patches-1.0.1-rc.1.jar`.
+5. Install the same companion version on both client and server for multiplayer.
+6. Start once to generate `config/isleofberkperformance.toml`.
 
-The optional `isleofberk-deadlockfix` mod remains a separate artifact. Do not merge the JARs or treat this companion as a replacement for it.
-
-## What is included
-
-- Configurable AI movement-request throttling for three exact Isle of Berk flight/follow goals.
-- Configurable egg hatch-check cadence.
-- Configurable ShockEffect particle cadence, while ShockEffect damage cadence remains fixed at 20 ticks.
-- Twelve narrow client renderer argument-reuse transformations.
-- Eight constructor-constant egg-animation and projectile resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
-- Strict target descriptors and production refmap mappings for the pinned Isle of Berk 1.2.0 bytecode.
-
-These are narrow companion mixins. The original Isle of Berk behavior remains the source of all non-targeted logic.
+Deadlock Fix and Threaded Horizons remain separate optional artifacts and must be installed separately when used.
 
 ## Configuration
 
-Forge registers `config/isleofberkperformance.toml` as a COMMON configuration. Comments in the generated file explain the normal/upstream value, the optimized default, and the tradeoff.
+The companion registers `config/isleofberkperformance.toml` as a Forge `COMMON` configuration.
 
-| Key | Optimized default | Upstream/normal value | Effect |
-|---|---:|---:|---|
-| `ai_move_throttling_enabled` | `true` | `false` | Throttles repeated flight/follow navigation requests. |
-| `ai_move_interval_ticks` | `4` | `1` | After a goal starts, the first eligible request runs immediately; later eligible requests use this interval. `1` disables AI cadence throttling. |
-| `egg_hatch_check_interval_ticks` | `20` | `20` | The pinned IoB 1.2.0 behavior already checks egg warmth/hatch progress every 20 ticks. Lower values increase work and change timing granularity. |
-| `shock_particle_interval_ticks` | `8` | `8` | The pinned IoB 1.2.0 behavior already sends shock particles every 8 ticks. Lower values increase packet/client work and visual density. |
+| Key | Optimized default | Normal/pinned value | Purpose |
+| --- | ---: | ---: | --- |
+| `ai_move_throttling_enabled` | `true` | `false` | Enables the three-goal AI movement cadence gate |
+| `ai_move_interval_ticks` | `4` | `1` | Allows an eligible movement request every configured number of goal ticks; `1` restores every-tick cadence |
+| `egg_hatch_check_interval_ticks` | `20` | `20` | Egg warmth/hatch check interval |
+| `shock_particle_interval_ticks` | `8` | `8` | Shock particle interval; damage remains fixed at 20 ticks |
 
-For the upstream AI cadence baseline, set `ai_move_throttling_enabled = false` or set `ai_move_interval_ticks = 1`. Egg and shock defaults already match the pinned upstream cadence. Changing these values intentionally changes timing or visual behavior.
+The generated configuration comments describe the trade-offs. Changing cadence values can intentionally change timing or visual frequency.
 
-## Scope and explicit exclusions
+## Candidate artifact
 
-This release does **not** change:
+```text
+File:   isleof-berk-performance-patches-1.0.1-rc.1.jar
+SHA256: 57b880f636fff7d8c1f69b310465ac13964817812586651a5531142043ab5577
+```
 
-- damage cadence, combat rules, target selection, RNG order, or progression semantics;
-- the Isle of Berk network protocol or packet format;
-- deadlock/safety/chunk-access behavior, including `getChunkNow` and `scratchPosDeadlockFix`;
-- Variant Loader compatibility, taming, spawning, or world generation;
-- pathfinder algorithms or mutable projectile scratch state;
-- shared static particle arrays;
-- dynamic model, texture, or layer selection;
-- the deferred client packet-handler local-cache optimization.
-
-The historical Vonix waves through `1.2.1-vonix.13` were audited. The companion intentionally implements only the narrow, defensible subset documented here. See [CANDIDATE-REPORT.md](CANDIDATE-REPORT.md) for the wave-by-wave disposition.
+This is a local release candidate. Do not rename a `1.0.0` JAR and treat it as `1.0.1-rc.1`.
 
 ## Verification
 
-The 1.0.0 release is the current companion tree, rebuilt after the version promotion. Historical 0.3.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1:
-
-- `BUILD SUCCESSFUL`
-- `auditPackagedJar`: companion-only archive; no bundled Isle of Berk or deadlock-fix content
-- `configFixture`: required COMMON keys, defaults, and comments present
-- `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed
-- Fresh Forge server runtime: all five common gameplay mixins applied; server reached `Done (12.028s)`
-- Independent GPT-5.6-SOL review: `PASS`
-- Final artifact SHA-256 matches the uploaded GitHub release asset
-
-No quantitative performance claim is made without matched before/after profiling.
-
-## Building from source
-
-Requires JDK 17. The pinned local validation command is:
+The candidate was built with Java 17 using:
 
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
-PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH \
-./gradlew clean check build --offline --no-daemon --rerun-tasks
+./gradlew clean check build --no-daemon --rerun-tasks
 ```
 
-The exact original Isle of Berk dependency is required locally for the bytecode fixture and is intentionally not committed or redistributed.
+Verified repository gates include:
 
-`reobfJar` remains required. The following `canonicalizeReobfJar` task rewrites only ZIP timestamps and timestamp extra fields on that reobfuscated JAR so two clean builds from the same tree are byte-identical. Audit and mapping fixtures inspect that canonical artifact.
+- clean build and test;
+- AI cadence and lifecycle fixtures;
+- configuration snapshot fixture;
+- renderer and mapping fixtures;
+- package and provenance checks;
+- performance-wave fixture;
+- absence of the removed AI predicate path.
 
-## Documentation
+The exact candidate also booted in the disposable Forge runtime with the Claws of Berk dependency stack and reached `Done`. A clean boot proves compatibility/startup only; matched before/after profiling is still required before claiming a measured performance improvement.
 
-- [Changelog](CHANGELOG.md)
-- [Release evidence and audited Vonix-wave disposition](CANDIDATE-REPORT.md)
+## Building from source
+
+Requires JDK 17 and the exact Isle of Berk dependency locally. The Isle of Berk JAR is not redistributed by this repository.
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
+./gradlew clean check build --no-daemon --rerun-tasks
+```
+
+## Related projects
+
+- [Deadlock Fix](https://github.com/Vonix-Network/isleofberk-deadlockfix)
 - [GitHub releases](https://github.com/Vonix-Network/isleofberk-performance-patches/releases)
 - [Issue tracker](https://github.com/Vonix-Network/isleofberk-performance-patches/issues)
 

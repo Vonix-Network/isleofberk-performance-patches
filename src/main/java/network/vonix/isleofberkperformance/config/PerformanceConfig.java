@@ -1,16 +1,26 @@
 package network.vonix.isleofberkperformance.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import network.vonix.isleofberkperformance.IsleOfBerkPerformance;
+import network.vonix.isleofberkperformance.internal.PerformanceSettings;
 
 /**
  * Common-side controls for cadence changes that intentionally affect gameplay or visual timing.
  * Forge owns loading/reloading the values from config/isleofberkperformance.toml.
  *
- * <p>AI movement-request phase: the first eligible gated request after a goal lifecycle
- * reset runs immediately; later eligible requests run every {@code ai_move_interval_ticks}.
- * That matches upstream "request now" at activation, then applies the configured interval.
- * Interval {@code 1} or {@code ai_move_throttling_enabled=false} keeps every eligible request.
+ * <p>AI movement cadence is tick-based. {@link network.vonix.isleofberkperformance.internal.AiMoveCadence}
+ * computes one allow/deny decision at each goal {@code tick()} HEAD. After WrappedGoal start
+ * the cadence is armed so the first eligible request runs immediately; later due ticks occur
+ * every {@code ai_move_interval_ticks} goal ticks and allow every intended call on that tick.
+ * Interval {@code 1} or {@code ai_move_throttling_enabled=false} keeps every request.
+ *
+ * <p>Hot paths read {@link PerformanceSettings} primitives. Those snapshots update through
+ * {@link ModConfigEvent} load/reload, not by calling {@code ForgeConfigSpec.get()} per request.
  */
+@Mod.EventBusSubscriber(modid = IsleOfBerkPerformance.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class PerformanceConfig {
     public static final ForgeConfigSpec SPEC;
 
@@ -25,7 +35,8 @@ public final class PerformanceConfig {
                 "Isle of Berk Performance Patches common configuration.",
                 "These controls intentionally change gameplay timing or visual cadence.",
                 "For AI movement, set an interval to 1 to disable that cadence optimization and use every eligible request.",
-                "When throttling is enabled, the first eligible request after a goal starts runs immediately, then every configured interval.",
+                "When throttling is enabled, the first eligible request after a goal starts runs immediately.",
+                "Later due decisions are computed once per goal tick: every configured interval, all intended calls on that tick run.",
                 "Damage cadence is not configurable and remains fixed at 20 ticks."
         );
         builder.push("performance");
@@ -39,9 +50,10 @@ public final class PerformanceConfig {
                 .define("ai_move_throttling_enabled", true);
         AI_MOVE_INTERVAL_TICKS = builder
                 .comment(
-                        "AI movement-request interval in ticks when throttling is enabled.",
+                        "AI movement-request interval in goal ticks when throttling is enabled.",
                         "Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.",
-                        "The first eligible request after a goal starts runs immediately; later eligible requests use this interval.",
+                        "The first eligible request after a goal starts runs immediately; later due ticks use this interval.",
+                        "On a due tick every intended movement/circle call may run; on a skip tick all of them are skipped.",
                         "Tradeoff: larger intervals reduce AI/navigation work but can make following or flight corrections less responsive.",
                         "1 disables cadence optimization for this control."
                 )
@@ -70,28 +82,25 @@ public final class PerformanceConfig {
 
     private PerformanceConfig() {}
 
-    /**
-     * @return true when throttling is disabled or the interval is 1 (every eligible request).
-     */
-    public static boolean shouldRunAiMove() {
-        return !AI_MOVE_THROTTLING_ENABLED.get() || AI_MOVE_INTERVAL_TICKS.get() <= 1;
+    @SubscribeEvent
+    public static void onModConfig(ModConfigEvent event) {
+        if (event.getConfig().getSpec() == SPEC) {
+            refreshSnapshots();
+        }
     }
 
     /**
-     * Whether one gated movement/circle request should run.
-     *
-     * @param moveTick 1-based count of gated request sites since the last goal start/stop reset
-     * @return true for the first request after reset, then every configured interval
+     * Copies loaded spec values into {@link PerformanceSettings}. Safe no-op until the spec is loaded.
      */
-    public static boolean shouldRunAiMove(int moveTick) {
-        return shouldRunAiMove() || shouldRunThrottledAiMove(moveTick, AI_MOVE_INTERVAL_TICKS.get());
-    }
-
-    /**
-     * Pure interval predicate used by {@link #shouldRunAiMove(int)}.
-     * {@code moveTick} is 1-based; tick 1 always runs, then ticks {@code 1 + n * interval}.
-     */
-    public static boolean shouldRunThrottledAiMove(int moveTick, int interval) {
-        return moveTick > 0 && interval > 0 && (moveTick - 1) % interval == 0;
+    public static void refreshSnapshots() {
+        if (!SPEC.isLoaded()) {
+            return;
+        }
+        PerformanceSettings.overwrite(
+                Boolean.TRUE.equals(AI_MOVE_THROTTLING_ENABLED.get()),
+                AI_MOVE_INTERVAL_TICKS.get(),
+                EGG_HATCH_CHECK_INTERVAL_TICKS.get(),
+                SHOCK_PARTICLE_INTERVAL_TICKS.get()
+        );
     }
 }

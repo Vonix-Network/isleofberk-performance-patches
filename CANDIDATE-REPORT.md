@@ -1,3 +1,7 @@
+# HISTORICAL ARCHIVE — 0.3.1-rc.1 evidence (not the current dirty successor candidate)
+
+This file is retained as historical provenance only. It does not describe the current AiMoveCadence/PerformanceSettings successor tree or its artifact.
+
 # 0.3.1-rc.1 release-candidate evidence
 
 This document records the implemented scope, audited exclusions, and release-candidate evidence for the 0.3.1-rc.1 standalone companion. It is not a claim that every historical Vonix fork hunk can be safely reproduced as a separate Mixin companion. The artifact implementation commit — the exact source/build commit for the pinned JAR — is `dcf712be5f88278f2a1fd87b533f88a150465105` (`Harden ZIP extra timestamp handling`). This report is committed as a separate provenance document descendant of the artifact implementation commit; verify the report commit with git log/rev-parse externally. The report commit is not the artifact source commit. Prior independent reviews rejected predecessor trees; this unpublished candidate requires a fresh independent Sol review. GitHub publication remains pending and is not authorized by this document.

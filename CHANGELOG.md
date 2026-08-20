@@ -1,86 +1,112 @@
 # Changelog
 
-All notable release changes for Isle of Berk Performance Patches are recorded here.
+All notable changes to Isle of Berk Performance Patches are documented here. A release entry is not publication or deployment authority.
+
+## [Unreleased]
+
+- `1.0.1-rc.1` is an unpublished, unaccepted successor candidate to the published `1.0.0` tree.
+- The current candidate is dirty and requires a fresh source manifest, rebuild, and independent read-only verification after any source, test, metadata, or documentation change.
+- Earlier parent-gate and reviewer records refer to older candidate identities and must not be reused as acceptance for the current tree.
+- No quantitative MSPT/FPS/performance-improvement claim is made. Matched before/after profiling remains required.
+- No publication, deployment, live-server installation, or public release effect was performed.
+
+## [1.0.1-rc.1] — 2026-08-20
+
+Unpublished local successor candidate based on published `1.0.0`. This entry records candidate scope and evidence status; it is not an accepted release.
+
+### Implemented
+
+- Added `AiMoveCadence` for one allow/deny decision at each pinned AI goal `tick()` HEAD. On a due tick, every intended gated call may run; on a skipped tick, all gated calls are suppressed. The first eligible request after a wrapped-goal start/restart runs immediately.
+- Added `PerformanceSettings` primitive snapshots. The AI enabled/interval tuple is published as one packed atomic snapshot; egg and ShockEffect intervals refresh on Forge config load/reload without calling `ForgeConfigSpec.get()` from active mixin hot paths.
+- Added deterministic re-arm behavior when the effective AI settings change during a cooldown.
+- Preserved exact lifecycle ownership: cadence state resets at the `WrappedGoal` start/stop boundary, not through `canUse()` or target lifecycle methods.
+- Implemented the safe follow-goal lifecycle wave (`P01`): the existing per-goal `tailingDragons` map and active formation reads remain intact, while the inactive map is cleared at the exact follow-goal stop tail. No replacement map, entity/world cache, cross-tick cache, or active-tick pruning was added.
+- Retained twelve narrow client renderer argument-reuse mixins and eight fixed-resource egg-animation/projectile transformations.
+- Preserved Variant Loader-compatible dynamic dragon and egg model, texture, animation, and layer selection.
+- Added cadence, snapshot, lifecycle, mapping, dataflow, instrumented-goal, coexistence, packaging, identity, and performance-wave fixtures and gates.
+- Kept the published `1.0.0` predecessor artifact separate and unchanged.
+
+### Explicitly blocked or deferred
+
+- `P02` scan-body rewrites for `ADragonBase.airSpaceMechanics()` and `ADragonBaseFlyingRideable.onGroundMechanics()` are blocked: the companion has no exact fail-closed whole-method transformation facility, so the original scan bodies remain untouched.
+- Heightmap/navigation allocation removal in `DragonFollowPlayerFlying.tick()` is not implemented; the large method body and its formation semantics remain unchanged.
+- `BaseLinearFlightProjectile` collision, predicate, explosion, deletion, damage, and block-griefing paths remain untouched because no behavior-neutral transformation was proven.
+- `MessageDragonFlapSounds` packet allocation/handler changes remain deferred; decode, enqueue, and packet-handled behavior are unchanged.
+- No changes were made to damage, combat, target selection, RNG order, progression, networking or packet formats, spawning, world generation, pathfinder algorithms, deadlock/chunk-access safety, projectile scratch state, or dynamic variant resource selection.
+- No Isle of Berk classes or resources are bundled. Deadlock Fix and Threaded Horizons remain separate artifacts.
+
+### Candidate evidence status
+
+The candidate manifest records this prior artifact tuple:
+
+```text
+File:   isleof-berk-performance-patches-1.0.1-rc.1.jar
+Size:   37,557 bytes
+SHA256: 57b880f636fff7d8c1f69b310465ac13964817812586651a5531142043ab5577
+```
+
+That tuple was recorded before this changelog refresh. This documentation change therefore makes the prior source-to-artifact manifest stale; rebuild and regenerate candidate identity before relying on it.
+
+- Earlier parent-owned deterministic evidence recorded clean Java 17 `check build` execution and fixture passes, but its log identified an older `1.0.0` artifact and is not current acceptance evidence for this successor.
+- The exact `1.0.1-rc.1` packaged client/server runtime gate remains unresolved (`SOL-007`); no exact-candidate runtime `Done` claim is made here.
+- The candidate remains `NOT ACCEPTED`, `NOT PUBLISHED`, and `NOT DEPLOYED` pending fresh exact-candidate gates and independent verification.
 
 ## [1.0.0] — 2026-08-15
 
-Stable promotion of the current companion tree.
+Stable promotion of the prior companion tree. This is the published GitHub Latest; earlier `0.3.x` tags remain immutable.
 
-- Same Mixin surface as `0.3.1-rc.3`: no stock dragon geo/anim pin, so Variant Loader / HybridsPlus / variant packs can remap those resources.
-- Forge accepted range remains `[40.3.0,40.4.0)` for live 1.18.2 Forge 40.3.x, including 40.3.12. Compile pin remains 40.3.0.
-- Server AI / egg / shock cadence mixins, renderer argument reuse, egg-animation intern, and FireBolt / FuryBolt intern are unchanged.
-- This is the GitHub Latest. Earlier `0.3.x` tags stay immutable. No MSPT/FPS claim.
+- Preserved Variant Loader-compatible dynamic dragon and egg resource selection.
+- Included the earlier renderer, fixed-resource, AI, egg, and ShockEffect companion transformations.
+- Forge compile pin remained `40.3.0`; accepted Forge range remained `[40.3.0,40.4.0)` for live 1.18.2 Forge 40.3.x, including 40.3.12.
+- Supported Minecraft 1.18.2, Forge 40.3.x, Isle of Berk 1.2.0, GeckoLib 3.0.57, and Java 17.
+- Kept Deadlock Fix separate and did not redistribute Isle of Berk classes.
 - Artifact: 32,865 bytes, SHA-256 `15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2`.
+- No quantitative MSPT/FPS claim.
 
-## [0.3.1-rc.3] — release candidate
+## [0.3.1-rc.3] — 2026-08-14
 
-- Stop cancelling dragon `getModelLocation` / `getAnimationFileLocation` (and do not pin dragon textures). Variant Loader 2.6.4/2.7.0 overwrites those lookups via `BaseDragonModelMixin`, per-species model mixins, and `ModelRedirectUtil`; a HEAD-cancellable stock `ResourceLocation` prevented variant geo/anim from applying and exploded remapped dragons.
-- Stop cancelling egg `getModelLocation`. Variant Loader remaps egg geo/texture through `DragonEggModelHelper`; egg animation remains constructor-constant and is still reused.
-- Keep the twelve renderer `getRenderType` argument-reuse mixins and the FireBolt/FuryBolt constructor-constant projectile mixins. Variant Loader does not remap those projectile methods.
-- Renderer fixture now gates 12 renderers and 8 remaining fixed-resource methods, and rejects reintroduction of dragon geo/anim HEAD-cancels.
+Release candidate.
 
-Release-candidate artifact is rebuilt from the publication commit; record the final SHA-256 after that rebuild. GitHub prerelease only. Latest remains 0.3.0. No runtime client retest of exploded variants is claimed. No MSPT/FPS claim. Publication does not authorize live-server deploy.
+- Removed stock dragon `getModelLocation` / `getAnimationFileLocation` cancellations and did not pin dragon textures, allowing Variant Loader and variant packs to remap dynamic resources.
+- Removed egg `getModelLocation` cancellation so Variant Loader can remap egg geo/texture; egg animation remains a fixed constructor resource.
+- Retained twelve renderer `getRenderType` argument-reuse mixins and the FireBolt/FuryBolt constructor-constant projectile mixins.
+- Renderer fixtures covered twelve renderers and eight remaining fixed-resource methods and rejected reintroduction of dynamic dragon/egg resource cancellations.
+- No runtime client retest of exploded variants was claimed. No MSPT/FPS claim.
 
-## [0.3.1-rc.2] — release candidate
+## [0.3.1-rc.2] — 2026-08-14
 
-- Widen the declared Forge dependency from `[40.3.0,40.3.1)` to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load the companion.
-- Compile pin remains Forge 40.3.0. This is a metadata compatibility fix, not a mixin/runtime rewrite.
+Release candidate.
 
-## [0.3.1-rc.1] — release candidate
+- Widened the declared Forge dependency from `[40.3.0,40.3.1)` to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load.
+- Compile pin remained Forge 40.3.0. This was a metadata compatibility fix, not a mixin/runtime rewrite.
 
-Successor release candidate. The published 0.3.0 artifact remains immutable. Prior independent reviews rejected predecessor trees; this unpublished candidate requires a fresh independent Sol review and is not accepted. GitHub publication remains pending and is not authorized.
+## [0.3.1-rc.1] — 2026-08-13
 
-- Pin egg hatch-check and ShockEffect particle `ModifyConstant` injectors to the verified ordinals; the ShockEffect damage 20 is still untouched.
-- Harden AI redirect counts to the pinned invoke counts (`moveTo` 1 and 5, `circleEntity` 2).
-- Reset AI counters from the exact `WrappedGoal` start/stop transition instead of target lifecycle method merges or `canUse()`, because vanilla `Goal.canContinueToUse()` delegates to `canUse()`.
-- First eligible AI movement request after a goal starts runs immediately, then every configured interval.
-- Couple the config fixture to `PerformanceConfig.SPEC` defaults in source.
+Release candidate.
 
-### Additional hardening
+- Pinned egg hatch-check and ShockEffect particle `ModifyConstant` injectors to verified ordinals; ShockEffect damage at 20 ticks remained untouched.
+- Hardened AI redirect counts to the pinned invoke counts: `moveTo` 1 and 5, `circleEntity` 2.
+- Reset AI counters from the exact `WrappedGoal` start/stop transition rather than `canUse()` or target lifecycle methods.
+- Added configuration, mapping, lifecycle, and renderer/resource fixtures.
+- Canonicalized ZIP timestamps and supported timestamp extra fields for deterministic reobfuscated JAR output.
+- This was an unpublished candidate and did not authorize publication or live-server deployment.
 
-- Reset AI movement counters from the exact `WrappedGoal` start/stop transition without merging target lifecycle methods.
-- Use the production-remapped `WrappedGoal.getGoal()` accessor (`m_26015_()` in the SRG runtime).
-- Add deterministic mapping and lifecycle fixtures covering the prior production and runtime failure modes.
-- Canonicalize ZIP timestamps/extra metadata on the final reobfuscated JAR after `reobfJar` so clean builds are byte-identical without changing entry contents, order, manifest, refmap, or bytecode.
+## [0.3.0] — 2026-08-13
 
-Release-candidate artifact: 47,478 bytes, SHA-256 `7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9`. This hash is the local canonical candidate only. A fresh independent Sol review is required. Publication remains pending and is not authorized.
-
-## [0.3.0](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0) — 2026-08-13
-
-### Added
-
-- Forge COMMON configuration at `config/isleofberkperformance.toml`.
-- Configurable AI movement-request throttling for three exact flight/follow goals.
-- Configurable egg hatch-check cadence.
-- Configurable ShockEffect particle cadence.
-- Documentation for upstream/normal values, optimized defaults, and timing/visual tradeoffs.
-- Twelve narrow client renderer argument-reuse transformations.
-- Thirty-six fixed-resource model, egg, and projectile transformations.
-
-### Compatibility and safety
-
-- Validated against Minecraft 1.18.2, Forge 40.3.0, Java 17, Isle of Berk 1.2.0, and GeckoLib 3.0.57.
-- The original Isle of Berk JAR remains a required separate dependency.
-- The optional `isleofberk-deadlockfix` mod remains separate and is not bundled or replaced.
-- ShockEffect damage cadence remains fixed at 20 ticks.
-- Network protocol, deadlock/chunk access, spawning, world generation, pathfinder algorithms, and dynamic resource selection remain outside this release.
-
-### Verification
-
-- Gradle clean `check build`: passed.
-- Package audit: passed; companion-only archive.
-- Config fixture: passed.
-- Renderer/resource fixture: passed for 12 renderers and 36 fixed-resource methods.
-- Fresh Forge server runtime: all five common gameplay mixins applied and server reached `Done (12.028s)`.
-- Independent GPT-5.6-SOL review: passed.
-- Release asset SHA-256: `c28dfc2871d97b654933f1b0d9023dd54f9319064274c3d1dd3ac2dc026efb56`.
+- Added Forge COMMON configuration at `config/isleofberkperformance.toml`.
+- Added configurable AI movement-request throttling for three exact flight/follow goals.
+- Added configurable egg hatch-check cadence and ShockEffect particle cadence; ShockEffect damage cadence remained fixed at 20 ticks.
+- Added twelve narrow client renderer argument-reuse transformations and the earlier fixed-resource model/egg/projectile transformations.
+- Kept the companion-only packaging boundary and explicit gameplay/safety exclusions.
 
 ## [0.2.0]
 
-- Added the narrow renderer and fixed-resource optimization wave that was promoted into the 0.3.0 companion.
+- Added the narrow renderer and fixed-resource optimization wave later promoted into the `0.3.0` companion.
 
-## [0.1.2](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.1.2)
+## [0.1.2] — 2026-08-12
 
-- Published the earlier partial companion release. It remains immutable and is superseded by 0.3.0.
+- Published the earlier partial companion release. It remains immutable and is superseded by `0.3.0`.
 
-[0.3.1-rc.1]: https://github.com/Vonix-Network/isleofberk-performance-patches/compare/v0.3.0...HEAD
+[1.0.0]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.0.0
+[0.3.0]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0
+[0.1.2]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.1.2
