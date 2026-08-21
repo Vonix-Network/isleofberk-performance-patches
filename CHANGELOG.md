@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.3 — Targeted safe successor of remaining Vonix hot-path Mixins
+
+V1.3 is a successor candidate and a targeted safe port of remaining historical Vonix optimizations that can be expressed as narrow Mixins. It is not a complete Vonix port. No FPS, RAM, or MSPT percentage and no guaranteed performance are claimed.
+
+### Added
+
+- Added per-instance `Vector3f` corner reuse and camera-position lookup reuse on the seven Isle of Berk particle `render` methods (`FireBolt`, `FireCoat`, `Flame`, `FuryBolt`, `Gas`, `SkrillLightning`, `SkrillSkill`) without cancelling or overwriting render.
+- Added `FlyNodeEvaluator` neighbor `EnumMap` reuse with a guarded fresh-map fallback for mismatched scratch acquisition, and skipped the redundant second `MutableBlockPos.set` in `getBlockPathType`.
+- Added client packet-handler lookup reuse for `Minecraft.getInstance()`, entity lookup, and the Skrill particle option in `ClientPacketHandlerClass.handleSpawnShockParticles`.
+- Added `ClientMessageTameParticlesDragon.spawnTamingParticles` `getRandom()` lookup reuse. `nextGaussian` consumption stays in the original loop.
+- Added deterministic fixtures for scratch reuse/fallback, original-jar Redirect-site counts, and mixin inventory (every declared mixin has a class; every mixin class is packaged).
+
+### Explicitly deferred
+
+- Projectile explosion scratch `BlockPos`, lambda hoist, fire-placement, and other combat/state paths.
+- Egg tick local caching (the existing hatch-check cadence Mixin already owns `tick`) and egg `position()` inlining that cannot be expressed without method rewrite or recursive Redirect.
+- Layer render rewrites (`DragonHeldItemLayer`, `LayerDragonRider`) and egg-renderer `Minecraft.getInstance()` hoists that require overwriting `render`.
+- Math/interpolation method overwrites, `Util.toRadians` compile-time constants, and Catmull-Rom matrix inlining.
+- Dragon-base spawn-rule caching, deadlock-named scratch `BlockPos`, `distanceTo`→`distanceToSqr` (float vs double), stream-to-get(0) rewrites, and species ability/combat getter inlining.
+- AI target, taming, combat, cadence, and move-control method rewrites.
+- Network handle control-flow changes (`ClientMessageGuiDragon`, `ControlMessageTerribleTerrorAbility`).
+- Worldgen/spawn registration, item tooltip array allocation, ShockEffect `% 8`→`& 7` (conflicts with the configurable particle cadence Mixin), and the Nightmare fire-armor UV argument change (not equivalent).
+
+### Compatibility and scope
+
+- Minecraft 1.18.2, Forge 40.3.x, Java 17.
+- Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain required separate dependencies.
+- The original Isle of Berk JAR remains required. This release does not replace or redistribute Isle of Berk.
+- The Isle of Berk Deadlock Fix remains a separate companion mod and is not included in this JAR.
+
 ## 1.2.0 — Remaining verified client render-resource patches after 1.1
 
 ### Added

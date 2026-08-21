@@ -12,9 +12,9 @@ description='''
 Standalone Forge Mixin companion for Isle of Berk 1.2.0.
 This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
 isleofberk-1.2.0.jar installed. It does not bundle IoB classes or resources.
-The 1.1 release combines the verified 1.0 performance work with the guarded
-GeckoLib dragon-bone index, documented configurable AI, egg, and ShockEffect
-visual cadence controls, and the existing renderer/resource transformations.
+V1.3 is a successor candidate and targeted safe Mixin port of remaining Vonix
+hot-path work that preserves original gameplay semantics. The Isle of Berk
+Deadlock Fix remains a separate companion and is not included.
 '''
 authors="Vonix-Network"
 

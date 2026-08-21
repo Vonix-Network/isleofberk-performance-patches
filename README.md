@@ -1,8 +1,10 @@
-# Isle of Berk Performance Patches 1.2
+# Isle of Berk Performance Patches 1.3
 
 A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.18.2**.
 
 > This is a performance companion, not a fork or replacement. Install the original `isleofberk-1.2.0.jar` and GeckoLib 3.0.57 separately. The Deadlock Fix mod is a separate companion and is not included here. This JAR does not redistribute Isle of Berk classes or resources.
+
+V1.3 is a successor candidate and a targeted safe port of remaining historical Vonix optimizations that fit narrow Mixins. It is not a complete Vonix port. No FPS, RAM, or MSPT percentage and no guaranteed performance are claimed.
 
 ## Compatibility
 
@@ -10,9 +12,17 @@ A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.1
 - Forge 40.3.x; compiled against 40.3.0
 - Isle of Berk exactly 1.2.0
 - GeckoLib 3.0.57
-- Java 17 target; the verified build host uses JDK 21 with Java 17-compatible source/target settings
+- Java 17 target; the V1.3 build and verification gates run under JDK 17
 
-Install the same 1.2.0 performance-patch JAR on both client and server for multiplayer. Client rendering mixins are client-only; common performance mixins load on both sides. Install it on the client for the render-resource changes to affect client rendering.
+Install the same V1.3 performance-patch JAR on both client and server for multiplayer. Client rendering mixins are client-only; common performance mixins load on both sides. Install it on the client for the render-resource changes to affect client rendering.
+
+## 1.2 → 1.3
+
+- Adds per-instance particle-render `Vector3f` corner reuse and camera-position lookup reuse for the seven Isle of Berk particle families, without replacing `render`.
+- Adds `FlyNodeEvaluator` neighbor `EnumMap` reuse and skips the redundant second `MutableBlockPos.set`.
+- Adds client packet-handler lookup reuse for Minecraft/entity/particle-option lookups and tame-particle `getRandom()`.
+- Keeps original call order, return values, RNG consumption, and client/common side separation on every implemented path.
+- Remaining historical families that need method overwrite, combat/target/cadence/network/worldgen changes, or unsafe mutable aliasing stay deferred.
 
 ## 1.1 → 1.2
 
@@ -26,7 +36,7 @@ Install the same 1.2.0 performance-patch JAR on both client and server for multi
 
 ## Remaining historical work deliberately deferred
 
-The old full Vonix edition documented additional particle-render, client packet-handler, renderer-layer, rider/held-item, and broader hot-path changes. They remain excluded from this companion where a narrow, activation-verified Mixin would require broad upstream method replacement or could alter hidden state/timing. No historical allocation estimate or FPS/RAM/MSPT percentage is claimed as a current measurement.
+The old full Vonix edition documented additional renderer-layer, rider/held-item, projectile-explosion, dragon-base, species, AI/combat, math-overwrite, and worldgen changes. They remain excluded from this companion where a narrow, activation-verified Mixin would require broad upstream method replacement or could alter hidden state, timing, RNG, combat, networking, or worldgen semantics. No historical allocation estimate or FPS/RAM/MSPT percentage is claimed as a current measurement.
 
 ## Scope boundary
 
@@ -39,7 +49,7 @@ The old full Vonix edition documented additional particle-render, client packet-
 1. Install Forge 40.3.x for Minecraft 1.18.2.
 2. Install the original Isle of Berk 1.2.0 JAR.
 3. Install GeckoLib Forge 3.0.57.
-4. Install `isleof-berk-performance-patches-1.2.0.jar`.
+4. Install `isleof-berk-performance-patches-1.3.jar`.
 5. If you need deadlock protection, install the separately released Deadlock Fix mod as its own companion.
 6. Install the same performance-patch version on both client and server for multiplayer.
 

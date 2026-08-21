@@ -225,6 +225,9 @@ tasks.named('check').configure {
     dependsOn 'aiMoveCadenceFixture'
     dependsOn 'mixinLifecycleFixture'
     dependsOn 'infoZipUxExtraFixture'
+    dependsOn 'v13HotPathFixture'
+    dependsOn 'v13BytecodeFixture'
+    dependsOn 'mixinInventoryFixture'
 }
 
 tasks.register('boneCacheFixture', JavaExec) {
@@ -973,6 +976,33 @@ static String extractSpecRangeDefault(String spec, String defineCall, String fal
         throw new GradleException("configFixture: PerformanceConfig.SPEC default not found for ${defineCall} (expected ${fallback})")
     }
     return matcher.group(1)
+}
+
+tasks.register('v13HotPathFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks V1.3 particle-corner and EnumMap scratch reuse plus fallback/negative cases.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.V13HotPathFixture'
+    dependsOn testClasses
+}
+
+tasks.register('v13BytecodeFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks pinned original pathfinder, particle-render, and packet-handler bytecode counts.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.V13BytecodeFixture'
+    args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
+    dependsOn testClasses
+}
+
+tasks.register('mixinInventoryFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks every declared mixin has a class and every mixin class is packaged.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.MixinInventoryFixture'
+    args = [file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar").absolutePath]
+    dependsOn testClasses
+    dependsOn 'canonicalizeReobfJar'
 }
 
 tasks.register('rendererBytecodeFixture', JavaExec) {
