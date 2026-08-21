@@ -1,28 +1,3 @@
-pluginManagement {
-    repositories {
-        maven { url = uri("${rootDir}/.offline-plugin-repo") }
-        mavenLocal()
-        gradlePluginPortal()
-        maven { url = 'https://maven.minecraftforge.net' }
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == 'net.minecraftforge.gradle') {
-                useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
-            }
-            if (requested.id.id == 'org.spongepowered.mixin') {
-                useModule("org.spongepowered:mixingradle:0.7-SNAPSHOT")
-            }
-        }
-    }
-}
-dependencyResolutionManagement {
-    repositories {
-        maven { url = uri("${rootDir}/.offline-plugin-repo") }
-        mavenLocal()
-        mavenCentral()
-        maven { url = 'https://maven.minecraftforge.net' }
-        flatDir { dirs "${rootDir}/libs" }
-    }
-}
+pluginManagement { repositories { gradlePluginPortal(); maven { url = 'https://maven.minecraftforge.net' } } }
+dependencyResolutionManagement { repositories { mavenCentral(); maven { url = 'https://maven.minecraftforge.net' } } }
 rootProject.name = 'isleofberk-performance-patches'

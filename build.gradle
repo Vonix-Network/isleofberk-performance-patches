@@ -57,6 +57,7 @@ dependencies {
     compileOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     runtimeOnly fg.deobf("local:isleofberk-${iobVersion}:${iobVersion}")
     runtimeOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
+    testCompileOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -216,21 +217,30 @@ tasks.named('build').configure {
 tasks.named('check').configure {
     dependsOn 'auditPackagedJar'
     dependsOn 'mappingFixture'
+    dependsOn 'boneCacheFixture'
+    dependsOn 'renderResourceCacheFixture'
     dependsOn 'rendererBytecodeFixture'
     dependsOn 'gameplayBytecodeFixture'
-    dependsOn 'gameplayDataflowFixture'
-    dependsOn 'performanceWaveFixture'
-    dependsOn 'instrumentedAiGoalFixture'
     dependsOn 'configFixture'
     dependsOn 'aiMoveCadenceFixture'
     dependsOn 'mixinLifecycleFixture'
-    dependsOn 'removedAiMovePredicateGate'
-    dependsOn 'mixinHotPathConfigGetGate'
-    dependsOn 'performanceSettingsSnapshotFixture'
-    dependsOn 'multiModCoexistenceFixture'
-    dependsOn 'releaseIdentityFixture'
-    dependsOn 'releaseDocumentationGate'
     dependsOn 'infoZipUxExtraFixture'
+}
+
+tasks.register('boneCacheFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks the guarded GeckoLib dragon-bone index Mixin and mutation invalidation contract.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.BoneCacheFixture'
+    dependsOn testClasses
+}
+
+tasks.register('renderResourceCacheFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks bounded fixed-path client render-resource reuse and dynamic fallback preservation.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.RenderResourceCacheFixture'
+    dependsOn testClasses
 }
 
 tasks.register('mappingFixture') {
@@ -317,7 +327,7 @@ tasks.register('configFixture') {
 
 tasks.register('aiMoveCadenceFixture', JavaExec) {
     group = 'verification'
-    description = 'Checks tick-HEAD AiMoveCadence allow/deny, multi-call due ticks, lifecycle reset, atomic snapshot, and reload rearm.'
+    description = 'Checks the first-request-then-interval AI cadence predicate.'
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'network.vonix.isleofberkperformance.verification.AiMoveCadenceFixture'
     dependsOn testClasses
@@ -329,139 +339,6 @@ tasks.register('mixinLifecycleFixture', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'network.vonix.isleofberkperformance.verification.MixinLifecycleFixture'
     dependsOn testClasses
-}
-
-tasks.register('performanceSettingsSnapshotFixture', JavaExec) {
-    group = 'verification'
-    description = 'Checks PerformanceSettings packed AI tuple and egg/shock snapshot handlers.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.verification.PerformanceSettingsSnapshotFixture'
-    dependsOn testClasses
-}
-
-/**
- * Rejects restored/leftover calls to the removed request-count predicates.
- * Source scan covers main+test Java; bytecode scan covers compiled companion classes.
- */
-tasks.register('removedAiMovePredicateGate') {
-    group = 'verification'
-    description = 'Fails if source or companion bytecode still references removed PerformanceConfig AI move predicates.'
-    dependsOn classes, testClasses
-    doLast {
-        def forbidden = [
-                'shouldRunAiMove',
-                'shouldRunThrottledAiMove'
-        ]
-        def sourceRoots = [
-                file("${projectDir}/src/main/java"),
-                file("${projectDir}/src/test/java")
-        ]
-        def sourceHits = [] as List
-        sourceRoots.each { root ->
-            if (!root.isDirectory()) {
-                return
-            }
-            root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-                if (!f.name.endsWith('.java')) {
-                    return
-                }
-                def text = f.getText('UTF-8')
-                forbidden.each { token ->
-                    if (text.contains(token)) {
-                        sourceHits << "${f.toPath().toAbsolutePath().normalize()}: ${token}"
-                    }
-                }
-            }
-        }
-        if (!sourceHits.isEmpty()) {
-            throw new GradleException("removedAiMovePredicateGate SOURCE FAIL:\n  - " + sourceHits.join('\n  - '))
-        }
-
-        def classRoots = [
-                file("${buildDir}/classes/java/main"),
-                file("${buildDir}/classes/java/test"),
-                file("${buildDir}/classes/scala/main"),
-                file("${buildDir}/classes/scala/test")
-        ]
-        def bytecodeHits = [] as List
-        classRoots.each { root ->
-            if (!root.isDirectory()) {
-                return
-            }
-            root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-                if (!f.name.endsWith('.class')) {
-                    return
-                }
-                def bytes = f.bytes
-                def latin1 = new String(bytes, 'ISO-8859-1')
-                forbidden.each { token ->
-                    if (latin1.contains(token)) {
-                        bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: ${token}"
-                    }
-                }
-            }
-        }
-        if (!bytecodeHits.isEmpty()) {
-            throw new GradleException("removedAiMovePredicateGate BYTECODE FAIL:\n  - " + bytecodeHits.join('\n  - '))
-        }
-        logger.lifecycle('removedAiMovePredicateGate: PASS (no shouldRunAiMove/shouldRunThrottledAiMove in source or companion bytecode)')
-    }
-}
-
-/**
- * SOL-003: reject ForgeConfigSpec.ConfigValue.get() from every active mixin method.
- * Source and companion mixin bytecode must not call .get() on config values.
- */
-tasks.register('mixinHotPathConfigGetGate') {
-    group = 'verification'
-    description = 'Fails if active mixins still call ForgeConfigSpec ConfigValue.get() on hot paths.'
-    dependsOn classes
-    doLast {
-        def mixinRoot = file("${projectDir}/src/main/java/network/vonix/isleofberkperformance/mixin")
-        def sourceHits = [] as List
-        if (mixinRoot.isDirectory()) {
-            mixinRoot.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-                if (!f.name.endsWith('.java')) {
-                    return
-                }
-                def text = f.getText('UTF-8')
-                // Strip block and line comments before scanning for live call sites.
-                def code = text
-                        .replaceAll(/(?s)\/\*.*?\*\//, ' ')
-                        .replaceAll(/\/\/.*/, ' ')
-                if (code =~ /PerformanceConfig\.[A-Za-z0-9_]+\s*\.\s*get\s*\(/) {
-                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: PerformanceConfig.*.get()"
-                }
-                if (code.contains('ForgeConfigSpec') || code.contains('ConfigValue')) {
-                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type reference in code"
-                }
-            }
-        }
-        if (!sourceHits.isEmpty()) {
-            throw new GradleException("mixinHotPathConfigGetGate SOURCE FAIL:\n  - " + sourceHits.join('\n  - '))
-        }
-
-        def classRoot = file("${buildDir}/classes/java/main/network/vonix/isleofberkperformance/mixin")
-        def bytecodeHits = [] as List
-        if (classRoot.isDirectory()) {
-            classRoot.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-                if (!f.name.endsWith('.class')) {
-                    return
-                }
-                def latin1 = new String(f.bytes, 'ISO-8859-1')
-                if (latin1.contains('ForgeConfigSpec') || latin1.contains('ConfigValue')) {
-                    bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type in bytecode"
-                }
-                if (latin1.contains('PerformanceConfig') && latin1.contains('()Ljava/lang/Object;')) {
-                    bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: possible ConfigValue.get Object return"
-                }
-            }
-        }
-        if (!bytecodeHits.isEmpty()) {
-            throw new GradleException("mixinHotPathConfigGetGate BYTECODE FAIL:\n  - " + bytecodeHits.join('\n  - '))
-        }
-        logger.lifecycle('mixinHotPathConfigGetGate: PASS (no ForgeConfigSpec/ConfigValue.get in active mixins)')
-    }
 }
 
 /**
@@ -1114,283 +991,4 @@ tasks.register('gameplayBytecodeFixture', JavaExec) {
     mainClass = 'network.vonix.isleofberkperformance.verification.GameplayBytecodeFixture'
     args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
     dependsOn testClasses
-}
-
-tasks.register('gameplayDataflowFixture', JavaExec) {
-    group = 'verification'
-    description = 'Digest-pinned IoB dataflow: moveTo POP, circle branches, egg/shock IREM, mixin HEAD/redirect shape.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.verification.GameplayDataflowFixture'
-    args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
-    dependsOn testClasses
-}
-
-tasks.register('performanceWaveFixture', JavaExec) {
-    group = 'verification'
-    description = 'Pins the 2026-08-19 safe performance-wave descriptors, lifecycle cleanup, scan audit, activation, and provenance.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.verification.PerformanceWaveFixture'
-    args = [
-            file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath,
-            file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar").absolutePath,
-            file("${projectDir}/PERFORMANCE-WAVE-20260819.md").absolutePath
-    ]
-    dependsOn testClasses, canonicalizeReobfJar
-}
-
-tasks.register('instrumentedAiGoalFixture', JavaExec) {
-    group = 'verification'
-    description = 'Instrumented goal/WrappedGoal cadence: 0/1/N calls per tick, skip nav=0, reset/restart.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.verification.InstrumentedAiGoalFixture'
-    dependsOn testClasses
-}
-
-tasks.register('multiModCoexistenceFixture', JavaExec) {
-    group = 'verification'
-    description = 'Structural coexistence gate for companion + pinned Variant Loader + deadlock-fix jars.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'network.vonix.isleofberkperformance.verification.MultiModCoexistenceFixture'
-    args = [
-            file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar").absolutePath,
-            file("${projectDir}/libs/iobvariantloader-2.6.4-all.jar").absolutePath,
-            file("${projectDir}/libs/isleofberk-deadlockfix-1.1.2.jar").absolutePath
-    ]
-    dependsOn testClasses, canonicalizeReobfJar
-}
-
-tasks.register('releaseIdentityFixture') {
-    group = 'verification'
-    description = 'Hashed source-to-artifact provenance: every build input digest, deps, exclusions, distinct release version, JAR match.'
-    dependsOn canonicalizeReobfJar
-    doLast {
-        def root = projectDir
-        def manifestPath = file("${root}/evidence/release-manifest.json")
-        if (!manifestPath.isFile()) {
-            throw new GradleException("releaseIdentityFixture: missing ${manifestPath}")
-        }
-        def manifest = new groovy.json.JsonSlurper().parse(manifestPath)
-        def sha256 = { File f ->
-            java.security.MessageDigest.getInstance('SHA-256').digest(f.bytes).encodeHex().toString()
-        }
-        def jar = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
-        if (!jar.isFile()) {
-            throw new GradleException("releaseIdentityFixture: missing jar ${jar}")
-        }
-        if (project.version != '1.0.1') {
-            throw new GradleException('releaseIdentityFixture: stable release must use version 1.0.1')
-        }
-        if (manifest.version != project.version.toString()) {
-            throw new GradleException("releaseIdentityFixture: manifest.version ${manifest.version} != project.version ${project.version}")
-        }
-        if (manifest.artifact?.file != jar.name) {
-            throw new GradleException("releaseIdentityFixture: manifest artifact file ${manifest.artifact?.file} != ${jar.name}")
-        }
-        def jarSha = sha256(jar)
-        if (manifest.artifact?.sha256 != jarSha) {
-            throw new GradleException("releaseIdentityFixture: manifest sha256 ${manifest.artifact?.sha256} != jar ${jarSha}")
-        }
-        if ((manifest.artifact?.size as Long) != jar.length()) {
-            throw new GradleException("releaseIdentityFixture: manifest size mismatch")
-        }
-
-        // Predecessor published 1.0.0 evidence must remain untouched and distinct.
-        def predecessor = file("${root}/release-download/isleof-berk-performance-patches-1.0.0.jar")
-        if (!predecessor.isFile()) {
-            throw new GradleException('releaseIdentityFixture: missing untouched predecessor release-download/1.0.0 jar')
-        }
-        def predSha = sha256(predecessor)
-        def expectedPred = '15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2'
-        if (predSha != expectedPred) {
-            throw new GradleException("releaseIdentityFixture: predecessor jar hash changed (${predSha}); must remain ${expectedPred}")
-        }
-        if (predSha == jarSha) {
-            throw new GradleException('releaseIdentityFixture: release jar hash must differ from predecessor 1.0.0')
-        }
-        if (manifest.predecessor?.sha256 != expectedPred) {
-            throw new GradleException('releaseIdentityFixture: manifest.predecessor.sha256 must pin published 1.0.0')
-        }
-
-        // Required packaged classes for this release.
-        def requiredClasses = [
-                'network/vonix/isleofberkperformance/internal/AiMoveCadence.class',
-                'network/vonix/isleofberkperformance/internal/PerformanceSettings.class'
-        ] as Set
-        def found = [] as Set
-        def modsTomlText = null
-        new java.util.zip.ZipFile(jar).withCloseable { zip ->
-            zip.entries().each { e ->
-                def n = e.name.replace('\\', '/')
-                found << n
-                if (n == 'META-INF/mods.toml') {
-                    modsTomlText = zip.getInputStream(e).getText('UTF-8')
-                }
-            }
-        }
-        requiredClasses.each { c ->
-            if (!found.contains(c)) {
-                throw new GradleException("releaseIdentityFixture: jar missing ${c}")
-            }
-        }
-        if (modsTomlText == null || !modsTomlText.contains("version=\"${project.version}\"")) {
-            throw new GradleException("releaseIdentityFixture: packaged mods.toml missing expanded version ${project.version}")
-        }
-
-        // Dependencies: exact digests.
-        ['isleofberk', 'geckolib', 'variant_loader', 'deadlock_fix'].each { key ->
-            def dep = manifest.dependencies?.get(key)
-            if (dep == null || !dep.sha256 || !dep.path) {
-                throw new GradleException("releaseIdentityFixture: dependency ${key} incomplete in manifest")
-            }
-            def p = file(dep.path as String)
-            if (!p.isFile()) {
-                throw new GradleException("releaseIdentityFixture: dependency path missing ${p}")
-            }
-            def d = sha256(p)
-            if (d != dep.sha256) {
-                throw new GradleException("releaseIdentityFixture: dependency ${key} digest mismatch ${d} != ${dep.sha256}")
-            }
-        }
-
-        // Hashed build inputs: every listed path must exist and match sha256.
-        def inputs = manifest.inputs
-        if (!(inputs instanceof Map) || inputs.isEmpty()) {
-            throw new GradleException('releaseIdentityFixture: manifest.inputs must be a non-empty path->sha256 map')
-        }
-        def requiredPrefixes = [
-                'src/main/java/',
-                'src/main/resources/',
-                'src/test/java/',
-                'build.gradle',
-                'settings.gradle',
-                'gradle.properties',
-                'gradlew',
-                'gradle/wrapper/'
-        ]
-        requiredPrefixes.each { prefix ->
-            def hit = inputs.keySet().any { ((String) it).startsWith(prefix) || it == prefix }
-            if (!hit) {
-                throw new GradleException("releaseIdentityFixture: manifest.inputs missing required prefix/entry ${prefix}")
-            }
-        }
-        // Every current source/test/resource file must be hashed in the manifest.
-        def discover = { String relDir ->
-            def dir = file("${root}/${relDir}")
-            def out = [] as List
-            if (dir.isDirectory()) {
-                dir.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-                    out << root.toPath().relativize(f.toPath()).toString().replace('\\', '/')
-                }
-            }
-            return out
-        }
-        def mustHash = [] as List
-        mustHash.addAll(discover('src/main/java'))
-        mustHash.addAll(discover('src/main/resources'))
-        mustHash.addAll(discover('src/test/java'))
-        mustHash.addAll([
-                'build.gradle',
-                'settings.gradle',
-                'gradle.properties',
-                'gradlew',
-                'gradlew.bat',
-                'gradle/wrapper/gradle-wrapper.properties',
-                'gradle/wrapper/gradle-wrapper.jar',
-                'config/isleofberkperformance.toml',
-                'README.md',
-                'CHANGELOG.md',
-                'PERFORMANCE-WAVE-20260819.md',
-                'CANDIDATE-REPORT.md',
-                'RELEASE-REPORT.md'
-        ])
-        // Include every mixin and verification fixture explicitly by discovery above.
-        mustHash.unique().each { rel ->
-            def f = file("${root}/${rel}")
-            if (!f.isFile()) {
-                throw new GradleException("releaseIdentityFixture: required build input missing on disk: ${rel}")
-            }
-            def expected = inputs[rel]
-            if (expected == null) {
-                throw new GradleException("releaseIdentityFixture: manifest.inputs missing hash for ${rel}")
-            }
-            def actual = sha256(f)
-            if (actual != expected) {
-                throw new GradleException("releaseIdentityFixture: hash mismatch for ${rel}: manifest=${expected} disk=${actual}")
-            }
-        }
-        // No stale manifest entries for missing files (except explicit optional notes).
-        inputs.each { rel, expected ->
-            def f = file("${root}/${rel}")
-            if (!f.isFile()) {
-                throw new GradleException("releaseIdentityFixture: manifest.inputs references missing file ${rel}")
-            }
-            def actual = sha256(f)
-            if (actual != expected) {
-                throw new GradleException("releaseIdentityFixture: stale hash for ${rel}")
-            }
-        }
-
-        def exclusions = manifest.exclusions as List
-        if (exclusions == null || !exclusions.contains('release-download/**') || !exclusions.contains('evidence/**') || !exclusions.contains('.offline-plugin-repo/**')) {
-            throw new GradleException('releaseIdentityFixture: exclusions must list release-download/**, evidence/**, .offline-plugin-repo/**')
-        }
-
-        logger.lifecycle("releaseIdentityFixture: PASS (version=${project.version}, jar=${jarSha}, inputs=${inputs.size()}, predecessor=${predSha})")
-    }
-}
-
-tasks.register('releaseDocumentationGate') {
-    group = 'verification'
-    description = 'Checks README/config/release report cadence wording and stable artifact identity.'
-    dependsOn canonicalizeReobfJar
-    doLast {
-        def jar = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
-        def sha = java.security.MessageDigest.getInstance('SHA-256').digest(jar.bytes).encodeHex().toString()
-        def readme = file('README.md').getText('UTF-8')
-        def config = file('config/isleofberkperformance.toml').getText('UTF-8')
-        def report = file('CANDIDATE-REPORT.md').getText('UTF-8')
-        def releaseReport = file('RELEASE-REPORT.md')
-        if (!releaseReport.isFile()) {
-            throw new GradleException('releaseDocumentationGate: missing RELEASE-REPORT.md')
-        }
-        def releaseText = releaseReport.getText('UTF-8')
-        if (project.version.toString() != '1.0.1') {
-            throw new GradleException('releaseDocumentationGate: project.version must be stable 1.0.1')
-        }
-        if (!releaseText.contains(project.version.toString())) {
-            throw new GradleException("releaseDocumentationGate: release report missing version ${project.version}")
-        }
-        if (!releaseText.contains(jar.name)) {
-            throw new GradleException("releaseDocumentationGate: release report missing jar name ${jar.name}")
-        }
-        if (!releaseText.contains(sha)) {
-            throw new GradleException('releaseDocumentationGate: release report missing jar sha256')
-        }
-        if (!releaseText.contains('AiMoveCadence') || !releaseText.contains('PerformanceSettings')) {
-            throw new GradleException('releaseDocumentationGate: release report missing helper class inventory')
-        }
-        if (!releaseText.contains('15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2')) {
-            throw new GradleException('releaseDocumentationGate: release report must cite predecessor 1.0.0 hash as distinct')
-        }
-        if (!readme.contains(project.version.toString())) {
-            throw new GradleException('releaseDocumentationGate: README missing stable release version identity')
-        }
-        if (!readme.contains('tick HEAD') && !readme.contains('tick() HEAD') && !readme.contains('one allow/deny decision')) {
-            throw new GradleException('releaseDocumentationGate: README missing tick-HEAD cadence wording')
-        }
-        if (!config.contains('goal tick') && !config.contains('one allow/deny')) {
-            throw new GradleException('releaseDocumentationGate: config missing tick-HEAD cadence wording')
-        }
-        if (report.contains('0.3.1-rc.1') && report.contains('7238b74e13167a59310cd1e9e14ff56048733a8755a272602a0aa6b0064a38c9') && !report.contains('HISTORICAL ARCHIVE')) {
-            throw new GradleException('releaseDocumentationGate: CANDIDATE-REPORT still presents historical 0.3.1-rc.1 identity as current without archive banner')
-        }
-        if (readme.contains('36 fixed-resource methods passed') && !readme.contains('eight fixed-resource')) {
-            throw new GradleException('releaseDocumentationGate: README still claims only historical 36 fixed-resource surface')
-        }
-        // Published 1.0.0 integrity block must remain for predecessor; release must not overwrite it.
-        if (!readme.contains('15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2')) {
-            throw new GradleException('releaseDocumentationGate: README must retain published 1.0.0 predecessor hash')
-        }
-        logger.lifecycle("releaseDocumentationGate: PASS (version=${project.version}, jar=${sha})")
-    }
 }

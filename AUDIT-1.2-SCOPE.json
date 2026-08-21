@@ -1,0 +1,207 @@
+{
+  "base_accepted_1_1_artifact": "/root/work/iob-performance-patches-1.1.0-candidate-20260821/build/libs/isleof-berk-performance-patches-1.1.0.jar",
+  "base_accepted_1_1_sha256": "7cd02bf0799f04769d8e3321b7cfee89a3a77e80ca648f3301d7f52edd0209bf",
+  "candidate_root": "/root/work/iob-performance-patches-1.2.0-candidate-20260821",
+  "claims_boundary": "No FPS/RAM/MSPT percentage is claimed; historical allocation estimates are not current measurements.",
+  "comparison_base_tag": "v1.2.1-vonix.5",
+  "current_candidate_changed_scope": [
+    "src/main/java/network/vonix/isleofberkperformance/internal/RenderResourceCache.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/*ResourceMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/BaseSaddleAndChestsLayerCacheMixin.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/RenderResourceCacheFixture.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java",
+    "src/main/resources/isleofberkperformance.mixins.json",
+    "CHANGELOG.md",
+    "README.md",
+    "gradle.properties",
+    "build.gradle"
+  ],
+  "deferred_families": [
+    {
+      "family": "deferred-other-historical-wave",
+      "historical_changed_path_count": 22,
+      "paths": [
+        "CHANGELOG.md",
+        "gradle.properties",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/breed/DragonBreedGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/flight/own/AIDragonLand.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/flight/own/UntamedDragonCircleFlightGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/flight/player/AIDragonRide.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/flight/player/DragonFollowPlayerFlying.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/path/air/DragonFlyingPathNavigation.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/taming/AggressionToPlayersGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/taming/DragonRideTilTamed.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/taming/T2DragonFeedTamingGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/taming/T3DragonWeakenAndFeedTamingGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/taming/T4DragonPotionRequirement.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/target/DragonHurtByTargetGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/target/DragonMeleeAttackGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/target/DragonNonTameRandomTargetGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/target/projectile_firing/ADragonBreathUserFireGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonBaseFlyingRideableBreathUser.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonBaseFlyingRideableProjUser.java",
+        "src/main/java/com/GACMD/isleofberk/entity/projectile/breath_user/skrill_lightning/SkrillLightning.java",
+        "src/main/java/com/GACMD/isleofberk/instance/DragonDivePlayerSoundInstance.java",
+        "src/main/java/com/GACMD/isleofberk/world/gen/ModSpawnRegistration.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-11-egg-tick-and-position-cache",
+      "historical_changed_path_count": 4,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/eggs/entity/base/ADragonEggBase.java",
+        "src/main/java/com/GACMD/isleofberk/entity/eggs/entity/eggs/GronkleEgg.java",
+        "src/main/java/com/GACMD/isleofberk/entity/eggs/entity/eggs/SkrillEgg.java",
+        "src/main/java/com/GACMD/isleofberk/entity/eggs/entity/eggs/SpeedStingerEgg.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-11-layer-state-caching",
+      "historical_changed_path_count": 2,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/base/render/layer/DragonHeldItemLayer.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/render/layer/LayerDragonRider.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-12-client-packet-handlers",
+      "historical_changed_path_count": 4,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/network/message/ClientMessageGuiDragon.java",
+        "src/main/java/com/GACMD/isleofberk/network/message/ClientMessageTameParticlesDragon.java",
+        "src/main/java/com/GACMD/isleofberk/network/message/ControlMessageTerribleTerrorAbility.java",
+        "src/main/java/com/GACMD/isleofberk/network/message/util/ClientPacketHandlerClass.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-12-math-and-interpolation",
+      "historical_changed_path_count": 4,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/util/Interpolation.java",
+        "src/main/java/com/GACMD/isleofberk/util/Util.java",
+        "src/main/java/com/GACMD/isleofberk/util/math/Interpolation.java",
+        "src/main/java/com/GACMD/isleofberk/util/math/MathX.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-13-particle-render-hot-path",
+      "historical_changed_path_count": 7,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/particles/FireBoltParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/FireCoatParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/FlameParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/FuryBoltParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/GasParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/SkrillLightningParticle.java",
+        "src/main/java/com/GACMD/isleofberk/particles/SkrillSkillParticle.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-13-residual-effects-items-events",
+      "historical_changed_path_count": 5,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/effects/ShockEffect.java",
+        "src/main/java/com/GACMD/isleofberk/event/ClientModEvent.java",
+        "src/main/java/com/GACMD/isleofberk/items/DragonEggItem.java",
+        "src/main/java/com/GACMD/isleofberk/items/DragonEggSeparateVariantItem.java",
+        "src/main/java/com/GACMD/isleofberk/items/DragonSpawnEggItem.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-6-and-10-dragon-base-hot-path",
+      "historical_changed_path_count": 4,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonBase.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonBaseFlyingRideable.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonBaseGroundRideable.java",
+        "src/main/java/com/GACMD/isleofberk/entity/base/dragon/ADragonRideableUtility.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-6-and-10-species-hot-path",
+      "historical_changed_path_count": 14,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/deadlynadder/DeadlyNadder.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/gronckle/Gronckle.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/lightfury/LightFury.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/lightfury/LightFuryGlowLayer.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/montrous_nightmare/MonstrousNightMareFireArmor.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/montrous_nightmare/MonstrousNightmare.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/nightfury/NightFury.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/nightfury/NightFuryGlowLayer.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/nightlight/NightLight.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/skrill/Skrill.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/stinger/Stinger.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/terrible_terror/TerribleTerror.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/triple_stryke/TripleStryke.java",
+        "src/main/java/com/GACMD/isleofberk/entity/dragons/zippleback/ZippleBack.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-7-pathfinder-allocation",
+      "historical_changed_path_count": 1,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/base/path/FlyNodeEvaluator.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-8-projectile-hot-path",
+      "historical_changed_path_count": 4,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/projectile/abase/BaseLinearBoltProjectile.java",
+        "src/main/java/com/GACMD/isleofberk/entity/projectile/abase/BaseLinearFlightProjectile.java",
+        "src/main/java/com/GACMD/isleofberk/entity/projectile/breath_user/firebreaths/FireBreathProjectile.java",
+        "src/main/java/com/GACMD/isleofberk/entity/projectile/breath_user/poison/ZippleBackAOECloud.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    },
+    {
+      "family": "deferred-wave-9-ai-and-navigation-hot-path",
+      "historical_changed_path_count": 5,
+      "paths": [
+        "src/main/java/com/GACMD/isleofberk/entity/AI/goal/DragonNearestAttackableTargetGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/goal/DragonSleepGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/goal/FollowOwnerNoTPGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/goal/IOBLookAtPlayerGoal.java",
+        "src/main/java/com/GACMD/isleofberk/entity/AI/path/air/FlyingDragonMoveControl.java"
+      ],
+      "reason": "Not ported as a companion because the safe narrow Mixin boundary is not established; broad overwrite/copy of upstream implementation or hidden timing/state risk is disallowed."
+    }
+  ],
+  "historical_post_base_changed_path_count": 97,
+  "historical_reference_repo": "/root/work/iob-vonix-source-1.2.1-vonix.13-20260821",
+  "historical_reference_tag": "v1.2.1-vonix.13",
+  "implemented_or_inherited": [
+    {
+      "details": "16 client mixins cover all 13 dragon model families, both glow layers, and BaseSaddleAndChestsLayer; fixed paths are bounded and dynamic fallback remains.",
+      "id": "R12-model-resource-cache",
+      "status": "IMPLEMENTED"
+    },
+    {
+      "details": "The accepted 1.1 companion already contains the 12 renderer texture-parameter reuse mixins.",
+      "id": "R11-renderer-texture-reuse",
+      "status": "INHERITED_1_1"
+    },
+    {
+      "details": "Original Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain external dependencies.",
+      "id": "R1-original-dependency",
+      "status": "REQUIRED"
+    },
+    {
+      "details": "No deadlock-fix package, mixin, class, or resource is included.",
+      "id": "R2-deadlock-separation",
+      "status": "PASS"
+    }
+  ],
+  "report": "Iob Performance Patches 1.2 remaining-scope audit"
+}

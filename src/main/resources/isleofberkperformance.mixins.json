@@ -30,7 +30,24 @@
     "FuryBoltModelMixin",
     "SmallEggModelMixin",
     "MediumEggModelMixin",
-    "LargeEggModelMixin"
+    "LargeEggModelMixin",
+    "AnimationProcessorBoneCacheMixin",
+    "GronckleModelResourceMixin",
+    "TripleStrykeModelResourceMixin",
+    "TerribleTerrorModelResourceMixin",
+    "StingerModelResourceMixin",
+    "LightFuryModelResourceMixin",
+    "DeadlyNadderModelResourceMixin",
+    "MonstrousNightmareModelResourceMixin",
+    "NightFuryModelResourceMixin",
+    "NightLightModelResourceMixin",
+    "SkrillModelResourceMixin",
+    "SpeedStingerModelResourceMixin",
+    "SpeedStingerLeaderModelResourceMixin",
+    "ZippleBackModelResourceMixin",
+    "NightFuryGlowLayerResourceMixin",
+    "LightFuryGlowLayerResourceMixin",
+    "BaseSaddleAndChestsLayerCacheMixin"
   ],
   "injectors": {
     "defaultRequire": 1
