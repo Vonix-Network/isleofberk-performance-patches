@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "network.vonix.isleofberkperformance.mixin",
+  "plugin": "network.vonix.isleofberkperformance.IsleOfBerkPerformanceMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
@@ -51,7 +52,8 @@
     "BaseSaddleAndChestsLayerCacheMixin",
     "IoBParticleRenderMixin",
     "ClientPacketHandlerClassMixin",
-    "ClientMessageTameParticlesDragonMixin"
+    "ClientMessageTameParticlesDragonMixin",
+    "PassengerLayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

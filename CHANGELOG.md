@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.3.4 — Variant Loader presence-gate successor
+
+- Successor to the delivered 1.3.3 JAR; the 1.3.3 artifact remains unchanged.
+- Changes the 13 overlapping dragon model-resource Mixin gate from exact-version-only to Variant Loader mod presence, so those Mixins are skipped for any detected `iobvariantloader` version.
+- Widens the optional `iobvariantloader` dependency metadata to `[1.0.0,)` so arbitrary present versions can load and be detected by the runtime gate.
+- Keeps the optional passenger-render guard separately fail-closed behind client side, exact Variant Loader 2.7.0 metadata, the exact `PassengerLayer.class` fingerprint, and the exact static method descriptor.
+- Updates deterministic fixtures, packaged metadata, build descriptions, and installation documentation to match the presence-based policy.
+- No new Variant Loader resource-selection override, gameplay, AI cadence, combat, RNG, networking, worldgen, or quantitative performance claim.
+
+## 1.3.3 — Variant Loader gate hardening
+
+- Preserves the verified 1.3.2 combined artifact scope and frozen R4/1.3 performance work.
+- Skips the 13 overlapping dragon model-resource Mixins only for exact Variant Loader 2.7.0 metadata; mismatched, malformed, unavailable, or absent metadata leaves those Mixins enabled.
+- Adds an exact `PassengerLayer.class` fingerprint with class-name, method-name, descriptor, and static-method checks before enabling the optional passenger guard.
+- Any target fingerprint failure disables only the optional passenger guard instead of allowing a late render-time injection failure.
+- Adds deterministic positive and negative gate fixtures and runs the plugin fixture through Gradle `check`.
+- Keeps the riderless-only empty-passenger cancellation and the original non-empty passenger path unchanged.
+- No new Variant Loader selection/cache implementation, gameplay, AI cadence, combat, RNG, networking, worldgen, or quantitative performance claim.
+
+## 1.3.2 — Full combined performance-patches artifact
+
+- Combines the frozen R4/1.3 performance-patch scope with the optional Variant Loader 2.7.0 passenger-render guard in one JAR.
+- Adds one client-only `PassengerLayer.renderPassenger` `HEAD` cancellation for non-null empty passenger lists; non-empty passenger rendering remains on the original Variant Loader path.
+- Applies the passenger guard only for exact Variant Loader 2.7.0 client metadata and fails closed on absent, malformed, mismatched, or server-side conditions.
+- Preserves the existing 13-resource-Mixin overlap skip so Variant Loader remains authoritative for dynamic resource selection.
+- Fixes the prior 1.3.1 Mixin validation defect by keeping Mixin helper fields private.
+- The standalone render-companion JAR is not needed when this combined 1.3.2 artifact is installed.
+- No Deadlock Fix, gameplay, AI cadence, combat, RNG, networking, worldgen, or Variant Loader implementation changes are included.
+- No quantitative FPS, MSPT, RAM, or guaranteed performance claim is made.
+
 ## 1.3 — Targeted safe successor of remaining Vonix hot-path Mixins
 
 V1.3 is a successor candidate and a targeted safe port of remaining historical Vonix optimizations that can be expressed as narrow Mixins. It is not a complete Vonix port. No FPS, RAM, or MSPT percentage and no guaranteed performance are claimed.
@@ -29,6 +59,7 @@ V1.3 is a successor candidate and a targeted safe port of remaining historical V
 - Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain required separate dependencies.
 - The original Isle of Berk JAR remains required. This release does not replace or redistribute Isle of Berk.
 - The Isle of Berk Deadlock Fix remains a separate companion mod and is not included in this JAR.
+- When `iobvariantloader` is installed, the 13 overlapping dragon model-resource Mixins are skipped automatically so Variant Loader keeps resource selection. Those Mixins stay active when Variant Loader is absent, and when FML `LoadingModList` is null or lookup fails (fail closed). Glow, renderer, particle, packet, pathfinder, egg, saddle, and other non-overlapping Mixins are unchanged.
 
 ## 1.2.0 — Remaining verified client render-resource patches after 1.1
 

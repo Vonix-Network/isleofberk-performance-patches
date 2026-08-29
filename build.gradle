@@ -228,6 +228,8 @@ tasks.named('check').configure {
     dependsOn 'v13HotPathFixture'
     dependsOn 'v13BytecodeFixture'
     dependsOn 'mixinInventoryFixture'
+    dependsOn 'passengerRenderCompanionFixture'
+    dependsOn 'mixinPluginFixture'
 }
 
 tasks.register('boneCacheFixture', JavaExec) {
@@ -1005,6 +1007,21 @@ tasks.register('mixinInventoryFixture', JavaExec) {
     dependsOn 'canonicalizeReobfJar'
 }
 
+tasks.register('mixinPluginFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks exact Variant Loader overlap gating and PassengerLayer structural fingerprint behavior.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.MixinPluginFixture'
+    dependsOn testClasses
+}
+
+tasks.register('passengerRenderCompanionFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks the combined 1.3.4 Variant Loader presence and exact passenger-render gates.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.PassengerRenderCompanionFixture'
+    dependsOn testClasses
+}
 tasks.register('rendererBytecodeFixture', JavaExec) {
     group = 'verification'
     description = 'Checks pinned original renderer and fixed-resource model bytecode before applying client mixins.'
@@ -1013,6 +1030,7 @@ tasks.register('rendererBytecodeFixture', JavaExec) {
     args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
     dependsOn testClasses
 }
+
 
 tasks.register('gameplayBytecodeFixture', JavaExec) {
     group = 'verification'
