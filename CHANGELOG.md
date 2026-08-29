@@ -1,101 +1,104 @@
 # Changelog
 
-All notable changes to Isle of Berk Performance Patches are documented here. A release entry is not publication or deployment authority.
+## 1.3.4 — Variant Loader presence-gate successor
 
-## [Unreleased]
+- Successor to the delivered 1.3.3 JAR; the 1.3.3 artifact remains unchanged.
+- Changes the 13 overlapping dragon model-resource Mixin gate from exact-version-only to Variant Loader mod presence, so those Mixins are skipped for any detected `iobvariantloader` version.
+- Widens the optional `iobvariantloader` dependency metadata to `[1.0.0,)` so arbitrary present versions can load and be detected by the runtime gate.
+- Keeps the optional passenger-render guard separately fail-closed behind client side, exact Variant Loader 2.7.0 metadata, the exact `PassengerLayer.class` fingerprint, and the exact static method descriptor.
+- Updates deterministic fixtures, packaged metadata, build descriptions, and installation documentation to match the presence-based policy.
+- No new Variant Loader resource-selection override, gameplay, AI cadence, combat, RNG, networking, worldgen, or quantitative performance claim.
 
-No unreleased changes.
+## 1.3.3 — Variant Loader gate hardening
 
-## [1.0.1] — 2026-08-20
+- Preserves the verified 1.3.2 combined artifact scope and frozen R4/1.3 performance work.
+- Skips the 13 overlapping dragon model-resource Mixins only for exact Variant Loader 2.7.0 metadata; mismatched, malformed, unavailable, or absent metadata leaves those Mixins enabled.
+- Adds an exact `PassengerLayer.class` fingerprint with class-name, method-name, descriptor, and static-method checks before enabling the optional passenger guard.
+- Any target fingerprint failure disables only the optional passenger guard instead of allowing a late render-time injection failure.
+- Adds deterministic positive and negative gate fixtures and runs the plugin fixture through Gradle `check`.
+- Keeps the riderless-only empty-passenger cancellation and the original non-empty passenger path unchanged.
+- No new Variant Loader selection/cache implementation, gameplay, AI cadence, combat, RNG, networking, worldgen, or quantitative performance claim.
 
-Stable promotion of the performance-patch successor to published `1.0.0`.
+## 1.3.2 — Full combined performance-patches artifact
 
-### Included
+- Combines the frozen R4/1.3 performance-patch scope with the optional Variant Loader 2.7.0 passenger-render guard in one JAR.
+- Adds one client-only `PassengerLayer.renderPassenger` `HEAD` cancellation for non-null empty passenger lists; non-empty passenger rendering remains on the original Variant Loader path.
+- Applies the passenger guard only for exact Variant Loader 2.7.0 client metadata and fails closed on absent, malformed, mismatched, or server-side conditions.
+- Preserves the existing 13-resource-Mixin overlap skip so Variant Loader remains authoritative for dynamic resource selection.
+- Fixes the prior 1.3.1 Mixin validation defect by keeping Mixin helper fields private.
+- The standalone render-companion JAR is not needed when this combined 1.3.2 artifact is installed.
+- No Deadlock Fix, gameplay, AI cadence, combat, RNG, networking, worldgen, or Variant Loader implementation changes are included.
+- No quantitative FPS, MSPT, RAM, or guaranteed performance claim is made.
 
-- Added `AiMoveCadence` for one allow/deny decision at each pinned AI goal `tick()` HEAD. On a due tick, every intended gated call may run; on a skipped tick, all gated calls are suppressed. The first eligible request after a wrapped-goal start/restart runs immediately.
-- Added `PerformanceSettings` primitive snapshots. The AI enabled/interval tuple is published as one packed atomic snapshot; egg and ShockEffect intervals refresh on Forge config load/reload without calling `ForgeConfigSpec.get()` from active mixin hot paths.
-- Added deterministic re-arm behavior when effective AI settings change during a cooldown.
-- Preserved exact lifecycle ownership: cadence state resets at the `WrappedGoal` start/stop boundary, not through `canUse()` or target lifecycle methods.
-- Implemented the safe follow-goal lifecycle wave (`P01`): the existing per-goal `tailingDragons` map and active formation reads remain intact, while the inactive map is cleared at the exact follow-goal stop tail. No replacement map, entity/world cache, cross-tick cache, or active-tick pruning was added.
-- Retained twelve narrow client renderer argument-reuse mixins and eight fixed-resource egg-animation/projectile transformations.
-- Preserved Variant Loader-compatible dynamic dragon and egg model, texture, animation, and layer selection.
-- Added cadence, snapshot, lifecycle, mapping, dataflow, instrumented-goal, coexistence, packaging, identity, and performance-wave fixtures and gates.
-- Kept the published `1.0.0` predecessor artifact separate and unchanged.
+## 1.3 — Targeted safe successor of remaining Vonix hot-path Mixins
 
-### Deliberately deferred
+V1.3 is a successor candidate and a targeted safe port of remaining historical Vonix optimizations that can be expressed as narrow Mixins. It is not a complete Vonix port. No FPS, RAM, or MSPT percentage and no guaranteed performance are claimed.
 
-- `P02` scan-body rewrites for `ADragonBase.airSpaceMechanics()` and `ADragonBaseFlyingRideable.onGroundMechanics()` remain deferred because no exact fail-closed whole-method transformation was proven.
-- Heightmap/navigation allocation removal in `DragonFollowPlayerFlying.tick()` remains deferred; formation semantics remain unchanged.
-- `BaseLinearFlightProjectile` collision, predicate, explosion, deletion, damage, and block-griefing paths remain untouched.
-- `MessageDragonFlapSounds` packet allocation/handler changes remain deferred; decode, enqueue, and packet-handled behavior are unchanged.
-- No changes were made to damage, combat, target selection, RNG order, progression, networking or packet formats, spawning, world generation, pathfinder algorithms, deadlock/chunk-access safety, projectile scratch state, or dynamic variant resource selection.
-- No Isle of Berk classes or resources are bundled. Deadlock Fix and Threaded Horizons remain separate artifacts.
+### Added
 
-### Release verification
+- Added per-instance `Vector3f` corner reuse and camera-position lookup reuse on the seven Isle of Berk particle `render` methods (`FireBolt`, `FireCoat`, `Flame`, `FuryBolt`, `Gas`, `SkrillLightning`, `SkrillSkill`) without cancelling or overwriting render.
+- Added `FlyNodeEvaluator` neighbor `EnumMap` reuse with a guarded fresh-map fallback for mismatched scratch acquisition, and skipped the redundant second `MutableBlockPos.set` in `getBlockPathType`.
+- Added client packet-handler lookup reuse for `Minecraft.getInstance()`, entity lookup, and the Skrill particle option in `ClientPacketHandlerClass.handleSpawnShockParticles`.
+- Added `ClientMessageTameParticlesDragon.spawnTamingParticles` `getRandom()` lookup reuse. `nextGaussian` consumption stays in the original loop.
+- Added deterministic fixtures for scratch reuse/fallback, original-jar Redirect-site counts, and mixin inventory (every declared mixin has a class; every mixin class is packaged).
 
-- Exact compatibility cell: Minecraft 1.18.2, Forge 40.3.x, Java 17, Isle of Berk 1.2.0, GeckoLib 3.0.57.
-- Java 17 clean `check build` with the offline pinned dependency set, package audit, mapping fixtures, lifecycle fixtures, and companion-only scope checks.
-- Exact packaged Forge runtime gate recorded separately from source-set build evidence.
-- No universal RAM/MSPT/FPS percentage is asserted; workload-specific results vary by world, entity population, JVM, render settings, and configuration.
-- Artifact size and SHA-256 are recorded in `RELEASE-REPORT.md` and the GitHub release asset.
+### Explicitly deferred
 
-## [1.0.0] — 2026-08-15
+- Projectile explosion scratch `BlockPos`, lambda hoist, fire-placement, and other combat/state paths.
+- Egg tick local caching (the existing hatch-check cadence Mixin already owns `tick`) and egg `position()` inlining that cannot be expressed without method rewrite or recursive Redirect.
+- Layer render rewrites (`DragonHeldItemLayer`, `LayerDragonRider`) and egg-renderer `Minecraft.getInstance()` hoists that require overwriting `render`.
+- Math/interpolation method overwrites, `Util.toRadians` compile-time constants, and Catmull-Rom matrix inlining.
+- Dragon-base spawn-rule caching, deadlock-named scratch `BlockPos`, `distanceTo`→`distanceToSqr` (float vs double), stream-to-get(0) rewrites, and species ability/combat getter inlining.
+- AI target, taming, combat, cadence, and move-control method rewrites.
+- Network handle control-flow changes (`ClientMessageGuiDragon`, `ControlMessageTerribleTerrorAbility`).
+- Worldgen/spawn registration, item tooltip array allocation, ShockEffect `% 8`→`& 7` (conflicts with the configurable particle cadence Mixin), and the Nightmare fire-armor UV argument change (not equivalent).
 
-Stable promotion of the prior companion tree. This is the published GitHub Latest; earlier `0.3.x` tags remain immutable.
+### Compatibility and scope
 
-- Preserved Variant Loader-compatible dynamic dragon and egg resource selection.
-- Included the earlier renderer, fixed-resource, AI, egg, and ShockEffect companion transformations.
-- Forge compile pin remained `40.3.0`; accepted Forge range remained `[40.3.0,40.4.0)` for live 1.18.2 Forge 40.3.x, including 40.3.12.
-- Supported Minecraft 1.18.2, Forge 40.3.x, Isle of Berk 1.2.0, GeckoLib 3.0.57, and Java 17.
-- Kept Deadlock Fix separate and did not redistribute Isle of Berk classes.
-- Artifact: 32,865 bytes, SHA-256 `15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2`.
-- No quantitative MSPT/FPS claim.
+- Minecraft 1.18.2, Forge 40.3.x, Java 17.
+- Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain required separate dependencies.
+- The original Isle of Berk JAR remains required. This release does not replace or redistribute Isle of Berk.
+- The Isle of Berk Deadlock Fix remains a separate companion mod and is not included in this JAR.
+- When `iobvariantloader` is installed, the 13 overlapping dragon model-resource Mixins are skipped automatically so Variant Loader keeps resource selection. Those Mixins stay active when Variant Loader is absent, and when FML `LoadingModList` is null or lookup fails (fail closed). Glow, renderer, particle, packet, pathfinder, egg, saddle, and other non-overlapping Mixins are unchanged.
 
-## [0.3.1-rc.3] — 2026-08-14
+## 1.2.0 — Remaining verified client render-resource patches after 1.1
 
-Release candidate.
+### Added
 
-- Removed stock dragon `getModelLocation` / `getAnimationFileLocation` cancellations and did not pin dragon textures, allowing Variant Loader and variant packs to remap dynamic resources.
-- Removed egg `getModelLocation` cancellation so Variant Loader can remap egg geo/texture; egg animation remains a fixed constructor resource.
-- Retained twelve renderer `getRenderType` argument-reuse mixins and the FireBolt/FuryBolt constructor-constant projectile mixins.
-- Renderer fixtures covered twelve renderers and eight remaining fixed-resource methods and rejected reintroduction of dynamic dragon/egg resource cancellations.
-- No runtime client retest of exploded variants was claimed. No MSPT/FPS claim.
+- Attempt FPS Improvment With multiple dragons in view.
+- Added bounded static `ResourceLocation` reuse for the remaining Deadly Nadder, Gronckle, Light Fury, Monstrous Nightmare, Night Fury, Night Light, Skrill, Speed Stinger, Speed Stinger Leader, Stinger, Terrible Terror, Triple Stryke, and Zippleback model families.
+- Added bounded static glow-resource reuse for Night Fury and Light Fury glow layers.
+- Added per-layer saddle-resource reuse in `BaseSaddleAndChestsLayer` without replacing its render method.
+- Preserved the original model variant/titan-wing decision before the cache is consulted.
+- Preserved dynamic and unknown-resource fallback allocation rather than forcing unverified cache hits.
+- Added a deterministic render-resource cache fixture covering known-path identity reuse, non-Isle-of-Berk fallback, and dynamic-path fallback.
 
-## [0.3.1-rc.2] — 2026-08-14
+### Explicitly not included
 
-Release candidate.
+- Deadlock Fix behavior, chunk-generation guards, or Variant Loader changes.
+- Broad renderer-layer rewrites, particle-render method overwrites, or client packet-handler rewrites that cannot be proven as narrow companion Mixins without bundling upstream implementation code.
+- Historical FPS/RAM/MSPT percentage claims; no matched before/after benchmark is available.
 
-- Widened the declared Forge dependency from `[40.3.0,40.3.1)` to `[40.3.0,40.4.0)` so live 1.18.2 Forge 40.3.x, including 40.3.12, can load.
-- Compile pin remained Forge 40.3.0. This was a metadata compatibility fix, not a mixin/runtime rewrite.
+## 1.1.0 — 1.0 → 1.1
 
-## [0.3.1-rc.1] — 2026-08-13
+### Added
 
-Release candidate.
+- Added a guarded GeckoLib dragon-bone lookup index for Isle of Berk dragon models. The index validates the live bone list and falls back to GeckoLib's original lookup after list mutation or duplicate-name changes.
 
-- Pinned egg hatch-check and ShockEffect particle `ModifyConstant` injectors to verified ordinals; ShockEffect damage at 20 ticks remained untouched.
-- Hardened AI redirect counts to the pinned invoke counts: `moveTo` 1 and 5, `circleEntity` 2.
-- Reset AI counters from the exact `WrappedGoal` start/stop transition rather than `canUse()` or target lifecycle methods.
-- Added configuration, mapping, lifecycle, and renderer/resource fixtures.
-- Canonicalized ZIP timestamps and supported timestamp extra fields for deterministic reobfuscated JAR output.
-- This was an unpublished candidate and did not authorize publication or live-server deployment.
+### Retained from 1.0
 
-## [0.3.0] — 2026-08-13
+- Configurable flight/follow AI movement-request throttling.
+- Configurable egg hatch-check cadence.
+- Configurable ShockEffect particle cadence; ShockEffect damage remains on its original cadence.
+- Narrow client renderer argument reuse.
+- Fixed-resource egg-animation and projectile transformations.
+- Variant-compatible dynamic dragon and egg model/resource selection.
 
-- Added Forge COMMON configuration at `config/isleofberkperformance.toml`.
-- Added configurable AI movement-request throttling for three exact flight/follow goals.
-- Added configurable egg hatch-check cadence and ShockEffect particle cadence; ShockEffect damage cadence remained fixed at 20 ticks.
-- Added twelve narrow client renderer argument-reuse transformations and the earlier fixed-resource model/egg/projectile transformations.
-- Kept the companion-only packaging boundary and explicit gameplay/safety exclusions.
+### Compatibility and scope
 
-## [0.2.0]
-
-- Added the narrow renderer and fixed-resource optimization wave later promoted into the `0.3.0` companion.
-
-## [0.1.2] — 2026-08-12
-
-- Published the earlier partial companion release. It remains immutable and is superseded by `0.3.0`.
-
-[1.0.1]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.0.1
-[1.0.0]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.0.0
-[0.3.0]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.3.0
-[0.1.2]: https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v0.1.2
+- Minecraft 1.18.2, Forge 40.3.x, Java 17.
+- Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain required separate dependencies.
+- The original Isle of Berk JAR remains required. This release does not replace or redistribute Isle of Berk.
+- The Isle of Berk Deadlock Fix remains a separate companion mod and is not included in this JAR.
+- No changes to combat rules, damage cadence, target selection, network protocol, or dynamic model selection.
+- No universal FPS, MSPT, RAM, or gameplay percentage is promised; results vary by workload.

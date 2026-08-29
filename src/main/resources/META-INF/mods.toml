@@ -11,10 +11,14 @@ displayTest="MATCH_VERSION"
 description='''
 Standalone Forge Mixin companion for Isle of Berk 1.2.0.
 This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
-isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
-include or replace the separate isleofberkdeadlockfix companion. Install that
-deadlock-fix JAR only if you want it, as its own optional mod.
-Applies exact client renderer/fixed-resource transformations plus documented configurable AI, egg, and shock visual cadence controls.
+isleofberk-1.2.0.jar installed. It does not bundle IoB classes or resources.
+V1.3.4 preserves the verified R4 performance work and the optional,
+client-only Variant Loader 2.7.0 passenger-render guard. The 13 overlapping
+model-resource Mixins are skipped whenever Variant Loader is present, regardless of declared version.
+The passenger guard additionally requires the exact PassengerLayer.class
+fingerprint and static renderPassenger descriptor; any fingerprint failure
+disables only that optional guard. Non-empty passenger rendering remains
+unchanged. The Isle of Berk Deadlock Fix remains a separate companion.
 '''
 authors="Vonix-Network"
 
@@ -47,3 +51,13 @@ mandatory=true
 versionRange="[3.0.57,3.0.58)"
 ordering="AFTER"
 side="BOTH"
+
+# Optional Variant Loader presence integration. The 13 overlap Mixins are
+# skipped for any present version; the passenger Mixin remains exact-gated.
+[[dependencies.isleofberkperformance]]
+modId="iobvariantloader"
+mandatory=false
+versionRange="[1.0.0,)"
+ordering="AFTER"
+side="CLIENT"
+

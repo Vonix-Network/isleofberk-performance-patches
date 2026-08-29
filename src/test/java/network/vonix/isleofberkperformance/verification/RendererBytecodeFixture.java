@@ -10,8 +10,9 @@ import java.util.List;
 
 /**
  * Exact bytecode gate for renderer substitutions and remaining constructor-constant
- * resource methods. Dragon geo/anim/texture lookups and egg geo/texture lookups are
- * remapped by Variant Loader and must not be treated as fixed resources.
+ * resource methods. Dragon renderer geo/anim/texture lookups remain untouched by
+ * cancellation/overwrite hooks; bounded constructor redirects may reuse fixed paths
+ * after the original model has selected them.
  */
 public final class RendererBytecodeFixture {
     private static final List<String> RENDERERS = List.of(
@@ -106,14 +107,23 @@ public final class RendererBytecodeFixture {
                 if (!cancelsResource) {
                     continue;
                 }
-                require(!source.contains("entity.dragons."),
+                require(!source.contains("entity.dragons.") || isNarrowResourceRedirect(source),
                         path.getFileName() + " must not cancel dragon geo/anim/texture lookups remapped by Variant Loader");
-                require(!source.contains("method = \"getModelLocation") || !source.contains("entity.eggs."),
+                require(!source.contains("method = \"getModelLocation") || !source.contains("entity.eggs.") || isNarrowResourceRedirect(source),
                         path.getFileName() + " must not cancel egg getModelLocation remapped by Variant Loader");
-                require(!source.contains("method = \"getTextureLocation") || !source.contains("entity.eggs."),
+                require(!source.contains("method = \"getTextureLocation") || !source.contains("entity.eggs.") || isNarrowResourceRedirect(source),
                         path.getFileName() + " must not cancel egg getTextureLocation remapped by Variant Loader");
             }
         }
+    }
+
+    private static boolean isNarrowResourceRedirect(String source) {
+        return source.contains("@Redirect")
+                && source.contains("RenderResourceCache")
+                && !source.contains("@Inject")
+                && !source.contains("@Overwrite")
+                && !source.contains("cancellable = true")
+                && !source.contains("setReturnValue");
     }
 
     private static FixedResource fixed(String owner, String method, String parameter, String path) {

@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "network.vonix.isleofberkperformance.mixin",
+  "plugin": "network.vonix.isleofberkperformance.IsleOfBerkPerformanceMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
@@ -11,7 +12,8 @@
     "UntamedDragonCircleFlightGoalMixin",
     "DragonFollowPlayerFlyingMixin",
     "ADragonEggBaseMixin",
-    "ShockEffectMixin"
+    "ShockEffectMixin",
+    "FlyNodeEvaluatorMixin"
   ],
   "client": [
     "GronckleRenderMixin",
@@ -30,7 +32,28 @@
     "FuryBoltModelMixin",
     "SmallEggModelMixin",
     "MediumEggModelMixin",
-    "LargeEggModelMixin"
+    "LargeEggModelMixin",
+    "AnimationProcessorBoneCacheMixin",
+    "GronckleModelResourceMixin",
+    "TripleStrykeModelResourceMixin",
+    "TerribleTerrorModelResourceMixin",
+    "StingerModelResourceMixin",
+    "LightFuryModelResourceMixin",
+    "DeadlyNadderModelResourceMixin",
+    "MonstrousNightmareModelResourceMixin",
+    "NightFuryModelResourceMixin",
+    "NightLightModelResourceMixin",
+    "SkrillModelResourceMixin",
+    "SpeedStingerModelResourceMixin",
+    "SpeedStingerLeaderModelResourceMixin",
+    "ZippleBackModelResourceMixin",
+    "NightFuryGlowLayerResourceMixin",
+    "LightFuryGlowLayerResourceMixin",
+    "BaseSaddleAndChestsLayerCacheMixin",
+    "IoBParticleRenderMixin",
+    "ClientPacketHandlerClassMixin",
+    "ClientMessageTameParticlesDragonMixin",
+    "PassengerLayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
