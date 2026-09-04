@@ -230,6 +230,7 @@ tasks.named('check').configure {
     dependsOn 'mixinInventoryFixture'
     dependsOn 'passengerRenderCompanionFixture'
     dependsOn 'mixinPluginFixture'
+    dependsOn 'structureManagerCacheFixture'
 }
 
 tasks.register('boneCacheFixture', JavaExec) {
@@ -309,7 +310,8 @@ tasks.register('configFixture') {
                 ai_move_throttling_enabled: extractSpecDefault(spec, 'define("ai_move_throttling_enabled"', 'true'),
                 ai_move_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("ai_move_interval_ticks"', '4'),
                 egg_hatch_check_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("egg_hatch_check_interval_ticks"', '20'),
-                shock_particle_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("shock_particle_interval_ticks"', '8')
+                shock_particle_interval_ticks: extractSpecRangeDefault(spec, 'defineInRange("shock_particle_interval_ticks"', '8'),
+                structure_cache_max_entries: extractSpecRangeDefault(spec, 'defineInRange("structure_cache_max_entries"', '512')
         ]
         expected.each { key, value ->
             def assignment = "${key} = ${value}"
@@ -325,6 +327,9 @@ tasks.register('configFixture') {
             if (!text.contains(required)) {
                 throw new GradleException("configFixture: required text missing: ${required}")
             }
+        }
+        if (!spec.contains('defineInRange("structure_cache_max_entries", 512, 64, 4096)')) {
+            throw new GradleException('configFixture: structure cache default/range declaration mismatch')
         }
         logger.lifecycle("configFixture: PASS (COMMON keys match PerformanceConfig.SPEC defaults ${expected})")
     }
@@ -1012,6 +1017,14 @@ tasks.register('mixinPluginFixture', JavaExec) {
     description = 'Checks exact Variant Loader overlap gating and PassengerLayer structural fingerprint behavior.'
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'network.vonix.isleofberkperformance.verification.MixinPluginFixture'
+    dependsOn testClasses
+}
+
+tasks.register('structureManagerCacheFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks the server-only bounded StructureManager cache candidate contract.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.StructureManagerCacheFixture'
     dependsOn testClasses
 }
 

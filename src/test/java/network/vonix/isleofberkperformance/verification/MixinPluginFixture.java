@@ -23,6 +23,7 @@ public final class MixinPluginFixture {
     private static final String PLUGIN_CLASS =
             "network.vonix.isleofberkperformance.IsleOfBerkPerformanceMixinPlugin";
     private static final String PASSENGER_MIXIN = "PassengerLayerMixin";
+    private static final String STRUCTURE_CACHE_MIXIN = "StructureManagerCacheMixin";
 
     private static final Set<String> EXPECTED_OVERLAP = Set.of(
             "GronckleModelResourceMixin",
@@ -69,6 +70,8 @@ public final class MixinPluginFixture {
                 "plugin must retain exact Variant Loader 2.7.0 gating");
         require(IsleOfBerkPerformanceMixinPlugin.PASSENGER_LAYER_TARGET_DESCRIPTOR.contains("GeoEntityRenderer"),
                 "passenger target descriptor must remain explicit");
+        require(IsleOfBerkPerformanceMixinPlugin.isStructureManagerCacheMixin(STRUCTURE_CACHE_MIXIN),
+                "structure cache mixin name must remain explicit");
 
         Class<?> pluginType = Class.forName(PLUGIN_CLASS);
         require(IMixinConfigPlugin.class.isAssignableFrom(pluginType),
@@ -102,7 +105,7 @@ public final class MixinPluginFixture {
         for (String name : declared) {
             boolean applyWithoutLoader = IsleOfBerkPerformanceMixinPlugin.shouldApplyMixin(
                     name, false, IsleOfBerkPerformanceMixinPlugin.VariantLoaderMatch.ABSENT, false);
-            require(applyWithoutLoader || PASSENGER_MIXIN.equals(name),
+            require(applyWithoutLoader || PASSENGER_MIXIN.equals(name) || STRUCTURE_CACHE_MIXIN.equals(name),
                     "ordinary declared mixins must apply without Variant Loader: " + name);
             boolean applyWithExactLoader = IsleOfBerkPerformanceMixinPlugin.shouldApplyMixin(
                     name, true, IsleOfBerkPerformanceMixinPlugin.VariantLoaderMatch.EXACT_2_7_0, false);
@@ -110,6 +113,8 @@ public final class MixinPluginFixture {
                 require(!applyWithExactLoader, "declared overlap mixin was not skipped: " + name);
             } else if (PASSENGER_MIXIN.equals(name)) {
                 require(!applyWithExactLoader, "passenger guard must remain off without fingerprint: " + name);
+            } else if (STRUCTURE_CACHE_MIXIN.equals(name)) {
+                require(!applyWithExactLoader, "structure cache candidate must remain server-only: " + name);
             } else {
                 require(applyWithExactLoader, "non-overlap mixin must remain active with Variant Loader: " + name);
             }
@@ -135,6 +140,14 @@ public final class MixinPluginFixture {
                         PASSENGER_MIXIN, true,
                         IsleOfBerkPerformanceMixinPlugin.VariantLoaderMatch.MALFORMED, true),
                 "passenger guard must fail closed for malformed metadata");
+        require(IsleOfBerkPerformanceMixinPlugin.shouldApplyMixin(
+                        STRUCTURE_CACHE_MIXIN, false,
+                        IsleOfBerkPerformanceMixinPlugin.VariantLoaderMatch.ABSENT, false),
+                "structure cache candidate must apply on the dedicated-server side");
+        require(!IsleOfBerkPerformanceMixinPlugin.shouldApplyMixin(
+                        STRUCTURE_CACHE_MIXIN, true,
+                        IsleOfBerkPerformanceMixinPlugin.VariantLoaderMatch.ABSENT, false),
+                "structure cache candidate must remain off on the client side");
 
         require(IsleOfBerkPerformanceMixinPlugin.hasPassengerLayerMethodShape(
                         syntheticPassengerClass(true, IsleOfBerkPerformanceMixinPlugin.PASSENGER_LAYER_TARGET_DESCRIPTOR)),

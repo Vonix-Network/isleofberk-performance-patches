@@ -12,7 +12,7 @@ description='''
 Standalone Forge Mixin companion for Isle of Berk 1.2.0.
 This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
 isleofberk-1.2.0.jar installed. It does not bundle IoB classes or resources.
-V1.3.4 preserves the verified R4 performance work and the optional,
+V1.3.7 preserves the verified R4 performance work and the optional,
 client-only Variant Loader 2.7.0 passenger-render guard. The 13 overlapping
 model-resource Mixins are skipped whenever Variant Loader is present, regardless of declared version.
 The passenger guard additionally requires the exact PassengerLayer.class

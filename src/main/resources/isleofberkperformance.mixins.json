@@ -13,7 +13,8 @@
     "DragonFollowPlayerFlyingMixin",
     "ADragonEggBaseMixin",
     "ShockEffectMixin",
-    "FlyNodeEvaluatorMixin"
+    "FlyNodeEvaluatorMixin",
+    "StructureManagerCacheMixin"
   ],
   "client": [
     "GronckleRenderMixin",

@@ -153,7 +153,7 @@ public final class AiMoveCadenceFixture {
         require(cadence.gateBoolean(true) == true, "re-enable first request must run");
 
         // PerformanceSettings.overwrite publishes a coherent AI tuple and egg/shock primitives.
-        PerformanceSettings.overwrite(false, 9, 11, 13);
+        PerformanceSettings.overwrite(false, 9, 11, 13, 512);
         long after = PerformanceSettings.aiMoveSnapshot();
         require(!PerformanceSettings.aiMoveThrottlingEnabled(after), "overwrite must publish enabled=false");
         require(PerformanceSettings.aiMoveIntervalTicks(after) == 9, "overwrite must publish interval=9");
@@ -162,7 +162,7 @@ public final class AiMoveCadenceFixture {
         require(PerformanceSettings.eggHatchCheckIntervalTicks() == 11, "egg snapshot must update");
         require(PerformanceSettings.shockParticleIntervalTicks() == 13, "shock snapshot must update");
         // Restore defaults used elsewhere.
-        PerformanceSettings.overwrite(true, 4, 20, 8);
+        PerformanceSettings.overwrite(true, 4, 20, 8, 512);
         long restored = PerformanceSettings.aiMoveSnapshot();
         require(PerformanceSettings.aiMoveThrottlingEnabled(restored), "defaults restored enabled");
         require(PerformanceSettings.aiMoveIntervalTicks(restored) == 4, "defaults restored interval");

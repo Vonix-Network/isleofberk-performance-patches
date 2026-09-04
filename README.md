@@ -1,90 +1,107 @@
-# Isle of Berk Performance Patches 1.3.4
+# Isle of Berk Performance Patches
+
+[![Latest stable release](https://img.shields.io/github/v/release/Vonix-Network/isleofberk-performance-patches?label=latest%20stable)](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.3.4)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.18.2-62b47a)](https://www.minecraft.net/)
+[![Forge](https://img.shields.io/badge/Forge-40.3.x-orange)](https://files.minecraftforge.net/net/minecraftforge/forge/)
+[![Java](https://img.shields.io/badge/Java-17-red)](https://adoptium.net/)
 
 A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.18.2**.
 
-> This is a performance companion, not a fork or replacement. Install the original `isleofberk-1.2.0.jar`, GeckoLib 3.0.57, and Variant Loader separately. The Deadlock Fix mod is a separate companion and is not included here. This JAR does not redistribute upstream implementation classes or resources.
+> **Companion, not replacement.** Keep the original `isleofberk-1.2.0.jar` and GeckoLib Forge `3.0.57` installed. This project does not redistribute Isle of Berk or GeckoLib classes/resources and does not include the separate Isle of Berk Deadlock Fix mod.
 
-Version 1.3.4 is the successor to the delivered 1.3.3 JAR. It preserves the frozen R4/1.3 work and the exact Variant Loader 2.7.0 passenger-render optimization, while making the 13 overlapping resource-Mixin gate presence-based for all Variant Loader versions and widening the optional dependency metadata accordingly. The standalone render-companion JAR is not required when using this combined artifact.
+## Current public status
+
+This repository's `main` source snapshot tracks the **1.3.7 development candidate**. It is public source status, not a release announcement:
+
+- Latest tagged stable release: **v1.3.4**, published August 29, 2026.
+- 1.3.5, 1.3.6, and 1.3.7 are unpublished candidate iterations for the StructureManager cache work.
+- The 1.3.7 candidate artifact is **85,892 bytes**, SHA-256 `389d6576ad09bca8406af889f470903ad6af93a9b4fa0aa3c61a8eb8f7d29acf`.
+- The live Isle of Berk server was observed running the 1.3.7 JAR on September 4, 2026. Early memory readings were below the earlier high-water mark, but the post-restart window was short and matched performance/heap evidence is not available.
+- Do not interpret the 1.3.7 source snapshot as accepted, released, deployed, or proven to fix a memory leak.
+
+See [STATUS.md](STATUS.md) for the evidence-bound public status and [CHANGELOG.md](CHANGELOG.md) for the complete version history.
 
 ## Compatibility
 
-- Minecraft 1.18.2
-- Forge 40.3.x; compiled against 40.3.0
-- Isle of Berk exactly 1.2.0
-- GeckoLib 3.0.57
-- Java 17 target; the V1.3 build and verification gates run under JDK 17
-- Variant Loader (`iobvariantloader`): the 13 dragon model-resource Mixins are skipped whenever Variant Loader is present, regardless of declared version. The passenger-render guard additionally requires exact 2.7.0 metadata, the exact 2.7.0 `PassengerLayer.class` fingerprint, and physical-client side. With Variant Loader absent, the 13 overlapping resource Mixins remain enabled; malformed or unavailable loader state fails closed for the optional passenger guard. All other V1.3 Mixins remain active.
+- Minecraft `1.18.2`
+- Forge `40.3.x`; compiled against `40.3.0`; accepted metadata range `[40.3.0,40.4.0)`
+- Isle of Berk exactly `1.2.0`; dependency range `[1.2.0,1.2.0.1)`
+- GeckoLib Forge `3.0.57`; dependency range `[3.0.57,3.0.58)`
+- Java `17`
+- Optional Variant Loader integration; the 13 overlapping model-resource Mixins are skipped whenever `iobvariantloader` is present, while the passenger-render guard remains exact-gated to the validated 2.7.0 target and physical client side
 
-Install the same V1.3 performance-patch JAR on both client and server for multiplayer. Client rendering mixins are client-only; common performance mixins load on both sides. Install it on the client for the render-resource changes to affect client rendering.
+Install the same performance-patch version on both client and server for multiplayer. Client renderer/resource Mixins affect client rendering only.
 
-## 1.3.4 compatibility successor
+## Included patch families
 
-- Preserves the delivered 1.3.3 artifact scope without adding speculative Variant Loader behavior.
-- Skips the 13 overlapping dragon model-resource Mixins whenever Variant Loader is present, regardless of declared version; absent Variant Loader keeps those Mixins on the original path.
-- Widens the optional `iobvariantloader` dependency range to `[1.0.0,)` so arbitrary present versions can load and be detected by the runtime gate.
-- Requires an exact `PassengerLayer.class` bytecode fingerprint, class name, method name, descriptor, and static method shape before enabling the optional passenger guard. Any fingerprint failure disables only that guard.
-- Adds deterministic positive and negative gate fixtures and includes the plugin fixture in the Gradle `check` graph.
-- Keeps the riderless-only early return and the complete non-empty passenger path unchanged.
-- Does not add model/resource cache duplication, Variant Loader selection overrides, renderer call-site bypasses, gameplay changes, or quantitative performance claims.
+The current source carries the verified companion work from the earlier release line:
 
-## 1.3.2 combined update
+- Configurable flight/follow AI movement-request cadence with exact `WrappedGoal` lifecycle reset.
+- Configurable egg hatch-check cadence and ShockEffect particle cadence; ShockEffect damage remains on its original 20-tick cadence.
+- Guarded GeckoLib dragon-bone lookup reuse with mutation/duplicate fallback.
+- Narrow renderer argument/resource reuse for fixed Isle of Berk paths.
+- Per-instance particle scratch reuse and camera-position lookup reuse.
+- Pathfinder neighbor-map scratch reuse and removal of one redundant position write.
+- Client packet-handler lookup reuse without changing packet order or RNG consumption.
+- Variant Loader presence-aware resource-overlap gating and exact passenger-render compatibility gating.
+- Server-only StructureManager parsed-template cache replacement using a bounded Guava `softValues()` map, applied after the normal higher-priority replacement path.
 
-- Retains the complete frozen R4/1.3 performance-patch scope: AI/lifecycle, GeckoLib bone lookup, renderer/resource reuse, glow/saddle/resource handling, particle scratch reuse, pathfinder scratch reuse, and client lookup reuse.
-- Adds the optional client-only Variant Loader 2.7.0 `PassengerLayer.renderPassenger` guard. Empty passenger lists return before passenger rendering work; non-empty passenger paths remain unchanged.
-- Keeps the 13 overlapping Variant Loader model-resource Mixins disabled when Variant Loader is present, so Variant Loader remains authoritative for dynamic resource selection.
-- Adds exact Variant Loader metadata/version and physical-client gating; absent, malformed, mismatched, or server-side conditions fail closed.
-- Fixes the earlier 1.3.1 Mixin validation issue by keeping Mixin helper fields private.
-- No Deadlock Fix behavior, gameplay, AI cadence, combat, RNG, networking, worldgen, or Variant Loader implementation changes are included.
+## 1.3.7 StructureManager candidate
 
-## 1.2 → 1.3
+The candidate adds the COMMON setting `structure_cache_max_entries`:
 
-- Adds per-instance particle-render `Vector3f` corner reuse and camera-position lookup reuse for the seven Isle of Berk particle families, without replacing `render`.
-- Adds `FlyNodeEvaluator` neighbor `EnumMap` reuse and skips the redundant second `MutableBlockPos.set`.
-- Adds client packet-handler lookup reuse for Minecraft/entity/particle-option lookups and tame-particle `getRandom()`.
-- Keeps original call order, return values, RNG consumption, and client/common side separation on every implemented path.
-- Remaining historical families that need method overwrite, combat/target/cadence/network/worldgen changes, or unsafe mutable aliasing stay deferred.
+- Default: `512`
+- Inclusive range: `64..4096`
+- Values are clamped in reload-correct primitive snapshots.
+- The cache remains soft-valued so the JVM can reclaim templates under memory pressure.
+- The setting is read when `StructureManager` is constructed; changes require a restart.
+- This is a bounded memory/performance experiment. It does not modify Lootr persistence, world data, structure definitions, Threaded Horizons, or third-party JARs.
 
-## 1.1 → 1.2
-
-- Attempt FPS Improvment With multiple dragons in view.
-- Adds bounded static `ResourceLocation` reuse for the remaining Deadly Nadder, Gronckle, Light Fury, Monstrous Nightmare, Night Fury, Night Light, Skrill, Speed Stinger, Speed Stinger Leader, Stinger, Terrible Terror, Triple Stryke, and Zippleback model families.
-- Adds bounded static glow-resource reuse for Night Fury and Light Fury glow layers.
-- Adds per-layer saddle-resource reuse without replacing the layer render method.
-- Keeps the original variant/titan-wing selection logic authoritative; the cache is consulted only after a path is selected.
-- Preserves dynamic and unknown-resource fallback behavior.
-- Includes a deterministic fixture for known-path reuse and fallback preservation.
-
-## Remaining historical work deliberately deferred
-
-The old full Vonix edition documented additional renderer-layer, rider/held-item, projectile-explosion, dragon-base, species, AI/combat, math-overwrite, and worldgen changes. They remain excluded from this companion where a narrow, activation-verified Mixin would require broad upstream method replacement or could alter hidden state, timing, RNG, combat, networking, or worldgen semantics. No historical allocation estimate or FPS/RAM/MSPT percentage is claimed as a current measurement.
-
-## Scope boundary
-
-- No Deadlock Fix behavior, chunk-generation guards, or Variant Loader changes.
-- No changes to combat rules, target selection, network protocol, or dynamic model selection.
-- No universal FPS, MSPT, RAM, or gameplay percentage is promised; results vary by workload, entity count, render distance, particles, shaders, and hardware.
+A larger bound may reduce reparsing but can retain more cache entries. A smaller bound can increase parsing and I/O. No universal RAM, MSPT, FPS, or leak-resolution result is promised.
 
 ## Installation
 
-1. Install Forge 40.3.x for Minecraft 1.18.2.
-2. Install the original Isle of Berk 1.2.0 JAR.
-3. Install GeckoLib Forge 3.0.57.
-4. Install `isleof-berk-performance-patches-1.3.4.jar`.
-5. If using Variant Loader, install it separately; do not also install the standalone render-companion JAR because this combined artifact already contains the exact-gated passenger guard.
-6. If you need deadlock protection, install the separately released Deadlock Fix mod as its own companion.
-7. Install the same performance-patch version on both client and server for multiplayer.
+1. Install Forge `40.3.x` for Minecraft `1.18.2`.
+2. Install the original `isleofberk-1.2.0.jar`.
+3. Install GeckoLib Forge `3.0.57`.
+4. Install the same performance-patch JAR on both client and server for multiplayer.
+5. If using Variant Loader, install it separately. Do not install a separate render companion when using a combined performance-patch artifact.
+6. If deadlock protection is required, install the separately released Isle of Berk Deadlock Fix mod.
+7. Start once to generate `config/isleofberkperformance.toml`, then review the documented tradeoffs before changing cadence or cache settings.
 
 ## Configuration
 
-The generated `config/isleofberkperformance.toml` controls the inherited cadence options:
+The generated `config/isleofberkperformance.toml` contains:
 
 - `ai_move_throttling_enabled`
 - `ai_move_interval_ticks`
 - `egg_hatch_check_interval_ticks`
 - `shock_particle_interval_ticks`
+- `structure_cache_max_entries`
 
-Changing cadence values intentionally changes timing or visual density; lower intervals perform more work.
+Cadence values intentionally affect timing or visual density. The structure-cache value affects only the in-memory cache bound and takes effect after restart.
+
+## Verification and scope
+
+The source includes deterministic Gradle fixtures for mapping, lifecycle, packaging, Mixin inventory, Variant Loader gates, hot-path contracts, and the StructureManager cache contract. The 1.3.7 candidate packet recorded a passing clean `check build` and packaged JAR audit.
+
+The following remain separate gates and are not claimed here:
+
+- Matched production workload A/B testing.
+- Fresh heap dominator or GC-root evidence.
+- A long normal-player soak with post-restart baseline comparison.
+- Full-pack packaged dedicated-server boot for this exact candidate run.
+- Client launch/render-path validation.
+- CurseForge publication or live deployment.
+
+## Links
+
+- [Public status](STATUS.md)
+- [Changelog](CHANGELOG.md)
+- [Latest stable release: v1.3.4](https://github.com/Vonix-Network/isleofberk-performance-patches/releases/tag/v1.3.4)
+- [GitHub releases](https://github.com/Vonix-Network/isleofberk-performance-patches/releases)
+- [Issue tracker](https://github.com/Vonix-Network/isleofberk-performance-patches/issues)
 
 ## License and provenance
 
-The Vonix-owned performance-companion source and metadata are MIT licensed. Isle of Berk, GeckoLib, and the separate Deadlock Fix mod remain separate dependencies. This repository does not redistribute those dependency JARs.
+Vonix-owned companion source and metadata are MIT licensed. Isle of Berk, GeckoLib, Variant Loader, and the separate Deadlock Fix mod remain separate dependencies. This repository does not redistribute those dependency JARs.

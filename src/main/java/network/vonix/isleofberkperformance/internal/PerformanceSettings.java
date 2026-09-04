@@ -15,11 +15,14 @@ public final class PerformanceSettings {
     private static final int AI_INTERVAL_MAX = 20;
     private static final int CADENCE_MIN = 1;
     private static final int CADENCE_MAX = 200;
+    private static final int STRUCTURE_CACHE_MIN = 64;
+    private static final int STRUCTURE_CACHE_MAX = 4096;
 
     /** Packed AI tuple: interval in the high 32 bits, enabled flag in bit 0. */
     private static volatile long aiMoveSnapshot = packAiMove(true, 4);
     private static volatile int eggHatchCheckIntervalTicks = 20;
     private static volatile int shockParticleIntervalTicks = 8;
+    private static volatile int structureCacheMaxEntries = 512;
 
     private PerformanceSettings() {}
 
@@ -27,13 +30,15 @@ public final class PerformanceSettings {
             boolean throttlingEnabled,
             int aiIntervalTicks,
             int eggIntervalTicks,
-            int shockIntervalTicks
+            int shockIntervalTicks,
+            int structureCacheEntries
     ) {
         int clampedAi = clamp(aiIntervalTicks, AI_INTERVAL_MIN, AI_INTERVAL_MAX);
         // Single volatile write publishes the coherent AI enabled/interval tuple.
         aiMoveSnapshot = packAiMove(throttlingEnabled, clampedAi);
         eggHatchCheckIntervalTicks = clamp(eggIntervalTicks, CADENCE_MIN, CADENCE_MAX);
         shockParticleIntervalTicks = clamp(shockIntervalTicks, CADENCE_MIN, CADENCE_MAX);
+        structureCacheMaxEntries = clamp(structureCacheEntries, STRUCTURE_CACHE_MIN, STRUCTURE_CACHE_MAX);
     }
 
     /**
@@ -70,6 +75,10 @@ public final class PerformanceSettings {
 
     public static int shockParticleIntervalTicks() {
         return shockParticleIntervalTicks;
+    }
+
+    public static int structureCacheMaxEntries() {
+        return structureCacheMaxEntries;
     }
 
     private static int clamp(int value, int min, int max) {

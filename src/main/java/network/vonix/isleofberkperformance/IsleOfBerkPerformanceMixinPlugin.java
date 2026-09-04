@@ -32,6 +32,7 @@ public final class IsleOfBerkPerformanceMixinPlugin implements IMixinConfigPlugi
     public static final String VARIANT_LOADER_MOD_ID = "iobvariantloader";
     public static final String EXACT_VARIANT_LOADER_VERSION = "2.7.0";
     public static final String PASSENGER_LAYER_MIXIN_SIMPLE_NAME = "PassengerLayerMixin";
+    public static final String STRUCTURE_MANAGER_CACHE_MIXIN_SIMPLE_NAME = "StructureManagerCacheMixin";
     public static final String PASSENGER_LAYER_TARGET_CLASS =
             "nordmods.iobvariantloader.util.layer.PassengerLayer";
     public static final String PASSENGER_LAYER_TARGET_CLASS_ENTRY =
@@ -99,6 +100,10 @@ public final class IsleOfBerkPerformanceMixinPlugin implements IMixinConfigPlugi
 
     public static boolean isPassengerLayerMixin(String mixinClassName) {
         return PASSENGER_LAYER_MIXIN_SIMPLE_NAME.equals(simpleMixinName(mixinClassName));
+    }
+
+    public static boolean isStructureManagerCacheMixin(String mixinClassName) {
+        return STRUCTURE_MANAGER_CACHE_MIXIN_SIMPLE_NAME.equals(simpleMixinName(mixinClassName));
     }
 
     public static VariantLoaderMatch classifyDeclaredVersion(String version) {
@@ -204,6 +209,9 @@ public final class IsleOfBerkPerformanceMixinPlugin implements IMixinConfigPlugi
             boolean clientDist,
             VariantLoaderMatch match,
             boolean passengerTargetFingerprintValid) {
+        if (isStructureManagerCacheMixin(mixinClassName)) {
+            return !clientDist;
+        }
         if (isPassengerLayerMixin(mixinClassName)) {
             return clientDist
                     && match == VariantLoaderMatch.EXACT_2_7_0

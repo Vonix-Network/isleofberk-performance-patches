@@ -28,6 +28,7 @@ public final class PerformanceConfig {
     public static final ForgeConfigSpec.IntValue AI_MOVE_INTERVAL_TICKS;
     public static final ForgeConfigSpec.IntValue EGG_HATCH_CHECK_INTERVAL_TICKS;
     public static final ForgeConfigSpec.IntValue SHOCK_PARTICLE_INTERVAL_TICKS;
+    public static final ForgeConfigSpec.IntValue STRUCTURE_CACHE_MAX_ENTRIES;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -75,6 +76,15 @@ public final class PerformanceConfig {
                         "Damage remains fixed at the upstream 20-tick cadence and is not changed by this key."
                 )
                 .defineInRange("shock_particle_interval_ticks", 8, 1, 200);
+        STRUCTURE_CACHE_MAX_ENTRIES = builder
+                .comment(
+                        "Maximum number of parsed structure templates retained by the performance companion cache.",
+                        "The cache uses soft values so the JVM may reclaim templates under memory pressure.",
+                        "The 1.3.5 value of 64 can cause repeated eviction and reparsing in structure-heavy packs.",
+                        "Optimized test default: 512. Larger values retain more cache keys/templates; smaller values can increase parsing and CPU work.",
+                        "Set to the minimum value supported by this candidate only; changes take effect after a server restart."
+                )
+                .defineInRange("structure_cache_max_entries", 512, 64, 4096);
         builder.pop();
 
         SPEC = builder.build();
@@ -100,7 +110,8 @@ public final class PerformanceConfig {
                 Boolean.TRUE.equals(AI_MOVE_THROTTLING_ENABLED.get()),
                 AI_MOVE_INTERVAL_TICKS.get(),
                 EGG_HATCH_CHECK_INTERVAL_TICKS.get(),
-                SHOCK_PARTICLE_INTERVAL_TICKS.get()
+                SHOCK_PARTICLE_INTERVAL_TICKS.get(),
+                STRUCTURE_CACHE_MAX_ENTRIES.get()
         );
     }
 }
