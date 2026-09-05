@@ -20,10 +20,20 @@ public final class StructureManagerCacheFixture {
                 "candidate must run after ModernFix's default-priority constructor injection");
         require(text.contains("PerformanceSettings.structureCacheMaxEntries()"),
                 "candidate must read the reload-correct configured cache bound");
+        require(text.contains("Map<ResourceLocation, Optional<StructureTemplate>>"),
+                "candidate must preserve the Forge 1.18.2 repository value contract");
         require(text.contains(".maximumSize(maxStructureCacheEntries)"),
                 "candidate must configure the bounded cache from the snapshot");
+        require(text.contains(".expireAfterWrite(30, TimeUnit.MINUTES)"),
+                "candidate must bound stale entries with explicit write expiry");
         require(text.contains(".softValues()"),
                 "candidate must preserve GC-sensitive soft-value behavior");
+        require(text.contains("method = \"onResourceManagerReload\""),
+                "candidate must attach cleanup to the target reload lifecycle");
+        require(text.contains("isleofberk$structureCache.cleanUp()"),
+                "candidate must drain expired/cleared cache entries after reload");
+        require(text.contains("@Unique"),
+                "candidate must retain the cache handle for explicit maintenance");
         require(text.contains("structureRepository"),
                 "candidate must target the official-mapped Forge 1.18.2 StructureManager repository field");
         require(!text.contains("@Overwrite"), "candidate must not overwrite the full StructureManager lifecycle");

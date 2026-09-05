@@ -4,7 +4,18 @@ All notable changes to Isle of Berk Performance Patches are documented here. The
 
 ## [Unreleased]
 
-No changes beyond the current 1.3.7 development candidate are recorded.
+The 1.3.8 candidate is being built for the next Forge 1.18.2 Claws of Berk restart. It is not a release or deployment claim.
+
+### Added
+
+- Added explicit 30-minute write expiry to the server-only StructureManager companion cache.
+- Added explicit cache maintenance after `StructureManager.onResourceManagerReload`.
+- Corrected the cache declaration to match Forge 1.18.2's `Optional<StructureTemplate>` repository value contract.
+
+### Verification status
+
+- The owner-staged test configuration disables ModernFix's dynamic StructureManager cache and sets `structure_cache_max_entries = 64`.
+- Restart activation, exact-candidate boot, and post-restart heap/MSPT/GC evidence remain separate gates.
 
 ## [1.3.7] — unpublished development candidate, September 4, 2026
 

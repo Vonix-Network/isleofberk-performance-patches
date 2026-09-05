@@ -11,10 +11,10 @@ A standalone Forge Mixin companion for **Isle of Berk 1.2.0** on **Minecraft 1.1
 
 ## Current public status
 
-This repository's `main` source snapshot tracks the **1.3.7 development candidate**. It is public source status, not a release announcement:
+This repository's current source branch tracks the **1.3.8 development candidate**. It is public source status, not a release announcement:
 
 - Latest tagged stable release: **v1.3.4**, published August 29, 2026.
-- 1.3.5, 1.3.6, and 1.3.7 are unpublished candidate iterations for the StructureManager cache work.
+- 1.3.5, 1.3.6, and 1.3.7 are unpublished candidate iterations for the StructureManager cache work; 1.3.8 is the current successor candidate.
 - The 1.3.7 candidate artifact is **85,892 bytes**, SHA-256 `389d6576ad09bca8406af889f470903ad6af93a9b4fa0aa3c61a8eb8f7d29acf`.
 - The live Isle of Berk server was observed running the 1.3.7 JAR on September 4, 2026. Early memory readings were below the earlier high-water mark, but the post-restart window was short and matched performance/heap evidence is not available.
 - Do not interpret the 1.3.7 source snapshot as accepted, released, deployed, or proven to fix a memory leak.
@@ -46,14 +46,17 @@ The current source carries the verified companion work from the earlier release 
 - Variant Loader presence-aware resource-overlap gating and exact passenger-render compatibility gating.
 - Server-only StructureManager parsed-template cache replacement using a bounded Guava `softValues()` map, applied after the normal higher-priority replacement path.
 
-## 1.3.7 StructureManager candidate
+## 1.3.8 StructureManager candidate
 
-The candidate adds the COMMON setting `structure_cache_max_entries`:
+The candidate retains the COMMON setting `structure_cache_max_entries` and adds bounded expiry/maintenance:
 
 - Default: `512`
 - Inclusive range: `64..4096`
 - Values are clamped in reload-correct primitive snapshots.
 - The cache remains soft-valued so the JVM can reclaim templates under memory pressure.
+- Entries expire 30 minutes after write, limiting stale retention during long-running structure-heavy sessions.
+- The cache is explicitly maintained after `StructureManager.onResourceManagerReload`.
+- The repository declaration matches Forge 1.18.2's `Optional<StructureTemplate>` values.
 - The setting is read when `StructureManager` is constructed; changes require a restart.
 - This is a bounded memory/performance experiment. It does not modify Lootr persistence, world data, structure definitions, Threaded Horizons, or third-party JARs.
 
