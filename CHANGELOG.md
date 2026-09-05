@@ -4,18 +4,23 @@ All notable changes to Isle of Berk Performance Patches are documented here. The
 
 ## [Unreleased]
 
-The 1.3.8 candidate is being built for the next Forge 1.18.2 Claws of Berk restart. It is not a release or deployment claim.
+No changes beyond the current 1.3.8 development candidate are recorded.
 
-### Added
+## [1.3.8] — unpublished development candidate, September 5, 2026
 
-- Added explicit 30-minute write expiry to the server-only StructureManager companion cache.
-- Added explicit cache maintenance after `StructureManager.onResourceManagerReload`.
+This source snapshot records the 1.3.8 StructureManager cache successor prepared for the next Forge 1.18.2 Claws of Berk restart. It is not a GitHub release, CurseForge release, deployment confirmation, or performance-proof claim.
+
+### Changed
+
+- Updated the server-only StructureManager companion cache to use the configured `structure_cache_max_entries` bound with Guava `softValues()`, explicit 30-minute write expiry, and reload cleanup.
+- Kept the owner-staged one-cache-owner test configuration at `structure_cache_max_entries = 64` with ModernFix's dynamic StructureManager cache disabled.
 - Corrected the cache declaration to match Forge 1.18.2's `Optional<StructureTemplate>` repository value contract.
+- Preserved companion-only packaging and the separate Deadlock Fix boundary; no Lootr persistence, world data, Threaded Horizons, gameplay rules, or third-party JARs were changed.
 
 ### Verification status
 
-- The owner-staged test configuration disables ModernFix's dynamic StructureManager cache and sets `structure_cache_max_entries = 64`.
-- Restart activation, exact-candidate boot, and post-restart heap/MSPT/GC evidence remain separate gates.
+- Parent Java 17 `check build`, deterministic StructureManager fixture, and packaged JAR audit passed for the exact 1.3.8 candidate.
+- Live upload and restart remain separate owner actions. Restart activation, exact-candidate boot, and post-restart heap/MSPT/GC evidence are not yet claims.
 
 ## [1.3.7] — unpublished development candidate, September 4, 2026
 
