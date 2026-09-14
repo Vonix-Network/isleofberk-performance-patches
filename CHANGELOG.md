@@ -4,23 +4,28 @@ All notable changes to Isle of Berk Performance Patches are documented here. The
 
 ## [Unreleased]
 
-No changes beyond the current 1.3.8 development candidate are recorded.
+No changes beyond the 1.3.8 release line are recorded.
 
-## [1.3.8] — unpublished development candidate, September 5, 2026
+## [1.3.8] — September 14, 2026
 
-This source snapshot records the 1.3.8 StructureManager cache successor prepared for the next Forge 1.18.2 Claws of Berk restart. It is not a GitHub release, CurseForge release, deployment confirmation, or performance-proof claim.
+This entry documents the 1.3.8 StructureManager cache successor for Forge 1.18.2 Claws of Berk installations. It is a companion artifact only and makes no universal RAM, MSPT, FPS, or leak-resolution claim.
+
+### Compatibility requirement
+
+- **You must disable the conflicting ModernFix StructureManager mixin before using this release. Set `mixin.perf.dynamic_structure_manager=false` in ModernFix's configuration.**
 
 ### Changed
 
 - Updated the server-only StructureManager companion cache to use the configured `structure_cache_max_entries` bound with Guava `softValues()`, explicit 30-minute write expiry, and reload cleanup.
-- Kept the owner-staged one-cache-owner test configuration at `structure_cache_max_entries = 64` with ModernFix's dynamic StructureManager cache disabled.
+- Kept the owner-staged one-cache-owner test configuration at `structure_cache_max_entries = 64` with the conflicting ModernFix StructureManager mixin disabled.
 - Corrected the cache declaration to match Forge 1.18.2's `Optional<StructureTemplate>` repository value contract.
 - Preserved companion-only packaging and the separate Deadlock Fix boundary; no Lootr persistence, world data, Threaded Horizons, gameplay rules, or third-party JARs were changed.
 
 ### Verification status
 
-- Parent Java 17 `check build`, deterministic StructureManager fixture, and packaged JAR audit passed for the exact 1.3.8 candidate.
-- Live upload and restart remain separate owner actions. Restart activation, exact-candidate boot, and post-restart heap/MSPT/GC evidence are not yet claims.
+- Java 17 `check build`, deterministic StructureManager fixture, and packaged JAR audit passed for the exact 1.3.8 artifact.
+- Artifact identity: `isleof-berk-performance-patches-1.3.8.jar`, 86,290 bytes, SHA-256 `7fb078520c276db6956de10c6e21da1b7c956cabf557f2d3809ca0cbc13cecca`.
+- Upload, restart activation, exact-candidate boot, and post-restart heap/MSPT/GC evidence remain separate effects or evidence gates and are not implied by this changelog.
 
 ## [1.3.7] — unpublished development candidate, September 4, 2026
 
