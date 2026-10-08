@@ -14,7 +14,7 @@ This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
 isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
 include or replace the separate isleofberkdeadlockfix companion. Install that
 deadlock-fix JAR only if you want it, as its own optional mod.
-Applies exact client renderer/fixed-resource transformations plus documented configurable AI, egg, and shock visual cadence controls.
+Applies exact client renderer/fixed-resource transformations, a guarded GeckoLib dragon-bone index, plus documented configurable AI, egg, and shock visual cadence controls.
 '''
 authors="Vonix-Network"
 

@@ -13,6 +13,7 @@
     "ShockEffectMixin"
   ],
   "client": [
+    "AnimationProcessorBoneCacheMixin",
     "GronckleRenderMixin",
     "LightFuryRenderMixin",
     "MonstrousNightmareRenderMixin",

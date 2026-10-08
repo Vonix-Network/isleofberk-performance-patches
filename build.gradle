@@ -57,6 +57,7 @@ dependencies {
     compileOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     runtimeOnly fg.deobf("local:isleofberk-${iobVersion}:${iobVersion}")
     runtimeOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
+    testCompileOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -216,12 +217,21 @@ tasks.named('build').configure {
 tasks.named('check').configure {
     dependsOn 'auditPackagedJar'
     dependsOn 'mappingFixture'
+    dependsOn 'boneCacheFixture'
     dependsOn 'rendererBytecodeFixture'
     dependsOn 'gameplayBytecodeFixture'
     dependsOn 'configFixture'
     dependsOn 'aiMoveCadenceFixture'
     dependsOn 'mixinLifecycleFixture'
     dependsOn 'infoZipUxExtraFixture'
+}
+
+tasks.register('boneCacheFixture', JavaExec) {
+    group = 'verification'
+    description = 'Checks the guarded GeckoLib dragon-bone index Mixin and mutation invalidation contract.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'network.vonix.isleofberkperformance.verification.BoneCacheFixture'
+    dependsOn testClasses
 }
 
 tasks.register('mappingFixture') {
