@@ -1,0 +1,208 @@
+{
+  "files": [
+    {
+      "bytes": 11421,
+      "path": "CANDIDATE-REPORT.md",
+      "sha256": "62c4bbbfe1afc4eced6510904eff531da59247e3af22a6bda43b1c052410367a"
+    },
+    {
+      "bytes": 5977,
+      "path": "CHANGELOG.md",
+      "sha256": "8cba076e052fabe22aec194e990a3f9cb7c23a10ddf3c10800e2047da5a11788"
+    },
+    {
+      "bytes": 8520,
+      "path": "README.md",
+      "sha256": "c37a5022f6a8456d4970f73eeef5ca28d0b4b8c7fb521529ac30a42a3b86c19b"
+    },
+    {
+      "bytes": 44089,
+      "path": "build.gradle",
+      "sha256": "c8d4218863243bd574a206a552ce996d042a03fd6dd9898bab221c3f0cc29339"
+    },
+    {
+      "bytes": 1302,
+      "path": "config/isleofberkperformance.toml",
+      "sha256": "0dc89926b3119b1c643a9c210a3ebc05093b004d3574e2ecd028586d3799d825"
+    },
+    {
+      "bytes": 101,
+      "path": "gradle.properties",
+      "sha256": "59c51488ad154b48dfa825757284fd4277c6f70b84e3cf2f78266a6faa843fa1"
+    },
+    {
+      "bytes": 282,
+      "path": "settings.gradle",
+      "sha256": "9f00f0f7753f88a21c8d58b7c290063ac0fc2a26277330eb8387bafdd41bbf3a"
+    },
+    {
+      "bytes": 977,
+      "path": "src/main/java/network/vonix/isleofberkperformance/IsleOfBerkPerformance.java",
+      "sha256": "7b15d7eb90ba4ea38ecb5dfe262507ea4a21a76d9b2a0d22b3209ee9fd5e3b06"
+    },
+    {
+      "bytes": 5412,
+      "path": "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java",
+      "sha256": "56c0c8c68db024f291b3d0060aa2a6f0ce07cdaef64555fe1b121e6482bb6e4a"
+    },
+    {
+      "bytes": 202,
+      "path": "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveLifecycle.java",
+      "sha256": "ab4a99ded73a4abde9366c52afd0a0f1ef3c58e2372f12a7a30cb9e07ec06024"
+    },
+    {
+      "bytes": 994,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java",
+      "sha256": "ce9c133560d8b25588dd293ddd6ad570f935111704ef93871fb1a37b69b58c68"
+    },
+    {
+      "bytes": 1894,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java",
+      "sha256": "589197c538797ee6bf44fe4e7babd58024530b06c723496b868361b7fbf4dc18"
+    },
+    {
+      "bytes": 1786,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java",
+      "sha256": "795cabb8a77bfbd58b6c82b77d84ae2bfa2e96d105d00c2fdcfc94262b7d8412"
+    },
+    {
+      "bytes": 2137,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/FireBoltModelMixin.java",
+      "sha256": "2683e3deefcc14aeaf01752b1f268bc7337b7d2969a2029ca2f9358e06efe99d"
+    },
+    {
+      "bytes": 1643,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/FuryBoltModelMixin.java",
+      "sha256": "a86230949c1fc88682f043b130fcb91994913a3df20fbc71ae8d46c5d7c817c8"
+    },
+    {
+      "bytes": 1729,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/GronckleRenderMixin.java",
+      "sha256": "061c5679e87fbcb485ddf3d561b0c93c9b8bc59cb88196ccb9ad263622ee495c"
+    },
+    {
+      "bytes": 1227,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/LargeEggModelMixin.java",
+      "sha256": "2fe04fbd9fdc73539fab63565465d98dc7df6ed45d267e557e7253ec2c7675e2"
+    },
+    {
+      "bytes": 1738,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/LightFuryRenderMixin.java",
+      "sha256": "429a446e5825bbd2af564538db152a504e0d94108c99899012f726ea44c0f5b5"
+    },
+    {
+      "bytes": 1222,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/MediumEggModelMixin.java",
+      "sha256": "539c92ee1bd2e207c8c0c96ff86c4a3749ce448c8c0c812cf665f43ab3ecdd11"
+    },
+    {
+      "bytes": 1819,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/MonstrousNightmareRenderMixin.java",
+      "sha256": "93febbd71c1236e349340cfafebbafb9d86b04dbb3e1117d92695db51311adb2"
+    },
+    {
+      "bytes": 1738,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/NightFuryRenderMixin.java",
+      "sha256": "ab4f02689ab216bc528fccade82a8dca8c406f96388fd4ebc72f688c5af6f678"
+    },
+    {
+      "bytes": 1747,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/NightLightRenderMixin.java",
+      "sha256": "ca86863fe403168bb7aab54c86e11f9ab2b8a51346605f59981f25497c1eee69"
+    },
+    {
+      "bytes": 1090,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java",
+      "sha256": "605fbeb4e2c6faf8175df453ae81c700e943b1add94dcde527082142c12da6c7"
+    },
+    {
+      "bytes": 1717,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/SkrillRendererMixin.java",
+      "sha256": "39ef852ca75d270fda199a3692be41410d10adef8dd7a9283dd819259fe7d405"
+    },
+    {
+      "bytes": 1217,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/SmallEggModelMixin.java",
+      "sha256": "5fa70cddb83a6393093a7f8d9f71a275fa9df57addf9f888ab4e6fa9966a20ec"
+    },
+    {
+      "bytes": 1819,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/SpeedStingerLeaderRenderMixin.java",
+      "sha256": "a6961d8fc8f84009afef10f31ec401dd16617b83a0ce8d7be1243891359f7835"
+    },
+    {
+      "bytes": 1765,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/SpeedStingerRenderMixin.java",
+      "sha256": "46bbdf721e1af70255ea8fcdbccf18f21fe7438590a51f27d9c52e048fe8588a"
+    },
+    {
+      "bytes": 1720,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/StingerRenderMixin.java",
+      "sha256": "20f968abfdde68d4887b4f0104729f15d704398e9c68b5044ae7b617ae9d25a5"
+    },
+    {
+      "bytes": 1786,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/TerribleTerrorRenderMixin.java",
+      "sha256": "1f140d24b03a7fe73650b9199e014e13646274b341a92afb08195f578396b5de"
+    },
+    {
+      "bytes": 1774,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/TripleStrykeRendererMixin.java",
+      "sha256": "18cce0a9a8f2b020aa6629d8227dd58fc5ba4f463c619ec92de4e3c0412afab9"
+    },
+    {
+      "bytes": 2240,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java",
+      "sha256": "8133aa9e29e1725d7b13a30809778be2f9beb5e987b294696197ab0e58375cc9"
+    },
+    {
+      "bytes": 1726,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/WrappedGoalMixin.java",
+      "sha256": "892b34c9be110ae36069313621fb61aa995548fb67239744c3e47c5c2b01c9d0"
+    },
+    {
+      "bytes": 1753,
+      "path": "src/main/java/network/vonix/isleofberkperformance/mixin/ZippleBackRendererMixin.java",
+      "sha256": "1a425c592ef7f626b6684c5449adc740382144946bb323a91694dfbab54a09a5"
+    },
+    {
+      "bytes": 1497,
+      "path": "src/main/resources/META-INF/mods.toml",
+      "sha256": "605e59c49678475d1a48f48c81eca0d42b4cc6181c043d43539d6864628da621"
+    },
+    {
+      "bytes": 972,
+      "path": "src/main/resources/isleofberkperformance.mixins.json",
+      "sha256": "2f078211c65ece4acb4eb71d46494d11c6fcd608291bac640296304ae42a0d77"
+    },
+    {
+      "bytes": 96,
+      "path": "src/main/resources/pack.mcmeta",
+      "sha256": "2f30f8e48285d034b9f0a30bd10f56c42d5a5bd372c0d3d8fb9408bdd79686e9"
+    },
+    {
+      "bytes": 1508,
+      "path": "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java",
+      "sha256": "31641df3f189102520dfe04204b9e352a069fa1bc52a74c79da7437ac5fa90e3"
+    },
+    {
+      "bytes": 5243,
+      "path": "src/test/java/network/vonix/isleofberkperformance/verification/GameplayBytecodeFixture.java",
+      "sha256": "a1719a31520f5e1742f763b55d2abd07b06ff7e57a14617a7afa095426d9071b"
+    },
+    {
+      "bytes": 3338,
+      "path": "src/test/java/network/vonix/isleofberkperformance/verification/MixinLifecycleFixture.java",
+      "sha256": "f8715c07e698ab3e54790a62e542301142006d5adbd55a56d6e9f4173ce7385f"
+    },
+    {
+      "bytes": 11457,
+      "path": "src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java",
+      "sha256": "0dfd56a51a9c661426e12cdc0c3c812051d2fde6ab32686de1f5fa79c61c5dd9"
+    }
+  ],
+  "head": "515b9a677a39f72e9be12330355cbf765dbafcea",
+  "root": "/root/work/isleofberk-performance-patches",
+  "schema": "iob-performance-manifest-v1",
+  "tree": "eb4ede303e40709356fe6385e5f925a68c9146b4"
+}

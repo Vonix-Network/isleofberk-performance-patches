@@ -1,0 +1,499 @@
+↻ Resumed session 20260819_033657_f848ab "Complete SOL-001 AI cadence conversion" (1 user message, 41 total messages)
+Model restored from session: xai/grok-4.6
+[33m⚠ Deprecated .env settings detected:[0m
+  [33m⚠[0m TERMINAL_CWD=/root found in .env — this is deprecated.
+  [2mMove to config.yaml instead:  terminal:\n    cwd: /your/project/path[0m
+  [2mThen remove the old entries from ~/.hermes/.env[0m
+
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java
+@@ -3,30 +3,44 @@
+ import com.GACMD.isleofberk.entity.AI.flight.own.DragonFlyAndAttackAirbourneTargetGoal;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.ai.navigation.PathNavigation;
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.AiMoveCadence;
+ import network.vonix.isleofberkperformance.internal.AiMoveLifecycle;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.Unique;
+ import org.spongepowered.asm.mixin.injection.At;
++import org.spongepowered.asm.mixin.injection.Inject;
+ import org.spongepowered.asm.mixin.injection.Redirect;
++import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+ 
+ /**
+  * Gates only the exact target-flight navigation request; target selection and flight state remain upstream.
+  *
+- * <p>The counter is reset by {@link WrappedGoalMixin} at the actual wrapped-goal start/stop
+- * transition. {@code canUse()} is not a reset point: vanilla {@code Goal.canContinueToUse()}
+- * delegates to {@code canUse()} on every running tick and would zero the counter before each
+- * {@code tick()}.
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
++ * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
++ * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
++ * zero the cadence before each {@code tick()}.
+  *
+  * <p>Pinned {@code tick()} contains exactly one {@code PathNavigation.moveTo(Entity, double)}.
++ * Skipped calls return {@link AiMoveCadence#SKIPPED_MOVE_TO_RESULT} so a suppressed refresh is not
++ * reported as a pathfinding failure.
+  */
+ @Mixin(value = DragonFlyAndAttackAirbourneTargetGoal.class, remap = true)
+ public abstract class DragonFlyAndAttackAirbourneTargetGoalMixin implements AiMoveLifecycle {
+-    @Unique private int vonix$moveTick;
++    @Unique private final AiMoveCadence vonix$cadence = new AiMoveCadence();
+ 
+     @Override
+     public void vonix$resetAiMoveTick() {
+-        this.vonix$moveTick = 0;
++        this.vonix$cadence.reset();
++    }
++
++    @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
++    private void vonix$beginAiMoveTick(CallbackInfo ci) {
++        this.vonix$cadence.beginTick(
++                PerformanceSettings.aiMoveThrottlingEnabled(),
++                PerformanceSettings.aiMoveIntervalTicks()
++        );
+     }
+ 
+     @Redirect(
+@@ -37,6 +51,9 @@
+             allow = 1
+     )
+     private boolean vonix$gateMoveRequest(PathNavigation navigation, Entity target, double speed) {
+-        return PerformanceConfig.shouldRunAiMove(++this.vonix$moveTick) && navigation.moveTo(target, speed);
++        if (!this.vonix$cadence.allowThisTick()) {
++            return AiMoveCadence.SKIPPED_MOVE_TO_RESULT;
++        }
++        return this.vonix$cadence.gateBoolean(navigation.moveTo(target, speed));
+     }
+ }
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java
+@@ -2,30 +2,44 @@
+ 
+ import com.GACMD.isleofberk.entity.AI.flight.player.DragonFollowPlayerFlying;
+ import net.minecraft.world.entity.ai.navigation.PathNavigation;
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.AiMoveCadence;
+ import network.vonix.isleofberkperformance.internal.AiMoveLifecycle;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.Unique;
+ import org.spongepowered.asm.mixin.injection.At;
++import org.spongepowered.asm.mixin.injection.Inject;
+ import org.spongepowered.asm.mixin.injection.Redirect;
++import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+ 
+ /**
+  * Configurable gate for exact navigation requests in the follow-player goal.
+  *
+- * <p>The counter is reset by {@link WrappedGoalMixin} at the actual wrapped-goal start/stop
+- * transition. {@code canUse()} is not a reset point: vanilla {@code Goal.canContinueToUse()}
+- * delegates to {@code canUse()} on every running tick and would zero the counter before each
+- * {@code tick()}.
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
++ * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
++ * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
++ * zero the cadence before each {@code tick()}.
+  *
+  * <p>Pinned {@code tick()} contains exactly five {@code PathNavigation.moveTo(double, double, double, double)}.
++ * On a due tick every intended site may run; on a skip tick all return
++ * {@link AiMoveCadence#SKIPPED_MOVE_TO_RESULT}.
+  */
+ @Mixin(value = DragonFollowPlayerFlying.class, remap = true)
+ public abstract class DragonFollowPlayerFlyingMixin implements AiMoveLifecycle {
+-    @Unique private int vonix$moveTick;
++    @Unique private final AiMoveCadence vonix$cadence = new AiMoveCadence();
+ 
+     @Override
+     public void vonix$resetAiMoveTick() {
+-        this.vonix$moveTick = 0;
++        this.vonix$cadence.reset();
++    }
++
++    @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
++    private void vonix$beginAiMoveTick(CallbackInfo ci) {
++        this.vonix$cadence.beginTick(
++                PerformanceSettings.aiMoveThrottlingEnabled(),
++                PerformanceSettings.aiMoveIntervalTicks()
++        );
+     }
+ 
+     @Redirect(
+@@ -36,6 +50,9 @@
+             allow = 5
+     )
+     private boolean vonix$gateMoveRequest(PathNavigation navigation, double x, double y, double z, double speed) {
+-        return PerformanceConfig.shouldRunAiMove(++this.vonix$moveTick) && navigation.moveTo(x, y, z, speed);
++        if (!this.vonix$cadence.allowThisTick()) {
++            return AiMoveCadence.SKIPPED_MOVE_TO_RESULT;
++        }
++        return this.vonix$cadence.gateBoolean(navigation.moveTo(x, y, z, speed));
+     }
+ }
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java
+@@ -3,31 +3,44 @@
+ import com.GACMD.isleofberk.entity.AI.flight.own.UntamedDragonCircleFlightGoal;
+ import com.GACMD.isleofberk.entity.base.dragon.ADragonBaseFlyingRideable;
+ import net.minecraft.world.phys.Vec3;
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.AiMoveCadence;
+ import network.vonix.isleofberkperformance.internal.AiMoveLifecycle;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.Unique;
+ import org.spongepowered.asm.mixin.injection.At;
++import org.spongepowered.asm.mixin.injection.Inject;
+ import org.spongepowered.asm.mixin.injection.Redirect;
++import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+ 
+ /**
+  * Narrow gate for circle movement; random choice and circle state remain in the original method.
+  *
+- * <p>The counter is reset by {@link WrappedGoalMixin} at the actual wrapped-goal start/stop
+- * transition. {@code canUse()} is not a reset point: vanilla {@code Goal.canContinueToUse()}
+- * delegates to {@code canUse()} on every running tick and would zero the counter before each
+- * {@code tick()}.
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
++ * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
++ * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
++ * zero the cadence before each {@code tick()}.
+  *
+  * <p>Pinned {@code tick()} contains exactly two mutually exclusive
+- * {@code ADragonBaseFlyingRideable.circleEntity} invokes.
++ * {@code ADragonBaseFlyingRideable.circleEntity} invokes. On a due tick the intended branch may run;
++ * on a skip tick both sites are suppressed.
+  */
+ @Mixin(value = UntamedDragonCircleFlightGoal.class, remap = true)
+ public abstract class UntamedDragonCircleFlightGoalMixin implements AiMoveLifecycle {
+-    @Unique private int vonix$moveTick;
++    @Unique private final AiMoveCadence vonix$cadence = new AiMoveCadence();
+ 
+     @Override
+     public void vonix$resetAiMoveTick() {
+-        this.vonix$moveTick = 0;
++        this.vonix$cadence.reset();
++    }
++
++    @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
++    private void vonix$beginAiMoveTick(CallbackInfo ci) {
++        this.vonix$cadence.beginTick(
++                PerformanceSettings.aiMoveThrottlingEnabled(),
++                PerformanceSettings.aiMoveIntervalTicks()
++        );
+     }
+ 
+     @Redirect(
+@@ -51,8 +64,10 @@
+             float xScale,
+             float zScale
+     ) {
+-        if (PerformanceConfig.shouldRunAiMove(++this.vonix$moveTick)) {
+-            dragon.circleEntity(center, radius, speed, clockwise, tick, xScale, zScale);
++        if (!this.vonix$cadence.allowThisTick()) {
++            return;
+         }
++        this.vonix$cadence.noteRequest();
++        dragon.circleEntity(center, radius, speed, clockwise, tick, xScale, zScale);
+     }
+ }
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java
+@@ -1,24 +1,90 @@
+ package network.vonix.isleofberkperformance.verification;
+ 
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.AiMoveCadence;
+ 
+ /**
+- * Deterministic predicate check for the documented first-request-then-interval AI cadence.
++ * Deterministic checks for tick-HEAD AI movement cadence.
+  * Does not read Forge config values.
+  */
+ public final class AiMoveCadenceFixture {
+     private AiMoveCadenceFixture() {}
+ 
+     public static void main(String[] args) {
+-        require(PerformanceConfig.shouldRunThrottledAiMove(1, 4), "first request at interval 4 must run");
+-        require(!PerformanceConfig.shouldRunThrottledAiMove(2, 4), "tick 2 at interval 4 must skip");
+-        require(!PerformanceConfig.shouldRunThrottledAiMove(3, 4), "tick 3 at interval 4 must skip");
+-        require(PerformanceConfig.shouldRunThrottledAiMove(5, 4), "tick 5 (1 + interval) at interval 4 must run");
+-        require(PerformanceConfig.shouldRunThrottledAiMove(1, 1), "interval 1 must run every tick");
+-        require(PerformanceConfig.shouldRunThrottledAiMove(2, 1), "interval 1 must run every tick");
+-        require(!PerformanceConfig.shouldRunThrottledAiMove(0, 4), "zero tick is not a request site");
+-        require(!PerformanceConfig.shouldRunThrottledAiMove(1, 0), "non-positive interval is not a cadence");
+-        System.out.println("AiMoveCadenceFixture: PASS (first request immediately, then every interval)");
++        AiMoveCadence cadence = new AiMoveCadence();
++
++        // Armed after start: first eligible request runs immediately at interval 4.
++        cadence.reset();
++        cadence.beginTick(true, 4);
++        require(cadence.allowThisTick(), "armed first tick at interval 4 must allow");
++        require(cadence.gateBoolean(false) == false, "allowed moveTo must preserve executed false");
++        require(!cadence.armed(), "first gated request must disarm armed state");
++
++        // Cooldown ticks 2 and 3 skip; every intended call on a skip tick is denied.
++        cadence.beginTick(true, 4);
++        require(!cadence.allowThisTick(), "tick 2 at interval 4 must skip");
++        require(cadence.gateBoolean(false) == AiMoveCadence.SKIPPED_MOVE_TO_RESULT,
++                "skipped moveTo must return SKIPPED_MOVE_TO_RESULT");
++        cadence.beginTick(true, 4);
++        require(!cadence.allowThisTick(), "tick 3 at interval 4 must skip");
++
++        // Due again on tick 4; multiple intended calls on the same due tick all run.
++        cadence.beginTick(true, 4);
++        require(cadence.allowThisTick(), "tick 4 (first + interval) at interval 4 must allow");
++        require(cadence.gateBoolean(true) == true, "first due-tick call must preserve executed true");
++        require(cadence.gateBoolean(false) == false, "second due-tick call must still run and preserve false");
++        require(cadence.gateBoolean(true) == true, "third due-tick call must still run");
++
++        // Interval 1 keeps every request.
++        cadence.reset();
++        cadence.beginTick(true, 1);
++        require(cadence.allowThisTick(), "interval 1 must allow every tick");
++        require(cadence.gateBoolean(true) == true, "interval 1 must preserve executed result");
++        cadence.beginTick(true, 1);
++        require(cadence.allowThisTick(), "interval 1 must allow the next tick too");
++
++        // Throttling disabled keeps every request regardless of interval.
++        cadence.reset();
++        cadence.beginTick(false, 4);
++        require(cadence.allowThisTick(), "throttling disabled must allow");
++        require(cadence.gateBoolean(false) == false, "throttling disabled must preserve executed false");
++        cadence.beginTick(false, 4);
++        require(cadence.allowThisTick(), "throttling disabled must allow consecutive ticks");
++
++        // Non-positive interval sanitizes to always-on cadence while throttling is enabled.
++        cadence.reset();
++        cadence.beginTick(true, 0);
++        require(cadence.allowThisTick(), "non-positive interval must sanitize to allow");
++        require(cadence.intervalSnapshot() == 1, "non-positive interval snapshot must be 1");
++
++        // Void-style gate: noteRequest disarms only once per armed window.
++        cadence.reset();
++        cadence.beginTick(true, 4);
++        require(cadence.allowThisTick(), "void gate armed tick must allow");
++        cadence.noteRequest();
++        require(!cadence.armed(), "noteRequest must disarm");
++        cadence.noteRequest();
++        require(!cadence.armed(), "repeated noteRequest on same due tick stays disarmed");
++        cadence.beginTick(true, 4);
+… omitted 23 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -221,6 +221,7 @@
+     dependsOn 'configFixture'
+     dependsOn 'aiMoveCadenceFixture'
+     dependsOn 'mixinLifecycleFixture'
++    dependsOn 'removedAiMovePredicateGate'
+     dependsOn 'infoZipUxExtraFixture'
+ }
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -309,7 +309,7 @@
+ 
+ tasks.register('aiMoveCadenceFixture', JavaExec) {
+     group = 'verification'
+-    description = 'Checks the first-request-then-interval AI cadence predicate.'
++    description = 'Checks tick-HEAD AiMoveCadence allow/deny, multi-call due ticks, lifecycle reset, and bounded state.'
+     classpath = sourceSets.test.runtimeClasspath
+     mainClass = 'network.vonix.isleofberkperformance.verification.AiMoveCadenceFixture'
+     dependsOn testClasses
+@@ -321,6 +321,75 @@
+     classpath = sourceSets.test.runtimeClasspath
+     mainClass = 'network.vonix.isleofberkperformance.verification.MixinLifecycleFixture'
+     dependsOn testClasses
++}
++
++/**
++ * Rejects restored/leftover calls to the removed request-count predicates.
++ * Source scan covers main+test Java; bytecode scan covers compiled companion classes.
++ */
++tasks.register('removedAiMovePredicateGate') {
++    group = 'verification'
++    description = 'Fails if source or companion bytecode still references removed PerformanceConfig AI move predicates.'
++    dependsOn classes, testClasses
++    doLast {
++        def forbidden = [
++                'shouldRunAiMove',
++                'shouldRunThrottledAiMove'
++        ]
++        def sourceRoots = [
++                file("${projectDir}/src/main/java"),
++                file("${projectDir}/src/test/java")
++        ]
++        def sourceHits = [] as List
++        sourceRoots.each { root ->
++            if (!root.isDirectory()) {
++                return
++            }
++            root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
++                if (!f.name.endsWith('.java')) {
++                    return
++                }
++                def text = f.getText('UTF-8')
++                forbidden.each { token ->
++                    if (text.contains(token)) {
++                        sourceHits << "${f.toPath().toAbsolutePath().normalize()}: ${token}"
++                    }
++                }
++            }
++        }
++        if (!sourceHits.isEmpty()) {
++            throw new GradleException("removedAiMovePredicateGate SOURCE FAIL:\n  - " + sourceHits.join('\n  - '))
++        }
++
++        def classRoots = [
++                file("${buildDir}/classes/java/main"),
++                file("${buildDir}/classes/java/test"),
++                file("${buildDir}/classes/scala/main"),
++                file("${buildDir}/classes/scala/test")
++        ]
++        def bytecodeHits = [] as List
++        classRoots.each { root ->
++            if (!root.isDirectory()) {
++                return
++            }
++            root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
++                if (!f.name.endsWith('.class')) {
++                    return
++                }
++                def bytes = f.bytes
++                def latin1 = new String(bytes, 'ISO-8859-1')
++                forbidden.each { token ->
++                    if (latin1.contains(token)) {
++                        bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: ${token}"
++                    }
++                }
++            }
++        }
++        if (!bytecodeHits.isEmpty()) {
++            throw new GradleException("removedAiMovePredicateGate BYTECODE FAIL:\n  - " + bytecodeHits.join('\n  - '))
+… omitted 6 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/.offline-plugin-repo/net/minecraftforge/gradle/net.minecraftforge.gradle.gradle.plugin/5.1.77/net.minecraftforge.gradle.gradle.plugin-5.1.77.pom → b/.offline-plugin-repo/net/minecraftforge/gradle/net.minecraftforge.gradle.gradle.plugin/5.1.77/net.minecraftforge.gradle.gradle.plugin-5.1.77.pom
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0">
++  <modelVersion>4.0.0</modelVersion>
++  <groupId>net.minecraftforge.gradle</groupId>
++  <artifactId>net.minecraftforge.gradle.gradle.plugin</artifactId>
++  <version>5.1.77</version>
++  <packaging>pom</packaging>
++  <dependencies>
++    <dependency>
++      <groupId>net.minecraftforge.gradle</groupId>
++      <artifactId>ForgeGradle</artifactId>
++      <version>5.1.77</version>
++    </dependency>
++  </dependencies>
++</project>
+  ┊ review diff
+a/.offline-plugin-repo/org/spongepowered/mixin/org.spongepowered.mixin.gradle.plugin/0.7.38/org.spongepowered.mixin.gradle.plugin-0.7.38.pom → b/.offline-plugin-repo/org/spongepowered/mixin/org.spongepowered.mixin.gradle.plugin/0.7.38/org.spongepowered.mixin.gradle.plugin-0.7.38.pom
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0">
++  <modelVersion>4.0.0</modelVersion>
++  <groupId>org.spongepowered.mixin</groupId>
++  <artifactId>org.spongepowered.mixin.gradle.plugin</artifactId>
++  <version>0.7.38</version>
++  <packaging>pom</packaging>
++  <dependencies>
++    <dependency>
++      <groupId>org.spongepowered</groupId>
++      <artifactId>mixingradle</artifactId>
++      <version>0.7-SNAPSHOT</version>
++    </dependency>
++  </dependencies>
++</project>
+  ┊ review diff
+a/settings.gradle → b/settings.gradle
+@@ -1,3 +1,28 @@
+-pluginManagement { repositories { gradlePluginPortal(); maven { url = 'https://maven.minecraftforge.net' } } }
+-dependencyResolutionManagement { repositories { mavenCentral(); maven { url = 'https://maven.minecraftforge.net' } } }
++pluginManagement {
++    repositories {
++        maven { url = uri("${rootDir}/.offline-plugin-repo") }
++        mavenLocal()
++        gradlePluginPortal()
++        maven { url = 'https://maven.minecraftforge.net' }
++    }
++    resolutionStrategy {
++        eachPlugin {
++            if (requested.id.id == 'net.minecraftforge.gradle') {
++                useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
++            }
++            if (requested.id.id == 'org.spongepowered.mixin') {
++                useModule("org.spongepowered:mixingradle:0.7-SNAPSHOT")
++            }
++        }
++    }
++}
++dependencyResolutionManagement {
++    repositories {
++        maven { url = uri("${rootDir}/.offline-plugin-repo") }
++        mavenLocal()
++        mavenCentral()
++        maven { url = 'https://maven.minecraftforge.net' }
++        flatDir { dirs "${rootDir}/libs" }
++    }
++}
+ rootProject.name = 'isleofberk-performance-patches'
+⚠️  Reached maximum iterations (20). Requesting summary...
+SOL-001 code conversion is in place; the required offline Gradle gate did not finish green. No further tool calls available, so the report file was not written to disk.
+
+status: blocked
+
+changed_paths:
+- src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java
+- src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java
+- src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java
+- src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java
+- build.gradle
+- settings.gradle (offline plugin resolution helper)
+- libs/ (symlinks to local IoB/GeckoLib compile jars)
+- .offline-plugin-repo/ (local plugin/marker repo helper)
+
+code done for SOL-001:
+- All 3 active AI mixins use AiMoveCadence + PerformanceSettings
+- One allow/deny at tick() HEAD via beginTick(...)
+- Lifecycle reset via vonix$resetAiMoveTick() -> cadence.reset()
+- moveTo skips return AiMoveCadence.SKIPPED_MOVE_TO_RESULT (true)
+- circle gate uses allowThisTick + noteRequest
+- Fixture migrated off shouldRunThrottledAiMove
+- removedAiMovePredicateGate added to check
+- Source has zero shouldRunAiMove / shouldRunThrottledAiMove callers
+
+commands/outcomes:
+1. JAVA_HOME=java-17 ./gradlew clean check build --offline --no-daemon --rerun-tasks
+   - FAIL: plugin net.minecraftforge.gradle 5.1.77 not resolved offline
+2. Added local plugin markers + settings resolutionStrategy; seeded mavenLocal from Gradle module cache
+3. Rerun same offline command
+   - FAIL configure: no cached version offline for
+     cpw.mods:bootstraplauncher:1.0.0
+     net.minecraftforge:JarJarFileSystems:0.3.19
+   - Artifacts exist under ~/.gradle/caches and were copied to ~/.m2 and .offline-plugin-repo, but Gradle --offline still did not accept them for :modules_userdev_resolver
+4. Build log: evidence/grok-sol-001-build.log
+
+unresolved_blockers:
+- Offline Forge userdev configuration cannot resolve required modules under --offline in this environment, so full Java17 clean check build could not be completed/verified.
+- evidence/grok-sol-001-report.json was not written (tool-call limit hit before final write).
+
+effects: none
+
+owner actions:
+1. Allow one more turn to write evidence/grok-sol-001-report.json and/or finish offline repo wiring.
+2. Or run online once to populate Forge userdev cache, then rerun:
+   JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ./gradlew clean check build --offline --no-daemon --rerun-tasks
+
+intended report JSON (not on disk yet):
+{"status":"blocked","finding":"SOL-001","changed_paths":["src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java","src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java","src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java","src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java","build.gradle","settings.gradle"],"commands":[{"command":"./gradlew clean check build --offline --no-daemon --rerun-tasks","java":"17","outcome":"failed_configure","detail":"modules_userdev_resolver missing offline cache for bootstraplauncher:1.0.0 and JarJarFileSystems:0.3.19"}],"unresolved_blockers":["offline Forge userdev dependency resolution failed; full check/build not verified"],"effects":"none"}
+
+session_id: 20260819_033657_f848ab

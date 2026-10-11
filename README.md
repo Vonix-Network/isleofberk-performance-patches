@@ -17,13 +17,24 @@ A standalone Forge Mixin companion that applies Vonix performance patches to **I
 
 ### 1.0.0 artifact integrity
 
-Stable promotion of the current companion. Forge compile pin remains 40.3.0. Earlier `0.3.x` tags stay immutable.
+Stable published companion **before** the cadence-conversion successor. Retain this hash as predecessor identity only.
 
 ```text
 File:   isleof-berk-performance-patches-1.0.0.jar
 Size:   32,865 bytes
 SHA256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
 ```
+
+### 1.0.1-rc.1 successor candidate identity
+
+Unpublished dirty/prerelease successor with `AiMoveCadence` / `PerformanceSettings`, tick-HEAD AI decisions, and egg/shock snapshot hot paths. **Not** the published 1.0.0 coordinate. Bind exact size/hash from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a local clean build.
+
+```text
+File:   isleof-berk-performance-patches-1.0.1-rc.1.jar
+Coord:  version=1.0.1-rc.1 (gradle.properties / mods.toml Implementation-Version)
+```
+
+Do not install a jar named `isleof-berk-performance-patches-1.0.0.jar` and treat it as this successor.
 
 ### 0.3.1-rc.3 release-candidate integrity
 
@@ -70,7 +81,7 @@ The original Isle of Berk JAR and GeckoLib are required dependencies. The compan
 1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
 2. Install the original `isleofberk-1.2.0.jar`.
 3. Install GeckoLib Forge 3.0.57.
-4. For the stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. Latest is 1.0.0. Install the same jar on both client and server.
+4. For the published stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. For the unpublished `1.0.1-rc.1` successor candidate, use `isleof-berk-performance-patches-1.0.1-rc.1.jar` from a local clean build and the successor manifest — not a renamed 1.0.0 jar. Install the same jar on both client and server.
 5. Start the game once to generate `config/isleofberkperformance.toml`.
 6. For multiplayer, install the same companion version on the client and server.
 
@@ -78,11 +89,11 @@ The optional `isleofberk-deadlockfix` mod remains a separate artifact. Do not me
 
 ## What is included
 
-- Configurable AI movement-request throttling for three exact Isle of Berk flight/follow goals.
+- Configurable AI movement-request throttling for three exact Isle of Berk flight/follow goals. One allow/deny decision is computed at each goal `tick()` HEAD and reused for every gated call in that tick.
 - Configurable egg hatch-check cadence.
 - Configurable ShockEffect particle cadence, while ShockEffect damage cadence remains fixed at 20 ticks.
 - Twelve narrow client renderer argument-reuse transformations.
-- Eight constructor-constant egg-animation and projectile resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
+- Eight constructor-constant egg-animation and projectile fixed-resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
 - Strict target descriptors and production refmap mappings for the pinned Isle of Berk 1.2.0 bytecode.
 
 These are narrow companion mixins. The original Isle of Berk behavior remains the source of all non-targeted logic.
@@ -94,7 +105,7 @@ Forge registers `config/isleofberkperformance.toml` as a COMMON configuration. C
 | Key | Optimized default | Upstream/normal value | Effect |
 |---|---:|---:|---|
 | `ai_move_throttling_enabled` | `true` | `false` | Throttles repeated flight/follow navigation requests. |
-| `ai_move_interval_ticks` | `4` | `1` | After a goal starts, the first eligible request runs immediately; later eligible requests use this interval. `1` disables AI cadence throttling. |
+| `ai_move_interval_ticks` | `4` | `1` | One allow/deny decision is computed at each goal tick HEAD. After start, the first eligible request runs immediately; later due ticks use this interval and allow every intended call on that tick. `1` disables AI cadence throttling. |
 | `egg_hatch_check_interval_ticks` | `20` | `20` | The pinned IoB 1.2.0 behavior already checks egg warmth/hatch progress every 20 ticks. Lower values increase work and change timing granularity. |
 | `shock_particle_interval_ticks` | `8` | `8` | The pinned IoB 1.2.0 behavior already sends shock particles every 8 ticks. Lower values increase packet/client work and visual density. |
 
@@ -117,15 +128,15 @@ The historical Vonix waves through `1.2.1-vonix.13` were audited. The companion 
 
 ## Verification
 
-The 1.0.0 release is the current companion tree, rebuilt after the version promotion. Historical 0.3.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1:
+The published 1.0.0 GitHub asset is the pre-cadence-conversion companion (`SHA256 15df9183...`). The current prerelease successor coordinate is **`1.0.1-rc.1`** with a distinct artifact filename and hash; bind identity from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a successful local build — do not treat the historical 1.0.0 or 0.3.1-rc.1 JAR hashes as this successor.
 
-- `BUILD SUCCESSFUL`
+Historical 0.3.0/1.0.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1 (pre-successor bytecode):
+
+- `BUILD SUCCESSFUL` on the published trees
 - `auditPackagedJar`: companion-only archive; no bundled Isle of Berk or deadlock-fix content
 - `configFixture`: required COMMON keys, defaults, and comments present
-- `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed
-- Fresh Forge server runtime: all five common gameplay mixins applied; server reached `Done (12.028s)`
-- Independent GPT-5.6-SOL review: `PASS`
-- Final artifact SHA-256 matches the uploaded GitHub release asset
+- `RendererBytecodeFixture`: 12 renderers and eight fixed-resource methods on the Variant-Loader-compatible surface (older trees recorded 36 before dynamic dragon/egg resource pins were removed)
+- Runtime and independent review evidence cited for published tags is historical and is not automatic acceptance of this successor
 
 No quantitative performance claim is made without matched before/after profiling.
 

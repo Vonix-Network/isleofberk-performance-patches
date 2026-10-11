@@ -1,0 +1,113 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "net.minecraftforge",
+    "module": "eventbus",
+    "version": "5.0.7",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "net.jodah",
+          "module": "typetools",
+          "version": {
+            "requires": "0.8.+"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "eventbus-5.0.7.jar",
+          "url": "eventbus-5.0.7.jar",
+          "size": 42840,
+          "sha512": "9f3a3bb63e2330f25aebe50f26c57b0d0c203a199d8ff02f926db54ad65990abd4a24e0a1470de9441b17c01c2736866510089655d9d0180d24f5fa170754f7a",
+          "sha256": "e0c43041a745f8d1d7fbf29e4e1853a312f48ef56c95339b603ea9a8cd0b40a4",
+          "sha1": "5589e7511c4993054e6a80890618b46ed53519a0",
+          "md5": "26997d93ee3dba20d952f75dc0f32805"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-tree",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-api",
+          "version": {
+            "requires": "2.14.1"
+          }
+        },
+        {
+          "group": "cpw.mods",
+          "module": "modlauncher",
+          "version": {
+            "requires": "9.0.+"
+          }
+        },
+        {
+          "group": "net.jodah",
+          "module": "typetools",
+          "version": {
+            "requires": "0.8.+"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "eventbus-5.0.7.jar",
+          "url": "eventbus-5.0.7.jar",
+          "size": 42840,
+          "sha512": "9f3a3bb63e2330f25aebe50f26c57b0d0c203a199d8ff02f926db54ad65990abd4a24e0a1470de9441b17c01c2736866510089655d9d0180d24f5fa170754f7a",
+          "sha256": "e0c43041a745f8d1d7fbf29e4e1853a312f48ef56c95339b603ea9a8cd0b40a4",
+          "sha1": "5589e7511c4993054e6a80890618b46ed53519a0",
+          "md5": "26997d93ee3dba20d952f75dc0f32805"
+        }
+      ]
+    }
+  ]
+}

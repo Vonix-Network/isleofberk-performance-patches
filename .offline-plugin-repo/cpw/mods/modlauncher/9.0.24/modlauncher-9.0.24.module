@@ -1,0 +1,134 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "cpw.mods",
+    "module": "modlauncher",
+    "version": "9.0.24",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-tree",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "modlauncher-9.0.24.jar",
+          "url": "modlauncher-9.0.24.jar",
+          "size": 128503,
+          "sha512": "162b22a22455abeace604c937cb5d531978caf227887c015d0add603bb4b4e9e58aa930acc611dabf21f0202e7bcf4799f200096dd5af6dcbfb2f5426d1aa2c1",
+          "sha256": "f3bc5722ef343a85f2b8044ca27e80ef442a0a98a7b4ed1444c2e3442d3ca8bf",
+          "sha1": "0d581f56ce7e1f1bc5acb467918cb976f440604d",
+          "md5": "8899fbf733dd63a2b3d36bf1fb4affeb"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "net.sf.jopt-simple",
+          "module": "jopt-simple",
+          "version": {
+            "requires": "5.0.4"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-api",
+          "version": {
+            "requires": "2.17.1"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-core",
+          "version": {
+            "requires": "2.17.1"
+          }
+        },
+        {
+          "group": "cpw.mods",
+          "module": "securejarhandler",
+          "version": {
+            "requires": "0.9.+"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-tree",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "modlauncher-9.0.24.jar",
+          "url": "modlauncher-9.0.24.jar",
+          "size": 128503,
+          "sha512": "162b22a22455abeace604c937cb5d531978caf227887c015d0add603bb4b4e9e58aa930acc611dabf21f0202e7bcf4799f200096dd5af6dcbfb2f5426d1aa2c1",
+          "sha256": "f3bc5722ef343a85f2b8044ca27e80ef442a0a98a7b4ed1444c2e3442d3ca8bf",
+          "sha1": "0d581f56ce7e1f1bc5acb467918cb976f440604d",
+          "md5": "8899fbf733dd63a2b3d36bf1fb4affeb"
+        }
+      ]
+    }
+  ]
+}

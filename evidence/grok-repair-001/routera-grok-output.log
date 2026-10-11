@@ -1,0 +1,232 @@
+[33m⚠ Deprecated .env settings detected:[0m
+  [33m⚠[0m TERMINAL_CWD=/root found in .env — this is deprecated.
+  [2mMove to config.yaml instead:  terminal:\n    cwd: /your/project/path[0m
+  [2mThen remove the old entries from ~/.hermes/.env[0m
+
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java → b/src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java
+@@ -0,0 +1,105 @@
++package network.vonix.isleofberkperformance.internal;
++
++/**
++ * Per-goal AI movement cadence. One allow/deny decision is computed at {@code tick()} HEAD
++ * and reused for every gated call in that goal tick.
++ *
++ * <p>After {@link #reset()} (WrappedGoal start/stop), the cadence is armed: every tick stays
++ * due until the first gated request, so the first eligible request after start runs. That
++ * request starts a tick-based cooldown. Later due ticks allow every intended call; skip ticks
++ * suppress all of them.
++ *
++ * <p>Skipped {@code moveTo} calls return {@link #SKIPPED_MOVE_TO_RESULT} ({@code true}) so a
++ * suppressed refresh is not reported as a pathfinding failure. When a call is allowed, the
++ * original boolean is returned unchanged.
++ *
++ * <p>State is two booleans and a cooldown in {@code 0 .. interval-1}. No entity/world
++ * references and no unbounded counters.
++ */
++public final class AiMoveCadence {
++    /**
++     * Value returned in place of {@code PathNavigation.moveTo} when this tick is not due.
++     * {@code true} avoids caller failure/fallback branches; it does not mean a new path was set.
++     */
++    public static final boolean SKIPPED_MOVE_TO_RESULT = true;
++
++    private boolean armed = true;
++    private int cooldownRemaining;
++    private boolean allowThisTick;
++    private boolean throttlingActive;
++    private int interval = 1;
++
++    public void reset() {
++        this.armed = true;
++        this.cooldownRemaining = 0;
++        this.allowThisTick = false;
++        this.throttlingActive = false;
++        this.interval = 1;
++    }
++
++    /**
++     * Compute the single allow/deny decision for this goal tick.
++     *
++     * @param throttlingEnabled live snapshot of {@code ai_move_throttling_enabled}
++     * @param intervalTicks live snapshot of {@code ai_move_interval_ticks}
++     */
++    public void beginTick(boolean throttlingEnabled, int intervalTicks) {
++        int sanitizedInterval = intervalTicks < 1 ? 1 : intervalTicks;
++        this.interval = sanitizedInterval;
++        this.throttlingActive = throttlingEnabled && sanitizedInterval > 1;
++        if (!this.throttlingActive) {
++            this.allowThisTick = true;
++            this.armed = true;
++            this.cooldownRemaining = 0;
++            return;
++        }
++        if (this.armed) {
++            this.allowThisTick = true;
++            return;
++        }
++        if (this.cooldownRemaining <= 0) {
++            this.allowThisTick = true;
++            this.cooldownRemaining = sanitizedInterval - 1;
++            return;
++        }
++        this.allowThisTick = false;
++        this.cooldownRemaining--;
++    }
++
++    public boolean allowThisTick() {
++        return this.allowThisTick;
++    }
++
++    /**
++     * Marks that a gated request was issued on a due tick. The first such call after start
++     * disarms the cadence and starts the tick cooldown. Later calls on the same due tick
++     * are no-ops so every intended site may still run.
++     */
++    public void noteRequest() {
+… omitted 27 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java → b/src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java
+@@ -0,0 +1,58 @@
++package network.vonix.isleofberkperformance.internal;
++
++/**
++ * Reload-correct primitive snapshots of the COMMON spec. Mixins read only these values.
++ * Defaults match {@code PerformanceConfig} definitions and are replaced on Forge config
++ * load/reload — never frozen at class initialization from {@code ForgeConfigSpec.get()}.
++ */
++public final class PerformanceSettings {
++    private static final int AI_INTERVAL_MIN = 1;
++    private static final int AI_INTERVAL_MAX = 20;
++    private static final int CADENCE_MIN = 1;
++    private static final int CADENCE_MAX = 200;
++
++    private static volatile boolean aiMoveThrottlingEnabled = true;
++    private static volatile int aiMoveIntervalTicks = 4;
++    private static volatile int eggHatchCheckIntervalTicks = 20;
++    private static volatile int shockParticleIntervalTicks = 8;
++
++    private PerformanceSettings() {}
++
++    public static void overwrite(
++            boolean throttlingEnabled,
++            int aiIntervalTicks,
++            int eggIntervalTicks,
++            int shockIntervalTicks
++    ) {
++        aiMoveThrottlingEnabled = throttlingEnabled;
++        aiMoveIntervalTicks = clamp(aiIntervalTicks, AI_INTERVAL_MIN, AI_INTERVAL_MAX);
++        eggHatchCheckIntervalTicks = clamp(eggIntervalTicks, CADENCE_MIN, CADENCE_MAX);
++        shockParticleIntervalTicks = clamp(shockIntervalTicks, CADENCE_MIN, CADENCE_MAX);
++    }
++
++    public static boolean aiMoveThrottlingEnabled() {
++        return aiMoveThrottlingEnabled;
++    }
++
++    public static int aiMoveIntervalTicks() {
++        return aiMoveIntervalTicks;
++    }
++
++    public static int eggHatchCheckIntervalTicks() {
++        return eggHatchCheckIntervalTicks;
++    }
++
++    public static int shockParticleIntervalTicks() {
++        return shockParticleIntervalTicks;
++    }
++
++    private static int clamp(int value, int min, int max) {
++        if (value < min) {
++            return min;
++        }
++        if (value > max) {
++            return max;
++        }
++        return value;
++    }
++}
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java → b/src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java
+@@ -1,16 +1,26 @@
+ package network.vonix.isleofberkperformance.config;
+ 
+ import net.minecraftforge.common.ForgeConfigSpec;
++import net.minecraftforge.eventbus.api.SubscribeEvent;
++import net.minecraftforge.fml.common.Mod;
++import net.minecraftforge.fml.event.config.ModConfigEvent;
++import network.vonix.isleofberkperformance.IsleOfBerkPerformance;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ 
+ /**
+  * Common-side controls for cadence changes that intentionally affect gameplay or visual timing.
+  * Forge owns loading/reloading the values from config/isleofberkperformance.toml.
+  *
+- * <p>AI movement-request phase: the first eligible gated request after a goal lifecycle
+- * reset runs immediately; later eligible requests run every {@code ai_move_interval_ticks}.
+- * That matches upstream "request now" at activation, then applies the configured interval.
+- * Interval {@code 1} or {@code ai_move_throttling_enabled=false} keeps every eligible request.
++ * <p>AI movement cadence is tick-based. {@link network.vonix.isleofberkperformance.internal.AiMoveCadence}
++ * computes one allow/deny decision at each goal {@code tick()} HEAD. After WrappedGoal start
++ * the cadence is armed so the first eligible request runs immediately; later due ticks occur
++ * every {@code ai_move_interval_ticks} goal ticks and allow every intended call on that tick.
++ * Interval {@code 1} or {@code ai_move_throttling_enabled=false} keeps every request.
++ *
++ * <p>Hot paths read {@link PerformanceSettings} primitives. Those snapshots update through
++ * {@link ModConfigEvent} load/reload, not by calling {@code ForgeConfigSpec.get()} per request.
+  */
++@Mod.EventBusSubscriber(modid = IsleOfBerkPerformance.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+ public final class PerformanceConfig {
+     public static final ForgeConfigSpec SPEC;
+ 
+@@ -25,7 +35,8 @@
+                 "Isle of Berk Performance Patches common configuration.",
+                 "These controls intentionally change gameplay timing or visual cadence.",
+                 "For AI movement, set an interval to 1 to disable that cadence optimization and use every eligible request.",
+-                "When throttling is enabled, the first eligible request after a goal starts runs immediately, then every configured interval.",
++                "When throttling is enabled, the first eligible request after a goal starts runs immediately.",
++                "Later due decisions are computed once per goal tick: every configured interval, all intended calls on that tick run.",
+                 "Damage cadence is not configurable and remains fixed at 20 ticks."
+         );
+         builder.push("performance");
+@@ -39,9 +50,10 @@
+                 .define("ai_move_throttling_enabled", true);
+         AI_MOVE_INTERVAL_TICKS = builder
+                 .comment(
+-                        "AI movement-request interval in ticks when throttling is enabled.",
++                        "AI movement-request interval in goal ticks when throttling is enabled.",
+                         "Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.",
+-                        "The first eligible request after a goal starts runs immediately; later eligible requests use this interval.",
++                        "The first eligible request after a goal starts runs immediately; later due ticks use this interval.",
++                        "On a due tick every intended movement/circle call may run; on a skip tick all of them are skipped.",
+                         "Tradeoff: larger intervals reduce AI/navigation work but can make following or flight corrections less responsive.",
+                         "1 disables cadence optimization for this control."
+                 )
+@@ -70,28 +82,25 @@
+ 
+     private PerformanceConfig() {}
+ 
+-    /**
+-     * @return true when throttling is disabled or the interval is 1 (every eligible request).
+-     */
+-    public static boolean shouldRunAiMove() {
+-        return !AI_MOVE_THROTTLING_ENABLED.get() || AI_MOVE_INTERVAL_TICKS.get() <= 1;
++    @SubscribeEvent
++    public static void onModConfig(ModConfigEvent event) {
++        if (event.getConfig().getSpec() == SPEC) {
++            refreshSnapshots();
++        }
+     }
+ 
+     /**
+-     * Whether one gated movement/circle request should run.
+-     *
+-     * @param moveTick 1-based count of gated request sites since the last goal start/stop reset
+-     * @return true for the first request after reset, then every configured interval
++     * Copies loaded spec values into {@link PerformanceSettings}. Safe no-op until the spec is loaded.
+      */
+-    public static boolean shouldRunAiMove(int moveTick) {
+-        return shouldRunAiMove() || shouldRunThrottledAiMove(moveTick, AI_MOVE_INTERVAL_TICKS.get());
+… omitted 20 diff line(s) across 1 additional file(s)/section(s)
+
+session_id: 20260818_205302_dd0749

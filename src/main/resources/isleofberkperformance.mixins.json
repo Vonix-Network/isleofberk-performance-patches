@@ -6,6 +6,7 @@
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
     "WrappedGoalMixin",
+    "ADragonBaseBaseFlyingRideableGoalMixin",
     "DragonFlyAndAttackAirbourneTargetGoalMixin",
     "UntamedDragonCircleFlightGoalMixin",
     "DragonFollowPlayerFlyingMixin",

@@ -1,0 +1,111 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "net.minecraftforge",
+    "module": "forgespi",
+    "version": "4.0.15-4.x",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "forgespi-4.0.15-4.x.jar",
+          "url": "forgespi-4.0.15-4.x.jar",
+          "size": 22072,
+          "sha512": "e91ecfc483cb8857686491db0698549c2664d947e03cb65ff7dc797bfc2f4573de5fe9db2058bda1801b5547f8682018f6048d85cc3930551526d71252c87fc1",
+          "sha256": "afbea13adeb1def87a358ad529acb157506b34c3ec62d02033d584ea6a28bf14",
+          "sha1": "1d10ffe779684cb20f2b63bdcc030152e47116bb",
+          "md5": "8509a972b27c9f037d55c61e16fc051f"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 16,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "cpw.mods",
+          "module": "modlauncher",
+          "version": {
+            "requires": "9.0.7"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-tree",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-api",
+          "version": {
+            "requires": "2.14.1"
+          }
+        },
+        {
+          "group": "org.apache.maven",
+          "module": "maven-artifact",
+          "version": {
+            "requires": "3.8.1"
+          }
+        },
+        {
+          "group": "cpw.mods",
+          "module": "securejarhandler",
+          "version": {
+            "requires": "0.9.52"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "forgespi-4.0.15-4.x.jar",
+          "url": "forgespi-4.0.15-4.x.jar",
+          "size": 22072,
+          "sha512": "e91ecfc483cb8857686491db0698549c2664d947e03cb65ff7dc797bfc2f4573de5fe9db2058bda1801b5547f8682018f6048d85cc3930551526d71252c87fc1",
+          "sha256": "afbea13adeb1def87a358ad529acb157506b34c3ec62d02033d584ea6a28bf14",
+          "sha1": "1d10ffe779684cb20f2b63bdcc030152e47116bb",
+          "md5": "8509a972b27c9f037d55c61e16fc051f"
+        }
+      ]
+    }
+  ]
+}

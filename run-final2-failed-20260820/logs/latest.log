@@ -1,0 +1,55 @@
+[20Aug2026 00:58:00.569] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 1.18, --assetsDir, /root/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 40.3.12, --fml.mcVersion, 1.18.2, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20220404.173914, --mixin.config, isleofberkperformance.mixins.json]
+[20Aug2026 00:58:00.574] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 9.1.3+9.1.3+main.9b69c82a starting: java version 17.0.19 by Ubuntu
+[20Aug2026 00:58:00.797] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/root/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%2324!/ Service=ModLauncher Env=CLIENT
+[20Aug2026 00:58:00.879] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Configuration file /root/work/iob-packaged-client-harness-20260820/run/config/fml.toml is not correct. Correcting
+[20Aug2026 00:58:00.890] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [defaultConfigPath] was corrected from null to defaultconfigs
+[20Aug2026 00:58:00.893] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [maxThreads] was corrected from null to -1
+[20Aug2026 00:58:01.523] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.18.2-40.3.12/a4d3b9bca5244725d837f730940cd38d2f51b9b2/javafmllanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[20Aug2026 00:58:01.525] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.18.2-40.3.12/568738f00256bf1a0c77598cc5c8b1924dc5ff98/lowcodelanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[20Aug2026 00:58:01.527] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.18.2-40.3.12/7b7adedca7ec4d9cb25bd19432a6c24d07ea3c17/mclanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[20Aug2026 00:58:01.529] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.18.2-40.3.12/ccabc75ad01762dd0fa17f258ca119cc84d57b04/fmlcore-1.18.2-40.3.12.jar is missing mods.toml file
+[20Aug2026 00:58:01.793] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[20Aug2026 00:58:03.715] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[20Aug2026 00:58:03.744] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, /root/.gradle/caches/forge_gradle/assets, --assetIndex, 1.18]
+[20Aug2026 00:58:04.221] [main/INFO] [mixin/]: Remapping refMap isleofberkperformance.refmap.json using /root/work/iob-packaged-client-harness-20260820/build/createSrgToMcp/output.srg
+[20Aug2026 00:58:04.223] [main/INFO] [mixin/]: Remapping refMap isleofberkdeadlockfix.refmap.json using /root/work/iob-packaged-client-harness-20260820/build/createSrgToMcp/output.srg
+[20Aug2026 00:58:04.239] [main/INFO] [mixin/]: Remapping refMap iobvariantloader.refmap.json using /root/work/iob-packaged-client-harness-20260820/build/createSrgToMcp/output.srg
+[20Aug2026 00:58:09.112] [pool-3-thread-1/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
+[20Aug2026 00:58:11.704] [Render thread/FATAL] [mixin/]: Mixin apply failed iobvariantloader.mixins.json:client.minecraft.ResourceLoadStateTrackerMixin -> net.minecraft.client.ResourceLoadStateTracker: org.spongepowered.asm.mixin.transformer.throwables.InvalidMixinException @Shadow field f_168552_ was not located in the target class net.minecraft.client.ResourceLoadStateTracker. Using refmap iobvariantloader.refmap.json
+org.spongepowered.asm.mixin.transformer.throwables.InvalidMixinException: @Shadow field f_168552_ was not located in the target class net.minecraft.client.ResourceLoadStateTracker. Using refmap iobvariantloader.refmap.json
+	at org.spongepowered.asm.mixin.transformer.MixinPreProcessorStandard.attachFields(MixinPreProcessorStandard.java:629) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinPreProcessorStandard.attach(MixinPreProcessorStandard.java:305) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinPreProcessorStandard.createContextFor(MixinPreProcessorStandard.java:280) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinInfo.createContextFor(MixinInfo.java:1288) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.apply(MixinApplicatorStandard.java:292) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.apply(TargetClassContext.java:383) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.applyMixins(TargetClassContext.java:365) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:363) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:250) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.service.modlauncher.MixinTransformationHandler.processClass(MixinTransformationHandler.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.launch.MixinLaunchPluginLegacy.processClass(MixinLaunchPluginLegacy.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at cpw.mods.modlauncher.serviceapi.ILaunchPluginService.processClassWithFlags(ILaunchPluginService.java:156) ~[modlauncher-9.1.3.jar:9.1.3+9.1.3+main.9b69c82a]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:88) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:120) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.maybeTransformClassBytes(TransformingClassLoader.java:50) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:113) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:135) ~[securejarhandler-1.0.8.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at net.minecraft.client.Minecraft.<init>(Minecraft.java:384) ~[forge-1.18.2-40.3.12_mapped_official_1.18.2.jar%2389!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:169) ~[forge-1.18.2-40.3.12_mapped_official_1.18.2.jar%2389!/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.lambda$launchService$0(ForgeClientUserdevLaunchHandler.java:24) ~[fmlloader-1.18.2-40.3.12.jar%230!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:37) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:106) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:77) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:149) [bootstraplauncher-1.0.0.jar:?]

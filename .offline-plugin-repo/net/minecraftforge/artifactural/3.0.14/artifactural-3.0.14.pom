@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.minecraftforge</groupId>
+  <artifactId>artifactural</artifactId>
+  <version>3.0.14</version>
+  <name>artifactural</name>
+  <description>A Gradle artifact processing and management tool</description>
+  <url>https://github.com/MinecraftForge/Artifactural/</url>
+  <licenses>
+    <license>
+      <name>LGPL-2.1</name>
+      <url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git://github.com/MinecraftForge/Artifactural.git</connection>
+    <developerConnection>scm:git:git@github.com:MinecraftForge/Artifactural.git</developerConnection>
+    <url>https://github.com/MinecraftForge/Artifactural/</url>
+  </scm>
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/MinecraftForge/Artifactural/issues</url>
+  </issueManagement>
+</project>

@@ -1,0 +1,176 @@
+{
+  "schema": "sol-deep-readonly-review-v1",
+  "candidate_pin": {
+    "repository": "/root/work/isleofberk-performance-patches",
+    "head": "515b9a677a39f72e9be12330355cbf765dbafcea",
+    "tree": "eb4ede303e40709356fe6385e5f925a68c9146b4",
+    "tag_at_head": "v1.0.0",
+    "manifest": "evidence/sol-deep-001/source-manifest.json",
+    "manifest_sha256": "f89831b868089e16be45de70f61d73d4e4ed4c961142b2e8031169808616a86b",
+    "release_artifact": "release-download/isleof-berk-performance-patches-1.0.0.jar",
+    "release_artifact_sha256": "15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2"
+  },
+  "identity_recheck": {
+    "status": "MATCH_WITH_MANIFEST_COVERAGE_GAP",
+    "head_match": true,
+    "tree_match": true,
+    "tag_resolves_to_head": true,
+    "manifest_digest_match": true,
+    "manifest_entries_checked": 40,
+    "manifest_entry_mismatches": 0,
+    "tracked_files": 45,
+    "tracked_files_omitted_from_manifest": [
+      ".gitignore",
+      "gradle/wrapper/gradle-wrapper.jar",
+      "gradle/wrapper/gradle-wrapper.properties",
+      "gradlew",
+      "gradlew.bat"
+    ],
+    "artifact_digest_match": true,
+    "artifact_size_bytes": 32865,
+    "artifact_entries": 38,
+    "artifact_classes": 26,
+    "artifact_zip_integrity": "PASS",
+    "artifact_package_scope": "Companion classes only; no com/GACMD implementation classes, deadlock-fix classes, duplicate entries, shaded dependencies, or unexpected resources found.",
+    "worktree": "Tracked tree matches HEAD; only the requested evidence/ and release-download/ directories are untracked."
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "P1_HIGH",
+      "category": "CPU/MSPT and behavior",
+      "title": "The AI interval is counted per redirected invocation, not per goal tick",
+      "locations": [
+        "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java:40",
+        "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java:39",
+        "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java:54",
+        "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java:83"
+      ],
+      "causal_explanation": "Each counter advances only when execution reaches a redirected moveTo/circleEntity call. DragonFollowPlayerFlying has five static invocation sites sharing one counter, while goal ticks containing no eligible invocation do not advance it. Consequently ai_move_interval_ticks measures eligible call occurrences, and can advance more than once in a tick if more than one site executes. This is not a stable N-tick cadence despite the config name and tick-based documentation.",
+      "impact": "Movement correction frequency becomes branch-dependent. The first request is immediate, but subsequent requests are not demonstrably separated by the configured number of server ticks.",
+      "exact_repair": "Track cadence once at tick() HEAD and cache one allow/deny decision for the whole tick. Preserve first-eligible-request behavior with an armed/cooldown state, allow all intended calls on a due tick, reset the state at WrappedGoal start/stop, and keep the counter bounded to avoid integer overflow. Alternatively rename the option and documentation to an eligible-request-count interval if that behavior is intentional."
+    },
+    {
+      "id": "F-002",
+      "severity": "P1_HIGH",
+      "category": "Tests and Mixin correctness",
+      "title": "Tests do not prove transformed interval, return-value, lifecycle, or constant-site semantics",
+      "locations": [
+        "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java:12",
+        "src/test/java/network/vonix/isleofberkperformance/verification/GameplayBytecodeFixture.java:32",
+        "src/test/java/network/vonix/isleofberkperformance/verification/MixinLifecycleFixture.java:23",
+        "src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java:61"
+      ],
+      "causal_explanation": "AiMoveCadenceFixture tests only the pure modulo predicate. GameplayBytecodeFixture counts static invocation and bipush instructions but does not analyze branch exclusivity, calls per tick, whether moveTo's boolean result controls downstream behavior, or whether constants are the intended modulo divisors. MixinLifecycleFixture reflects untransformed mixin classes rather than exercising a transformed WrappedGoal. The required original IoB JAR is absent from this frozen checkout, so those upstream fixtures are not independently reproducible here.",
+      "impact": "A redirect can return false on a skipped call and alter caller control flow, or cadence can vary by branch, while all present fixtures still pass.",
+      "exact_repair": "Add an ASM-based target test that verifies control flow and return-value consumption, plus post-Mixin transformed-bytecode checks. Add an integration fixture covering zero, one, and multiple eligible calls per tick; start/stop/restart; disabled and interval-1 modes; config reload; and long-lived counter behavior. Verify the egg and shock constants by their IREM/packet/damage dataflow, not only literal counts. Pin and record the tested IoB dependency digest."
+    },
+    {
+      "id": "F-003",
+      "severity": "P2_MEDIUM",
+      "category": "Hot-path overhead",
+      "title": "Default throttled requests perform repeated Forge config lookups",
+      "locations": [
+        "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java:76",
+        "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java:86",
+        "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java:18",
+        "src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java:22"
+      ],
+      "causal_explanation": "At the default settings, shouldRunAiMove(int) reads the enabled value once and the interval value twice for every redirected request. Egg and shock injectors also read ForgeConfigSpec values from recurring gameplay paths. The release bytecode confirms the duplicate get()/unboxing path.",
+      "impact": "The patch adds config-access overhead to the same hot paths it is intended to reduce. No claim is made that this outweighs avoided navigation work, but it is unnecessary.",
+      "exact_repair": "Snapshot each setting once per goal tick or maintain validated volatile primitive caches updated by Forge config load/reload events. Test reload visibility and avoid caching values only at class initialization."
+    },
+    {
+      "id": "F-004",
+      "severity": "P2_MEDIUM",
+      "category": "Release evidence",
+      "title": "The committed candidate report is stale and does not attest the 1.0.0 artifact",
+      "locations": [
+        "CANDIDATE-REPORT.md:1",
+        "CANDIDATE-REPORT.md:7",
+        "CANDIDATE-REPORT.md:10",
+        "CANDIDATE-REPORT.md:21",
+        "CANDIDATE-REPORT.md:58",
+        "README.md:120",
+        "README.md:125"
+      ],
+      "causal_explanation": "CANDIDATE-REPORT.md identifies 0.3.1-rc.1, commit dcf712b, a different JAR and digest, and 36 fixed-resource methods. The current tree is 1.0.0 and the current fixture covers eight fixed resources after Variant Loader compatibility removals. README explicitly labels much of its verification as historical and still lists the historical 36-method result.",
+      "impact": "Historical build/runtime success cannot establish that this exact HEAD and exact release JAR applied correctly or coexisted with current Variant Loader and deadlock-fix versions.",
+      "exact_repair": "Replace or clearly archive the old report. Produce a 1.0.0 report pinned to this HEAD/tree/JAR, with current eight-resource results, dependency digests, post-transform checks, and fresh client/server coexistence evidence."
+    },
+    {
+      "id": "F-005",
+      "severity": "P2_MEDIUM",
+      "category": "Provenance",
+      "title": "The source manifest does not cover the complete tracked build input",
+      "locations": [
+        "evidence/sol-deep-001/source-manifest.json:2"
+      ],
+      "causal_explanation": "All 40 listed hashes match, but five of 45 tracked files are absent, including the Gradle wrapper JAR and wrapper configuration used by the documented build command.",
+      "impact": "The HEAD tree pins these files, but the standalone source-manifest digest is not a complete build-input manifest.",
+      "exact_repair": "Include every tracked file, or add an explicit exclusions section with rationale and separately pin the wrapper JAR/configuration hashes."
+    },
+    {
+      "id": "F-006",
+      "severity": "P2_MEDIUM",
+      "category": "Mixin coexistence",
+      "title": "Variant Loader and deadlock-fix coexistence is structurally plausible but not tested for this release",
+      "locations": [
+        "src/main/resources/isleofberkperformance.mixins.json:7",
+        "src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java:87",
+        "src/main/java/network/vonix/isleofberkperformance/mixin/GronckleRenderMixin.java:18"
+      ],
+      "causal_explanation": "Client classes are correctly confined to the client list, dynamic dragon and egg model/texture cancellations were removed, and the JAR does not bundle the deadlock fix. However, compatibility checks are source-string exclusions and upstream body checks. The twelve default-priority cancellable HEAD renderer injectors replace whole method bodies and no current multi-mod transformed-class or client runtime test is supplied.",
+      "impact": "No concrete collision was found, but same-method injections from another companion can be bypassed or conflict depending on priority and cancellation order.",
+      "exact_repair": "Test the exact release with supported Variant Loader versions and the separate deadlock-fix JAR, capture applied-mixin/transformed-class evidence, and prefer a narrower invocation-level transformation where practical."
+    }
+  ],
+  "required_repairs": [
+    {
+      "priority": 1,
+      "finding_ids": ["F-001", "F-002"],
+      "repair": "Define and implement true tick-based AI cadence, then prove it against transformed pinned target bytecode and lifecycle/branch scenarios."
+    },
+    {
+      "priority": 2,
+      "finding_ids": ["F-004", "F-006"],
+      "repair": "Generate exact 1.0.0 client/server and coexistence evidence instead of relying on predecessor evidence."
+    },
+    {
+      "priority": 3,
+      "finding_ids": ["F-003"],
+      "repair": "Remove duplicate recurring ForgeConfigSpec reads while retaining reload correctness."
+    },
+    {
+      "priority": 4,
+      "finding_ids": ["F-005"],
+      "repair": "Make the source manifest complete or explicitly scoped."
+    }
+  ],
+  "performance_evidence": {
+    "matched_before_after_profiling": false,
+    "quantitative_improvement_supported": false,
+    "tests_executed_during_review": false,
+    "reason_tests_not_executed": "Read-only review prohibited building; the local IoB and GeckoLib dependency JARs required by the fixtures are also absent.",
+    "qualitative_observations": [
+      "The three goal mixins can suppress navigation/circle requests, but their effective tick cadence is not established.",
+      "Eight fixed ResourceLocation instances are bounded static values and replace repeated upstream construction at their targeted methods.",
+      "Renderer mixins reuse the supplied texture argument, but cancellable injection overhead and net allocation benefit were not profiled.",
+      "Egg and shock defaults equal upstream values, so those two controls provide no default cadence reduction.",
+      "No unbounded collections, static entity/world references, ThreadLocals, or stale-reference cleanup defects were found.",
+      "Per-goal retained state is one primitive int; static ResourceLocations and Forge config objects are bounded to the normal mod classloader lifetime."
+    ],
+    "live_deployment_verified": false,
+    "artifact_presence_proves_live_deployment": false
+  },
+  "effects": {
+    "authority": "ADVISORY_ONLY",
+    "files_modified": false,
+    "build_performed": false,
+    "published": false,
+    "deployed": false,
+    "server_restarted": false,
+    "external_state_changed": false
+  },
+  "verdict": "REJECT"
+}

@@ -1,0 +1,21 @@
+Perform a deep independent read-only code review of the exact frozen repository candidate.
+
+Repository: /root/work/isleofberk-performance-patches
+HEAD: 515b9a677a39f72e9be12330355cbf765dbafcea
+HEAD tree: eb4ede303e40709356fe6385e5f925a68c9146b4
+Source manifest: /root/work/isleofberk-performance-patches/evidence/sol-deep-001/source-manifest.json
+Manifest SHA-256: f89831b868089e16be45de70f61d73d4e4ed4c961142b2e8031169808616a86b
+Release artifact for comparison only: /root/work/isleofberk-performance-patches/release-download/isleof-berk-performance-patches-1.0.0.jar
+Release artifact SHA-256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
+
+Scope: Isle of Berk Performance Patches companion, Minecraft 1.18.2, Forge 40.3.x, Java 17, Isle of Berk 1.2.0, GeckoLib 3.0.57.
+
+Review deeply for:
+1. RAM retention/leaks: static state, per-entity/per-goal state, unbounded collections, stale references, allocations in hot paths, ResourceLocation/model allocation, lifecycle cleanup, classloader retention.
+2. CPU/MSPT: per-tick loops, redirected invocation counts, movement/path/navigation semantics, tick-vs-call counter errors, repeated scans, packet pressure, renderer/client separation.
+3. Mixin correctness: exact descriptors, priorities, redirect behavior, lifecycle resets, cancellation, side separation, coexistence with Variant Loader and separate deadlock fix, behavioral changes.
+4. Tests: whether tests actually prove the advertised interval semantics, concurrency/lifecycle safety, bytecode targets, and package integrity.
+5. Identify concrete findings with severity, file/line, causal explanation, and exact repair proposal. Do not claim quantitative improvement without matched profiling.
+6. Inspect current tree and exact release artifact; source-present/release-present is not proof of live deployment.
+
+Do not edit files, build, publish, deploy, restart, or inspect unrelated workspaces. Recompute HEAD/tree/manifest identity and report any mismatch. Return one complete JSON object with schema, candidate_pin, identity_recheck, findings, required_repairs, performance_evidence, effects, and verdict (ACCEPT/REJECT/BLOCKED). This is advisory review only; no effect authority.

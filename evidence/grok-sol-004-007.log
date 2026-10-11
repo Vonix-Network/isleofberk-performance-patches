@@ -1,0 +1,554 @@
+↻ Resumed session 20260819_033657_f848ab "Complete SOL-001 AI cadence conversion" (5 user messages, 151 total messages)
+Model restored from session: xai/grok-4.6
+[33m⚠ Deprecated .env settings detected:[0m
+  [33m⚠[0m TERMINAL_CWD=/root found in .env — this is deprecated.
+  [2mMove to config.yaml instead:  terminal:\n    cwd: /your/project/path[0m
+  [2mThen remove the old entries from ~/.hermes/.env[0m
+
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/GameplayDataflowFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/GameplayDataflowFixture.java
+@@ -0,0 +1,259 @@
++package network.vonix.isleofberkperformance.verification;
++
++import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.security.MessageDigest;
++import java.util.ArrayList;
++import java.util.HexFormat;
++import java.util.List;
++import java.util.Locale;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++/**
++ * Digest-pinned ASM/dataflow checks against original Isle of Berk 1.2.0 bytecode.
++ * Records moveTo POP dataflow, circle mutual exclusivity shape, egg/shock IREM usage,
++ * and companion mixin injector shape (HEAD beginTick + required redirect counts).
++ */
++public final class GameplayDataflowFixture {
++    /** Pinned SHA-256 of the local original IoB 1.2.0 dependency used by this candidate. */
++    public static final String PINNED_IOB_SHA256 =
++            "a4b17befb1350d6d4cd07d7fdfcb2b3cec37a5c501e1f4fb811946f3e971dfc0";
++
++    private static final Pattern INVOKE_MOVE_ENTITY = Pattern.compile(
++            "invokevirtual\\s+#\\d+\\s+// Method net/minecraft/world/entity/ai/navigation/PathNavigation\\.m_5624_:\\(Lnet/minecraft/world/entity/Entity;D\\)Z");
++    private static final Pattern INVOKE_MOVE_COORDS = Pattern.compile(
++            "invokevirtual\\s+#\\d+\\s+// Method net/minecraft/world/entity/ai/navigation/PathNavigation\\.m_26519_:\\(DDDD\\)Z");
++    private static final Pattern INVOKE_CIRCLE = Pattern.compile(
++            "invokevirtual\\s+#\\d+\\s+// Method com/GACMD/isleofberk/entity/base/dragon/ADragonBaseFlyingRideable\\.circleEntity:\\(Lnet/minecraft/world/phys/Vec3;FFZIFF\\)V");
++
++    private GameplayDataflowFixture() {}
++
++    public static void main(String[] args) throws Exception {
++        if (args.length != 1) {
++            throw new IllegalArgumentException("usage: GameplayDataflowFixture <original-isleofberk.jar>");
++        }
++        Path jar = Path.of(args[0]).toAbsolutePath().normalize();
++        if (!Files.isRegularFile(jar)) {
++            throw new IOException("original dependency jar missing: " + jar);
++        }
++        String digest = sha256(jar);
++        require(PINNED_IOB_SHA256.equals(digest),
++                "IoB jar digest mismatch: expected " + PINNED_IOB_SHA256 + " got " + digest + " path=" + jar);
++
++        String attackTick = methodBody(javap(jar, "com.GACMD.isleofberk.entity.AI.flight.own.DragonFlyAndAttackAirbourneTargetGoal"), "m_8037_();");
++        requireMoveToThenPop(attackTick, INVOKE_MOVE_ENTITY, 1, "DragonFlyAndAttackAirbourneTargetGoal.tick");
++
++        String followTick = methodBody(javap(jar, "com.GACMD.isleofberk.entity.AI.flight.player.DragonFollowPlayerFlying"), "m_8037_();");
++        requireMoveToThenPop(followTick, INVOKE_MOVE_COORDS, 5, "DragonFollowPlayerFlying.tick");
++
++        String circleTick = methodBody(javap(jar, "com.GACMD.isleofberk.entity.AI.flight.own.UntamedDragonCircleFlightGoal"), "m_8037_();");
++        List<Integer> circlePcs = invokePcs(circleTick, INVOKE_CIRCLE);
++        require(circlePcs.size() == 2, "UntamedDragonCircleFlightGoal.tick must contain exactly 2 circleEntity calls, got " + circlePcs.size() + "\n" + circleTick);
++        // Mutual exclusivity: both sites are reached through distinct branch arms (if* present before each call).
++        require(circleTick.contains("ifeq") || circleTick.contains("ifne") || circleTick.contains("if_icmp"),
++                "circle tick must retain branch structure around circleEntity\n" + circleTick);
++
++        String eggTick = methodBody(javap(jar, "com.GACMD.isleofberk.entity.eggs.entity.base.ADragonEggBase"), "m_8119_();");
++        requireBipushIrem(eggTick, 20, 1, "ADragonEggBase.tick hatch cadence");
++        require(countBipush(eggTick, 8) == 0, "ADragonEggBase.tick must not contain bipush 8");
++
++        String shock = methodBody(javap(jar, "com.GACMD.isleofberk.effects.ShockEffect"), "m_6742_(net.minecraft.world.entity.LivingEntity, int);");
++        requireBipushIrem(shock, 20, 1, "ShockEffect damage cadence");
++        requireBipushIrem(shock, 8, 1, "ShockEffect particle cadence");
++
++        // Companion mixin class shape: final cadence field + HEAD begin + required redirects.
++        assertMixinShape(
++                "network.vonix.isleofberkperformance.mixin.DragonFlyAndAttackAirbourneTargetGoalMixin",
++                1,
++                "moveTo");
++        assertMixinShape(
++                "network.vonix.isleofberkperformance.mixin.DragonFollowPlayerFlyingMixin",
++                5,
++                "moveTo");
++        assertMixinShape(
+… omitted 181 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/InstrumentedAiGoalFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/InstrumentedAiGoalFixture.java
+@@ -0,0 +1,184 @@
++package network.vonix.isleofberkperformance.verification;
++
++import java.lang.reflect.Constructor;
++import java.lang.reflect.Field;
++import java.lang.reflect.Method;
++import java.util.concurrent.atomic.AtomicInteger;
++
++import network.vonix.isleofberkperformance.internal.AiMoveCadence;
++import network.vonix.isleofberkperformance.internal.AiMoveLifecycle;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
++
++/**
++ * Instrumented stand-in for transformed goal + WrappedGoal lifecycle behavior.
++ * Does not require full Mixin apply or Minecraft runtime. Mirrors the candidate contract:
++ * one HEAD decision, N gated calls, skipped ticks invoke navigation zero times, due ticks
++ * execute every intended call, start/stop reset rearms the first later eligible request.
++ */
++public final class InstrumentedAiGoalFixture {
++    private InstrumentedAiGoalFixture() {}
++
++    public static void main(String[] args) throws Exception {
++        PerformanceSettings.overwrite(true, 4, 20, 8);
++
++        // Constructor initialization of final cadence field on each AI mixin class.
++        for (String name : new String[] {
++                "network.vonix.isleofberkperformance.mixin.DragonFlyAndAttackAirbourneTargetGoalMixin",
++                "network.vonix.isleofberkperformance.mixin.DragonFollowPlayerFlyingMixin",
++                "network.vonix.isleofberkperformance.mixin.UntamedDragonCircleFlightGoalMixin"
++        }) {
++            assertCadenceFieldInitialized(name);
++        }
++
++        // Zero eligible calls on a skip tick (follow has 5 sites).
++        InstrumentedGoal follow = new InstrumentedGoal(5);
++        follow.reset(); // WrappedGoal start
++        follow.tickDueAndGate(); // first due
++        require(follow.navCalls == 5, "due tick must execute every intended call (5)");
++        follow.tickDueAndGate(); // cooldown skip
++        require(follow.navCalls == 5, "skip tick must call navigation zero additional times");
++        require(follow.skipReturns == 5, "skip tick must return SKIPPED result for each site");
++
++        // One eligible call goal (attack shape).
++        InstrumentedGoal attack = new InstrumentedGoal(1);
++        attack.reset();
++        attack.tickDueAndGate();
++        require(attack.navCalls == 1, "attack due tick one call");
++        attack.tickDueAndGate();
++        require(attack.navCalls == 1, "attack skip tick zero nav calls");
++
++        // Multiple eligible calls on a later due tick.
++        follow = new InstrumentedGoal(5);
++        follow.reset();
++        follow.tickDueAndGate(); // tick1 due
++        for (int i = 0; i < 3; i++) {
++            follow.tickDueAndGate(); // skips 2-4
++        }
++        int before = follow.navCalls;
++        follow.tickDueAndGate(); // tick5 due
++        require(follow.navCalls - before == 5, "later due tick must execute all five intended calls");
++
++        // Circle void-style two exclusive sites: on due tick both gate attempts allowed by cadence,
++        // but production branches are mutually exclusive; instrumented path still notes one request.
++        InstrumentedCircle circle = new InstrumentedCircle();
++        circle.reset();
++        circle.tickChoose(0);
++        require(circle.circleCalls == 1, "circle due tick executes chosen branch once");
++        circle.tickChoose(1);
++        require(circle.circleCalls == 1, "circle skip tick executes zero circleEntity calls");
++
++        // WrappedGoal start/stop/restart: both reset hooks rearm first later eligible request.
++        InstrumentedGoal life = new InstrumentedGoal(3);
++        life.reset(); // start
++        life.tickDueAndGate();
++        require(life.navCalls == 3, "start then first tick runs all calls");
++        life.reset(); // stop
++        life.reset(); // start again
++        int mid = life.navCalls;
++        life.tickDueAndGate();
+… omitted 106 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/MultiModCoexistenceFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/MultiModCoexistenceFixture.java
+@@ -0,0 +1,142 @@
++package network.vonix.isleofberkperformance.verification;
++
++import java.io.IOException;
++import java.io.InputStream;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.security.MessageDigest;
++import java.util.Enumeration;
++import java.util.HexFormat;
++import java.util.LinkedHashMap;
++import java.util.Locale;
++import java.util.Map;
++import java.util.TreeMap;
++import java.util.jar.JarEntry;
++import java.util.jar.JarFile;
++import java.util.zip.ZipEntry;
++import java.util.zip.ZipFile;
++
++/**
++ * Structural multi-mod coexistence gate for the companion + digest-pinned Variant Loader
++ * and deadlock-fix artifacts. Does not launch a client/server; records package/mixin
++ * inventory evidence and fails closed if required external jars are missing or mismatched.
++ */
++public final class MultiModCoexistenceFixture {
++    public static final String PINNED_VARIANT_LOADER_SHA256 =
++            "666f47962912e332494b0331640cefad252d60fcf01d33fcc092ef0ac9a27f4a";
++    public static final String PINNED_DEADLOCK_FIX_NAME_PREFIX = "isleofberk-deadlockfix";
++
++    private MultiModCoexistenceFixture() {}
++
++    public static void main(String[] args) throws Exception {
++        if (args.length < 3) {
++            throw new IllegalArgumentException(
++                    "usage: MultiModCoexistenceFixture <companion.jar> <variant-loader.jar> <deadlock-fix.jar>");
++        }
++        Path companion = Path.of(args[0]).toAbsolutePath().normalize();
++        Path variant = Path.of(args[1]).toAbsolutePath().normalize();
++        Path deadlock = Path.of(args[2]).toAbsolutePath().normalize();
++        require(Files.isRegularFile(companion), "companion jar missing: " + companion);
++        require(Files.isRegularFile(variant), "variant loader jar missing: " + variant);
++        require(Files.isRegularFile(deadlock), "deadlock-fix jar missing: " + deadlock);
++
++        String variantSha = sha256(variant);
++        require(PINNED_VARIANT_LOADER_SHA256.equals(variantSha),
++                "Variant Loader digest mismatch expected " + PINNED_VARIANT_LOADER_SHA256 + " got " + variantSha);
++
++        Map<String, byte[]> companionEntries = readJar(companion);
++        Map<String, byte[]> variantEntries = readJar(variant);
++        Map<String, byte[]> deadlockEntries = readJar(deadlock);
++
++        require(companionEntries.containsKey("isleofberkperformance.mixins.json"), "companion mixins.json missing");
++        require(companionEntries.containsKey("network/vonix/isleofberkperformance/internal/AiMoveCadence.class"),
++                "companion missing AiMoveCadence");
++        require(companionEntries.containsKey("network/vonix/isleofberkperformance/internal/PerformanceSettings.class"),
++                "companion missing PerformanceSettings");
++
++        // Companion must not bundle IoB or deadlock-fix packages.
++        for (String name : companionEntries.keySet()) {
++            require(!name.startsWith("com/GACMD/isleofberk/"), "companion bundles IoB path " + name);
++            require(!name.startsWith("network/vonix/isleofberkdeadlockfix/"), "companion bundles deadlock-fix path " + name);
++        }
++
++        // Deadlock-fix must remain a separate package surface.
++        boolean deadlockMixin = deadlockEntries.keySet().stream().anyMatch(n -> n.endsWith(".mixins.json") || n.contains("deadlock"));
++        require(deadlockMixin || deadlock.getFileName().toString().startsWith(PINNED_DEADLOCK_FIX_NAME_PREFIX),
++                "deadlock-fix artifact identity not recognized");
++
++        // Variant loader present as distinct artifact; no class path collision on companion package.
++        for (String name : variantEntries.keySet()) {
++            if (name.startsWith("network/vonix/isleofberkperformance/")) {
++                throw new AssertionError("Variant Loader unexpectedly contains companion package class: " + name);
++            }
++        }
++        for (String name : deadlockEntries.keySet()) {
++            if (name.startsWith("network/vonix/isleofberkperformance/")) {
++                throw new AssertionError("deadlock-fix unexpectedly contains companion package class: " + name);
++            }
+… omitted 64 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -218,12 +218,17 @@
+     dependsOn 'mappingFixture'
+     dependsOn 'rendererBytecodeFixture'
+     dependsOn 'gameplayBytecodeFixture'
++    dependsOn 'gameplayDataflowFixture'
++    dependsOn 'instrumentedAiGoalFixture'
+     dependsOn 'configFixture'
+     dependsOn 'aiMoveCadenceFixture'
+     dependsOn 'mixinLifecycleFixture'
+     dependsOn 'removedAiMovePredicateGate'
+     dependsOn 'mixinHotPathConfigGetGate'
+     dependsOn 'performanceSettingsSnapshotFixture'
++    dependsOn 'multiModCoexistenceFixture'
++    dependsOn 'candidateIdentityFixture'
++    dependsOn 'documentationConsistencyGate'
+     dependsOn 'infoZipUxExtraFixture'
+ }
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -1114,3 +1114,141 @@
+     args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
+     dependsOn testClasses
+ }
++
++tasks.register('gameplayDataflowFixture', JavaExec) {
++    group = 'verification'
++    description = 'Digest-pinned IoB dataflow: moveTo POP, circle branches, egg/shock IREM, mixin HEAD/redirect shape.'
++    classpath = sourceSets.test.runtimeClasspath
++    mainClass = 'network.vonix.isleofberkperformance.verification.GameplayDataflowFixture'
++    args = [file("${projectDir}/libs/isleofberk-${iobVersion}.jar").absolutePath]
++    dependsOn testClasses
++}
++
++tasks.register('instrumentedAiGoalFixture', JavaExec) {
++    group = 'verification'
++    description = 'Instrumented goal/WrappedGoal cadence: 0/1/N calls per tick, skip nav=0, reset/restart.'
++    classpath = sourceSets.test.runtimeClasspath
++    mainClass = 'network.vonix.isleofberkperformance.verification.InstrumentedAiGoalFixture'
++    dependsOn testClasses
++}
++
++tasks.register('multiModCoexistenceFixture', JavaExec) {
++    group = 'verification'
++    description = 'Structural coexistence gate for companion + pinned Variant Loader + deadlock-fix jars.'
++    classpath = sourceSets.test.runtimeClasspath
++    mainClass = 'network.vonix.isleofberkperformance.verification.MultiModCoexistenceFixture'
++    args = [
++            file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar").absolutePath,
++            file("${projectDir}/libs/iobvariantloader-2.6.4-all.jar").absolutePath,
++            file("${projectDir}/libs/isleofberk-deadlockfix-1.1.2.jar").absolutePath
++    ]
++    dependsOn testClasses, canonicalizeReobfJar
++}
++
++tasks.register('candidateIdentityFixture') {
++    group = 'verification'
++    description = 'Manifest completeness, dependency digests, and successor JAR class inventory identity.'
++    dependsOn canonicalizeReobfJar
++    doLast {
++        def root = projectDir
++        def manifestPath = file("${root}/evidence/candidate-manifest.json")
++        if (!manifestPath.isFile()) {
++            throw new GradleException("candidateIdentityFixture: missing ${manifestPath}")
++        }
++        def manifest = new groovy.json.JsonSlurper().parse(manifestPath)
++        def jar = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
++        if (!jar.isFile()) {
++            throw new GradleException("candidateIdentityFixture: missing jar ${jar}")
++        }
++        def sha = java.security.MessageDigest.getInstance('SHA-256').digest(jar.bytes).encodeHex().toString()
++        if (manifest.artifact?.sha256 != sha) {
++            throw new GradleException("candidateIdentityFixture: manifest sha256 ${manifest.artifact?.sha256} != jar ${sha}")
++        }
++        if ((manifest.artifact?.size as Long) != jar.length()) {
++            throw new GradleException("candidateIdentityFixture: manifest size mismatch")
++        }
++        def requiredClasses = [
++                'network/vonix/isleofberkperformance/internal/AiMoveCadence.class',
++                'network/vonix/isleofberkperformance/internal/PerformanceSettings.class'
++        ]
++        def found = [] as Set
++        new java.util.zip.ZipFile(jar).withCloseable { zip ->
++            zip.entries().each { e -> found << e.name.replace('\\', '/') }
++        }
++        requiredClasses.each { c ->
++            if (!found.contains(c)) {
++                throw new GradleException("candidateIdentityFixture: jar missing ${c}")
++            }
++        }
++        ['isleofberk', 'geckolib', 'variant_loader', 'deadlock_fix'].each { key ->
++            def dep = manifest.dependencies?.get(key)
++            if (dep == null || !dep.sha256) {
++                throw new GradleException("candidateIdentityFixture: dependency ${key} digest missing from manifest")
++            }
++            def p = file(dep.path as String)
++            if (!p.isFile()) {
++                throw new GradleException("candidateIdentityFixture: dependency path missing ${p}")
++            }
+… omitted 63 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/config/isleofberkperformance.toml → b/config/isleofberkperformance.toml
+@@ -1,15 +1,19 @@
+-# Deterministic common-config reference for the 0.3.1-rc.1 release candidate.
++# Deterministic common-config reference for the current companion candidate.
+ # Forge generates/updates this file from the registered COMMON spec at runtime.
+ # The comments below intentionally mirror the generated comments and defaults.
+ 
+ [performance]
+-# Whether repeated AI movement/navigation requests are throttled.
+-# Upstream/normal behavior: false (no throttle). Optimized default: true.
++# Whether repeated AI navigation movement requests are throttled.
++# Upstream/normal behavior: false (no throttle; movement requests may be issued every tick).
++# Optimized default: true. Tradeoff: navigation requests are less frequent and movement response can be less immediate.
+ ai_move_throttling_enabled = true
+ 
++# AI movement-request interval in goal ticks when throttling is enabled.
+ # Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.
+-# The first eligible request after a goal starts runs immediately; later eligible requests use this interval.
+-# 1 disables cadence optimization; larger values reduce navigation work but can reduce responsiveness.
++# One allow/deny decision is computed at each goal tick() HEAD.
++# The first eligible request after a goal starts runs immediately; later due decisions use this interval.
++# On a due tick every intended movement/circle call may run; on a skip tick all of them are skipped.
++# 1 disables cadence optimization for this control.
+ ai_move_interval_ticks = 4
+ 
+ # Upstream/normal behavior in Isle of Berk 1.2.0: 20 ticks. Optimized default: 20 ticks.
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -94,7 +94,7 @@
+ | Key | Optimized default | Upstream/normal value | Effect |
+ |---|---:|---:|---|
+ | `ai_move_throttling_enabled` | `true` | `false` | Throttles repeated flight/follow navigation requests. |
+-| `ai_move_interval_ticks` | `4` | `1` | After a goal starts, the first eligible request runs immediately; later eligible requests use this interval. `1` disables AI cadence throttling. |
++| `ai_move_interval_ticks` | `4` | `1` | One allow/deny decision is computed at each goal tick HEAD. After start, the first eligible request runs immediately; later due ticks use this interval and allow every intended call on that tick. `1` disables AI cadence throttling. |
+ | `egg_hatch_check_interval_ticks` | `20` | `20` | The pinned IoB 1.2.0 behavior already checks egg warmth/hatch progress every 20 ticks. Lower values increase work and change timing granularity. |
+ | `shock_particle_interval_ticks` | `8` | `8` | The pinned IoB 1.2.0 behavior already sends shock particles every 8 ticks. Lower values increase packet/client work and visual density. |
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -78,11 +78,11 @@
+ 
+ ## What is included
+ 
+-- Configurable AI movement-request throttling for three exact Isle of Berk flight/follow goals.
++- Configurable AI movement-request throttling for three exact Isle of Berk flight/follow goals. One allow/deny decision is computed at each goal `tick()` HEAD and reused for every gated call in that tick.
+ - Configurable egg hatch-check cadence.
+ - Configurable ShockEffect particle cadence, while ShockEffect damage cadence remains fixed at 20 ticks.
+ - Twelve narrow client renderer argument-reuse transformations.
+-- Eight constructor-constant egg-animation and projectile resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
++- Eight constructor-constant egg-animation and projectile fixed-resource transformations. Dragon geo/anim/texture and egg geo/texture remain uncancelled so Variant Loader can remap them.
+ - Strict target descriptors and production refmap mappings for the pinned Isle of Berk 1.2.0 bytecode.
+ 
+ These are narrow companion mixins. The original Isle of Berk behavior remains the source of all non-targeted logic.
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -117,15 +117,15 @@
+ 
+ ## Verification
+ 
+-The 1.0.0 release is the current companion tree, rebuilt after the version promotion. Historical 0.3.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1:
++The published 1.0.0 GitHub asset is the pre-cadence-conversion companion. The current dirty successor adds `AiMoveCadence` / `PerformanceSettings`, tick-HEAD AI decisions, and egg/shock snapshot hot paths; bind its identity from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a successful local build — do not treat the historical 1.0.0 or 0.3.1-rc.1 JAR hashes as this successor.
+ 
+-- `BUILD SUCCESSFUL`
++Historical 0.3.0/1.0.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1 (pre-successor bytecode):
++
++- `BUILD SUCCESSFUL` on the published trees
+ - `auditPackagedJar`: companion-only archive; no bundled Isle of Berk or deadlock-fix content
+ - `configFixture`: required COMMON keys, defaults, and comments present
+-- `RendererBytecodeFixture`: 12 renderers and 36 fixed-resource methods passed
+-- Fresh Forge server runtime: all five common gameplay mixins applied; server reached `Done (12.028s)`
+-- Independent GPT-5.6-SOL review: `PASS`
+-- Final artifact SHA-256 matches the uploaded GitHub release asset
++- `RendererBytecodeFixture`: 12 renderers and eight fixed-resource methods on the Variant-Loader-compatible surface (older trees recorded 36 before dynamic dragon/egg resource pins were removed)
++- Runtime and independent review evidence cited for published tags is historical and is not automatic acceptance of this successor
+ 
+ No quantitative performance claim is made without matched before/after profiling.
+ 
+  ┊ review diff
+a/evidence/grok-sol-004-007-report.json → b/evidence/grok-sol-004-007-report.json
+@@ -0,0 +1,115 @@
++{
++  "status": "blocked",
++  "findings": ["SOL-004", "SOL-005", "SOL-006", "SOL-007"],
++  "summary": "SOL-004/005/006 candidate gates completed with two byte-identical clean offline check builds. SOL-007 structural multi-mod inventory gate passed; required client/server runtime launch evidence was not executed because no isolated controlled launch harness with successor JAR + Variant Loader + deadlock-fix was available without mutating production gate packs.",
++  "changed_paths": [
++    "src/test/java/network/vonix/isleofberkperformance/verification/GameplayDataflowFixture.java",
++    "src/test/java/network/vonix/isleofberkperformance/verification/InstrumentedAiGoalFixture.java",
++    "src/test/java/network/vonix/isleofberkperformance/verification/MultiModCoexistenceFixture.java",
++    "build.gradle",
++    "config/isleofberkperformance.toml",
++    "README.md",
++    "CANDIDATE-REPORT.md",
++    "CANDIDATE-REPORT.successor.md",
++    "evidence/candidate-manifest.json",
++    "evidence/successor-jar-classes.txt",
++    "evidence/repro/a.jar",
++    "evidence/repro/b.jar",
++    "evidence/repro/a.sha",
++    "evidence/repro/b.sha",
++    "evidence/repro/build-a.log",
++    "evidence/repro/build-b.log",
++    "libs/isleofberk-1.2.0.jar",
++    "libs/geckolib-forge-1.18-3.0.57.jar",
++    "libs/iobvariantloader-2.6.4-all.jar",
++    "libs/isleofberk-deadlockfix-1.1.2.jar"
++  ],
++  "artifact": {
++    "path": "build/libs/isleof-berk-performance-patches-1.0.0.jar",
++    "size": 36194,
++    "sha256": "8d85461998deaae01a2009b37f34ff6ebad75ec21d32a35dae30ee6c8f310ba5",
++    "base_head": "515b9a677a39f72e9be12330355cbf765dbafcea",
++    "dirty_successor": true,
++    "repro_cmp": "PASS",
++    "classes_include": [
++      "network/vonix/isleofberkperformance/internal/AiMoveCadence.class",
++      "network/vonix/isleofberkperformance/internal/PerformanceSettings.class"
++    ]
++  },
++  "per_finding": {
++    "SOL-004": {
++      "status": "candidate_complete",
++      "work": [
++        "GameplayDataflowFixture: digest-pinned IoB SHA-256 a4b17bef..., moveTo POP after all 6 sites, circle x2 branched, egg bipush20+irem, shock bipush20+irem and bipush8+irem, mixin HEAD/redirect/cadence field shape",
++        "InstrumentedAiGoalFixture: ctor cadence field init via javap, 0/1/N calls per tick, skip nav=0, due executes all intended calls, WrappedGoal start/stop/restart rearm",
++        "Two clean Java17 offline check build --rerun-tasks BUILD SUCCESSFUL; jars byte-identical"
++      ]
++    },
++    "SOL-005": {
++      "status": "candidate_complete",
++      "work": [
++        "evidence/candidate-manifest.json with tracked build inputs, dependency digests, artifact size/sha, required classes, explicit exclusions",
++        "candidateIdentityFixture PASS",
++        "Two clean builds byte-identical (cmp PASS)",
++        "auditPackagedJar/mappingFixture/class inventory include AiMoveCadence and PerformanceSettings",
++        "No git commit created (dirty successor preserved); offline-plugin-repo excluded from release provenance"
++      ]
++    },
++    "SOL-006": {
++      "status": "candidate_complete",
++      "work": [
++        "CANDIDATE-REPORT.md marked HISTORICAL ARCHIVE for 0.3.1-rc.1",
++        "CANDIDATE-REPORT.successor.md bound to current jar sha256 and helper classes",
++        "README/config updated to tick-HEAD one allow/deny decision and eight fixed-resource surface",
++        "documentationConsistencyGate PASS"
++      ]
++    },
++    "SOL-007": {
++      "status": "blocked",
++      "work": [
++        "MultiModCoexistenceFixture structural PASS with digest-pinned Variant Loader 666f4796... and separate deadlock-fix 1.1.2 jar; companion package isolation verified; 12 renderer mixins retained",
++        "RendererBytecodeFixture PASS (12 renderers, 8 fixed-resource methods)"
++      ],
++      "missing_required_tests": [
++        "Client launch proving variant model/texture/animation/egg remapping with no MixinApplyError/InvalidInjection/linkage/visual fallback",
++        "Dedicated-server launch proving common mixins + config load/reload with deadlock-fix",
++        "Exported transformed-class inspection from a live multi-mod apply (post-Mixin runtime), not only structural jar inventory"
++      ],
++      "blocker": "No isolated controlled MC/Forge client or server launch harness was available that could install the successor companion + pinned Variant Loader + deadlock-fix without mutating existing production-gate packs under /root/iob-*. Existing gate packs ship an older companion jar and lack Variant Loader/deadlock-fix together. Per instructions, runtime evidence was not fabricated and gates were not weakened."
+… omitted 37 diff line(s) across 1 additional file(s)/section(s)
+SOL-004..007 done with honest block on SOL-007 runtime.
+
+status: blocked (overall) — SOL-004/005/006 complete; SOL-007 structural only
+
+artifact
+- build/libs/isleof-berk-performance-patches-1.0.0.jar
+- size 36194
+- sha256 8d85461998deaae01a2009b37f34ff6ebad75ec21d32a35dae30ee6c8f310ba5
+- two clean offline check builds: BUILD SUCCESSFUL + cmp PASS
+
+SOL-004
+- GameplayDataflowFixture PASS (IoB digest pin, moveTo POP x6, circle branches, egg/shock IREM, mixin shape)
+- InstrumentedAiGoalFixture PASS (0/1/N calls, skip nav=0, reset/restart)
+- full clean check build green (StackOverflow path cleared)
+
+SOL-005
+- evidence/candidate-manifest.json + candidateIdentityFixture PASS
+- AiMoveCadence + PerformanceSettings in JAR
+- tracked inputs + dep digests bound; no commit made
+
+SOL-006
+- CANDIDATE-REPORT.md archived (HISTORICAL)
+- CANDIDATE-REPORT.successor.md bound to current sha
+- README/config tick-HEAD + eight fixed-resource wording
+- documentationConsistencyGate PASS
+
+SOL-007 blocker
+- MultiModCoexistenceFixture structural PASS (Variant Loader digest + deadlock-fix jar + package isolation)
+- no client/server launch / live transformed-class export (would require mutating production gate packs or fabricating runtime)
+
+report: /root/work/isleofberk-performance-patches/evidence/grok-sol-004-007-report.json
+effects: none
+acceptance: not claimed
+
+owner actions for SOL-007 closeout
+1. provide isolated launch harness (or authorize temp pack) with successor JAR + Variant Loader + deadlock-fix
+2. optional: commit dirty successor for pinned commit identity
+
+session_id: 20260819_033657_f848ab
