@@ -11,10 +11,10 @@ displayTest="MATCH_VERSION"
 description='''
 Standalone Forge Mixin companion for Isle of Berk 1.2.0.
 This is NOT a fork, reupload, or replacement of Isle of Berk: keep the original
-isleofberk-1.2.0.jar installed. It does not bundle IoB classes and does not
-include or replace the separate isleofberkdeadlockfix companion. Install that
-deadlock-fix JAR only if you want it, as its own optional mod.
-Applies exact client renderer/fixed-resource transformations plus documented configurable AI, egg, and shock visual cadence controls.
+isleofberk-1.2.0.jar installed. It does not bundle IoB classes or resources.
+The 1.1 release combines the verified 1.0 performance work with the guarded
+GeckoLib dragon-bone index, documented configurable AI, egg, and ShockEffect
+visual cadence controls, and the existing renderer/resource transformations.
 '''
 authors="Vonix-Network"
 
@@ -47,3 +47,4 @@ mandatory=true
 versionRange="[3.0.57,3.0.58)"
 ordering="AFTER"
 side="BOTH"
+

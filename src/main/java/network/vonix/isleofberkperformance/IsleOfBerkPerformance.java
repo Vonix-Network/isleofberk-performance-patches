@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 
 /**
  * Standalone performance-patch companion for Isle of Berk 1.2.0.
- * Does not replace IoB and does not include deadlock-fix behavior.
+ * It does not replace IoB or bundle the original Isle of Berk implementation.
  */
 @Mod(IsleOfBerkPerformance.MOD_ID)
 public final class IsleOfBerkPerformance {

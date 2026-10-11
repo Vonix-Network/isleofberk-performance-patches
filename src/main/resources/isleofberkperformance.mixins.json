@@ -6,6 +6,7 @@
   "refmap": "isleofberkperformance.refmap.json",
   "mixins": [
     "WrappedGoalMixin",
+    "ADragonBaseBaseFlyingRideableGoalMixin",
     "DragonFlyAndAttackAirbourneTargetGoalMixin",
     "UntamedDragonCircleFlightGoalMixin",
     "DragonFollowPlayerFlyingMixin",
@@ -29,7 +30,8 @@
     "FuryBoltModelMixin",
     "SmallEggModelMixin",
     "MediumEggModelMixin",
-    "LargeEggModelMixin"
+    "LargeEggModelMixin",
+    "AnimationProcessorBoneCacheMixin"
   ],
   "injectors": {
     "defaultRequire": 1
