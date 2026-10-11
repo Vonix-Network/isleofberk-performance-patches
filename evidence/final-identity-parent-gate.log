@@ -1,0 +1,103 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/7.5.1/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+MixinGradle did not locate the diffplug APT plugin, skipping eclipse task configuration
+WARNING: This project is configured to use the official obfuscation mappings provided by Mojang. These mapping fall under their associated license, you should be fully aware of this license. For the latest license text, refer below, or the reference copy here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md, You can hide this warning by running the `hideOfficialWarningUntilChanged` task
+WARNING: (c) 2020 Microsoft Corporation. These mappings are provided "as-is" and you bear the risk of using them. You may copy and use the mappings for development purposes, but you may not redistribute the mappings complete and unmodified. Microsoft makes no warranties, express or implied, with respect to the mappings provided here.  Use and modification of this document or the source code (in any form) of Minecraft: Java Edition is governed by the Minecraft End User License Agreement available at https://account.mojang.com/documents/minecraft_eula.
+
+> Task :clean
+> Task :downloadMcpConfig
+> Task :extractSrg
+> Task :createMcpToSrg
+
+> Task :compileJava
+Note: SpongePowered MIXIN Annotation Processor Version=0.8.5 (MixinGradle Version=0.7)
+Note: Supported obfuscation types: ObfuscationServiceMCP supports [notch] ObfuscationServiceFG3 supports [searge]
+Note: Loading searge mappings from /root/work/isleofberk-performance-patches/build/createMcpToSrg/output.tsrg
+Note: Writing refmap to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-refmap.json
+Note: Writing refmap to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-refmap.json
+Note: Writing searge composite mappings to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-mappings.tsrg
+Note: Writing refmap to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-refmap.json
+Note: Writing refmap to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-refmap.json
+Note: Writing searge composite mappings to /root/work/isleofberk-performance-patches/build/tmp/compileJava/compileJava-mappings.tsrg
+
+> Task :processResources
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+
+> Task :aiMoveCadenceFixture
+AiMoveCadenceFixture: PASS (tick-HEAD, multi-call, lifecycle, atomic snapshot, 20<->2 reload rearm)
+
+> Task :addMixinsToJar
+> Task :jar
+> Task :configureReobfTaskForReobfJar
+> Task :reobfJar
+
+> Task :canonicalizeReobfJar
+canonicalizeReobfJar: deterministic ZIP metadata written for isleof-berk-performance-patches-1.0.1-rc.1.jar
+
+> Task :auditPackagedJar
+auditPackagedJar OK: isleof-berk-performance-patches-1.0.1-rc.1.jar (28 classes, 5 resources, companion-only)
+
+> Task :candidateIdentityFixture
+candidateIdentityFixture: PASS (version=1.0.1-rc.1, jar=72d91f1709baf27c3e3007e662fa657e5eb8348e924c094027af9a94ec2b01c2, inputs=51, predecessor=15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2)
+
+> Task :configFixture
+configFixture: PASS (COMMON keys match PerformanceConfig.SPEC defaults [ai_move_throttling_enabled:true, ai_move_interval_ticks:4, egg_hatch_check_interval_ticks:20, shock_particle_interval_ticks:8])
+
+> Task :documentationConsistencyGate
+documentationConsistencyGate: PASS (version=1.0.1-rc.1, jar=72d91f1709baf27c3e3007e662fa657e5eb8348e924c094027af9a94ec2b01c2)
+
+> Task :gameplayBytecodeFixture
+GameplayBytecodeFixture: PASS (moveTo 1/5, circleEntity 2, egg 20x1, shock 20x1+8x1)
+
+> Task :gameplayDataflowFixture
+GameplayDataflowFixture: PASS (IoB digest pin, moveTo POP x6, circle x2 branched, egg/shock IREM, mixin HEAD+redirect shape)
+
+> Task :infoZipUxExtraFixture
+infoZipUxExtraFixture: PASS (0x5455/0x000a/0x5855 timestamps canonicalized; flags/UID/GID/trailing preserved; fail-closed)
+
+> Task :instrumentedAiGoalFixture
+InstrumentedAiGoalFixture: PASS (ctor cadence field, 0/1/N calls/tick, skip nav=0, WrappedGoal reset/restart)
+
+> Task :mappingFixture
+mappingFixture: PASS (official getGoal -> SRG m_26015_; refmap and packaged bytecode verified)
+
+> Task :mixinHotPathConfigGetGate
+mixinHotPathConfigGetGate: PASS (no ForgeConfigSpec/ConfigValue.get in active mixins)
+
+> Task :mixinLifecycleFixture
+MixinLifecycleFixture: PASS (target canUse/start/stop untouched; WrappedGoal owns reset boundary)
+
+> Task :multiModCoexistenceFixture
+MultiModCoexistenceFixture: PASS (structural) companion=isleof-berk-performance-patches-1.0.1-rc.1.jar variantSha=666f47962912e332494b0331640cefad252d60fcf01d33fcc092ef0ac9a27f4a deadlock=isleofberk-deadlockfix-1.1.2.jar NOTE: client/server runtime launch evidence not executed by this fixture
+
+> Task :performanceSettingsSnapshotFixture
+PerformanceSettingsSnapshotFixture: PASS (atomic AI tuple + egg/shock snapshot reload)
+
+> Task :removedAiMovePredicateGate
+removedAiMovePredicateGate: PASS (no shouldRunAiMove/shouldRunThrottledAiMove in source or companion bytecode)
+
+> Task :rendererBytecodeFixture
+RendererBytecodeFixture: PASS (12 renderers, 8 fixed-resource methods)
+
+> Task :addMixinsToJarJar
+> Task :jarJar SKIPPED
+> Task :test
+> Task :check
+> Task :configureReobfTaskForReobfJarJar
+> Task :reobfJarJar SKIPPED
+> Task :assemble
+> Task :build
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+See https://docs.gradle.org/7.5.1/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 31s
+31 actionable tasks: 31 executed

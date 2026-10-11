@@ -1,0 +1,8 @@
+e194f13f76be157fc1beb8e636dd5803a8ff407e55e70e347651b9d56fad50ea  /root/work/iob-packaged-client-harness-20260820/run/mods/dragon_fire_variants-1.6.1.jar
+95ae617167757e5d96b71a1a9eb3198a6f11a693db6d192b2534cddd88c8ed7c  /root/work/iob-packaged-client-harness-20260820/run/mods/dragon_wars_variants-1.6.1.jar
+b6d0954f7b777b43e72f202116c8ccbb1e37757a1142759303ab636a9077b8ba  /root/work/iob-packaged-client-harness-20260820/run/mods/geckolib-forge-1.18-3.0.57.jar
+666f47962912e332494b0331640cefad252d60fcf01d33fcc092ef0ac9a27f4a  /root/work/iob-packaged-client-harness-20260820/run/mods/iobvariantloader-2.6.4-all.jar
+57b880f636fff7d8c1f69b310465ac13964817812586651a5531142043ab5577  /root/work/iob-packaged-client-harness-20260820/run/mods/isleof-berk-performance-patches-1.0.1-rc.1.jar
+a4b17befb1350d6d4cd07d7fdfcb2b3cec37a5c501e1f4fb811946f3e971dfc0  /root/work/iob-packaged-client-harness-20260820/run/mods/isleofberk-1.2.0.jar
+75789526f3e13f24d30bb817b66ae68f029799cb59bf83c01c8e8760085d3452  /root/work/iob-packaged-client-harness-20260820/run/mods/isleofberk-deadlockfix-1.1.2.jar
+9912a671f5a89e48a9345afbe1a85e423ee4cc76adfefc7e68f899ddb995d601  /root/work/iob-packaged-client-harness-20260820/run/mods/leafsvariants-1.0.0.jar

@@ -1,0 +1,115 @@
+{
+  "status": "blocked",
+  "findings": ["SOL-004", "SOL-005", "SOL-006", "SOL-007"],
+  "summary": "SOL-004/005/006 candidate gates completed with two byte-identical clean offline check builds. SOL-007 structural multi-mod inventory gate passed; required client/server runtime launch evidence was not executed because no isolated controlled launch harness with successor JAR + Variant Loader + deadlock-fix was available without mutating production gate packs.",
+  "changed_paths": [
+    "src/test/java/network/vonix/isleofberkperformance/verification/GameplayDataflowFixture.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/InstrumentedAiGoalFixture.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/MultiModCoexistenceFixture.java",
+    "build.gradle",
+    "config/isleofberkperformance.toml",
+    "README.md",
+    "CANDIDATE-REPORT.md",
+    "CANDIDATE-REPORT.successor.md",
+    "evidence/candidate-manifest.json",
+    "evidence/successor-jar-classes.txt",
+    "evidence/repro/a.jar",
+    "evidence/repro/b.jar",
+    "evidence/repro/a.sha",
+    "evidence/repro/b.sha",
+    "evidence/repro/build-a.log",
+    "evidence/repro/build-b.log",
+    "libs/isleofberk-1.2.0.jar",
+    "libs/geckolib-forge-1.18-3.0.57.jar",
+    "libs/iobvariantloader-2.6.4-all.jar",
+    "libs/isleofberk-deadlockfix-1.1.2.jar"
+  ],
+  "artifact": {
+    "path": "build/libs/isleof-berk-performance-patches-1.0.0.jar",
+    "size": 36194,
+    "sha256": "8d85461998deaae01a2009b37f34ff6ebad75ec21d32a35dae30ee6c8f310ba5",
+    "base_head": "515b9a677a39f72e9be12330355cbf765dbafcea",
+    "dirty_successor": true,
+    "repro_cmp": "PASS",
+    "classes_include": [
+      "network/vonix/isleofberkperformance/internal/AiMoveCadence.class",
+      "network/vonix/isleofberkperformance/internal/PerformanceSettings.class"
+    ]
+  },
+  "per_finding": {
+    "SOL-004": {
+      "status": "candidate_complete",
+      "work": [
+        "GameplayDataflowFixture: digest-pinned IoB SHA-256 a4b17bef..., moveTo POP after all 6 sites, circle x2 branched, egg bipush20+irem, shock bipush20+irem and bipush8+irem, mixin HEAD/redirect/cadence field shape",
+        "InstrumentedAiGoalFixture: ctor cadence field init via javap, 0/1/N calls per tick, skip nav=0, due executes all intended calls, WrappedGoal start/stop/restart rearm",
+        "Two clean Java17 offline check build --rerun-tasks BUILD SUCCESSFUL; jars byte-identical"
+      ]
+    },
+    "SOL-005": {
+      "status": "candidate_complete",
+      "work": [
+        "evidence/candidate-manifest.json with tracked build inputs, dependency digests, artifact size/sha, required classes, explicit exclusions",
+        "candidateIdentityFixture PASS",
+        "Two clean builds byte-identical (cmp PASS)",
+        "auditPackagedJar/mappingFixture/class inventory include AiMoveCadence and PerformanceSettings",
+        "No git commit created (dirty successor preserved); offline-plugin-repo excluded from release provenance"
+      ]
+    },
+    "SOL-006": {
+      "status": "candidate_complete",
+      "work": [
+        "CANDIDATE-REPORT.md marked HISTORICAL ARCHIVE for 0.3.1-rc.1",
+        "CANDIDATE-REPORT.successor.md bound to current jar sha256 and helper classes",
+        "README/config updated to tick-HEAD one allow/deny decision and eight fixed-resource surface",
+        "documentationConsistencyGate PASS"
+      ]
+    },
+    "SOL-007": {
+      "status": "blocked",
+      "work": [
+        "MultiModCoexistenceFixture structural PASS with digest-pinned Variant Loader 666f4796... and separate deadlock-fix 1.1.2 jar; companion package isolation verified; 12 renderer mixins retained",
+        "RendererBytecodeFixture PASS (12 renderers, 8 fixed-resource methods)"
+      ],
+      "missing_required_tests": [
+        "Client launch proving variant model/texture/animation/egg remapping with no MixinApplyError/InvalidInjection/linkage/visual fallback",
+        "Dedicated-server launch proving common mixins + config load/reload with deadlock-fix",
+        "Exported transformed-class inspection from a live multi-mod apply (post-Mixin runtime), not only structural jar inventory"
+      ],
+      "blocker": "No isolated controlled MC/Forge client or server launch harness was available that could install the successor companion + pinned Variant Loader + deadlock-fix without mutating existing production-gate packs under /root/iob-*. Existing gate packs ship an older companion jar and lack Variant Loader/deadlock-fix together. Per instructions, runtime evidence was not fabricated and gates were not weakened."
+    }
+  },
+  "commands": [
+    {
+      "command": "./gradlew gameplayDataflowFixture instrumentedAiGoalFixture aiMoveCadenceFixture performanceSettingsSnapshotFixture --offline --no-daemon --rerun-tasks",
+      "java": "17",
+      "outcome": "BUILD SUCCESSFUL",
+      "exit_code": 0,
+      "log": "evidence/grok-sol-004-focused.log"
+    },
+    {
+      "command": "./gradlew candidateIdentityFixture documentationConsistencyGate multiModCoexistenceFixture configFixture mappingFixture auditPackagedJar gameplayBytecodeFixture rendererBytecodeFixture gameplayDataflowFixture instrumentedAiGoalFixture --offline --no-daemon",
+      "java": "17",
+      "outcome": "BUILD SUCCESSFUL",
+      "exit_code": 0,
+      "log": "evidence/grok-sol-004-007-gates.log"
+    },
+    {
+      "command": "./gradlew clean check build --offline --no-daemon --rerun-tasks",
+      "java": "17",
+      "runs": 2,
+      "outcomes": ["BUILD SUCCESSFUL", "BUILD SUCCESSFUL"],
+      "exit_codes": [0, 0],
+      "logs": ["evidence/repro/build-a.log", "evidence/repro/build-b.log"],
+      "jar_sha256_both": "8d85461998deaae01a2009b37f34ff6ebad75ec21d32a35dae30ee6c8f310ba5",
+      "cmp": "PASS"
+    }
+  ],
+  "unresolved_blockers": [
+    "SOL-007 client runtime launch with Variant Loader + successor companion not executed",
+    "SOL-007 dedicated-server runtime launch with deadlock-fix + successor companion not executed",
+    "SOL-007 live post-Mixin transformed-class export from multi-mod runtime not captured",
+    "Dirty successor not git-committed (owner action if a clean pinned commit identity is required)"
+  ],
+  "effects": "none",
+  "acceptance": "not_claimed"
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.minecraftforge.gradle</groupId>
+  <artifactId>net.minecraftforge.gradle.gradle.plugin</artifactId>
+  <version>5.1.77</version>
+  <packaging>pom</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>net.minecraftforge.gradle</groupId>
+      <artifactId>ForgeGradle</artifactId>
+      <version>5.1.77</version>
+    </dependency>
+  </dependencies>
+</project>

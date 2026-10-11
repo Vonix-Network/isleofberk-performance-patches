@@ -1,0 +1,773 @@
+↻ Resumed session 20260819_033657_f848ab "Complete SOL-001 AI cadence conversion" (4 user messages, 106 total messages)
+Model restored from session: xai/grok-4.6
+[33m⚠ Deprecated .env settings detected:[0m
+  [33m⚠[0m TERMINAL_CWD=/root found in .env — this is deprecated.
+  [2mMove to config.yaml instead:  terminal:\n    cwd: /your/project/path[0m
+  [2mThen remove the old entries from ~/.hermes/.env[0m
+
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java → b/src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java
+@@ -4,6 +4,11 @@
+  * Reload-correct primitive snapshots of the COMMON spec. Mixins read only these values.
+  * Defaults match {@code PerformanceConfig} definitions and are replaced on Forge config
+  * load/reload — never frozen at class initialization from {@code ForgeConfigSpec.get()}.
++ *
++ * <p>The AI enabled flag and interval are published as one packed {@code long} snapshot so a
++ * reader observes a coherent tuple. Hot paths must call {@link #aiMoveSnapshot()} once per
++ * decision and unpack with {@link #aiMoveThrottlingEnabled(long)} / {@link #aiMoveIntervalTicks(long)}.
++ * Egg and shock intervals remain individual primitive snapshots.
+  */
+ public final class PerformanceSettings {
+     private static final int AI_INTERVAL_MIN = 1;
+@@ -11,8 +16,8 @@
+     private static final int CADENCE_MIN = 1;
+     private static final int CADENCE_MAX = 200;
+ 
+-    private static volatile boolean aiMoveThrottlingEnabled = true;
+-    private static volatile int aiMoveIntervalTicks = 4;
++    /** Packed AI tuple: interval in the high 32 bits, enabled flag in bit 0. */
++    private static volatile long aiMoveSnapshot = packAiMove(true, 4);
+     private static volatile int eggHatchCheckIntervalTicks = 20;
+     private static volatile int shockParticleIntervalTicks = 8;
+ 
+@@ -24,18 +29,39 @@
+             int eggIntervalTicks,
+             int shockIntervalTicks
+     ) {
+-        aiMoveThrottlingEnabled = throttlingEnabled;
+-        aiMoveIntervalTicks = clamp(aiIntervalTicks, AI_INTERVAL_MIN, AI_INTERVAL_MAX);
++        int clampedAi = clamp(aiIntervalTicks, AI_INTERVAL_MIN, AI_INTERVAL_MAX);
++        // Single volatile write publishes the coherent AI enabled/interval tuple.
++        aiMoveSnapshot = packAiMove(throttlingEnabled, clampedAi);
+         eggHatchCheckIntervalTicks = clamp(eggIntervalTicks, CADENCE_MIN, CADENCE_MAX);
+         shockParticleIntervalTicks = clamp(shockIntervalTicks, CADENCE_MIN, CADENCE_MAX);
+     }
+ 
++    /**
++     * Atomic AI enabled/interval snapshot. Read once per goal-tick decision; do not allocate.
++     */
++    public static long aiMoveSnapshot() {
++        return aiMoveSnapshot;
++    }
++
++    public static long packAiMove(boolean throttlingEnabled, int intervalTicks) {
++        int clamped = clamp(intervalTicks, AI_INTERVAL_MIN, AI_INTERVAL_MAX);
++        return (((long) clamped) << 32) | (throttlingEnabled ? 1L : 0L);
++    }
++
++    public static boolean aiMoveThrottlingEnabled(long snapshot) {
++        return (snapshot & 1L) != 0L;
++    }
++
++    public static int aiMoveIntervalTicks(long snapshot) {
++        return (int) (snapshot >>> 32);
++    }
++
+     public static boolean aiMoveThrottlingEnabled() {
+-        return aiMoveThrottlingEnabled;
++        return aiMoveThrottlingEnabled(aiMoveSnapshot);
+     }
+ 
+     public static int aiMoveIntervalTicks() {
+-        return aiMoveIntervalTicks;
++        return aiMoveIntervalTicks(aiMoveSnapshot);
+     }
+ 
+     public static int eggHatchCheckIntervalTicks() {
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java → b/src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java
+@@ -9,12 +9,18 @@
+  * request starts a tick-based cooldown. Later due ticks allow every intended call; skip ticks
+  * suppress all of them.
+  *
++ * <p>Reload rule: the AI enabled/interval tuple is read once per {@link #beginTick(long)} from
++ * an atomic snapshot. If the effective enabled flag or sanitized interval changes versus the
++ * previous tick, the cadence deterministically rearms so the next eligible request runs
++ * immediately and starts cooldown under the new interval. Old cooldown values are never kept
++ * across an effective settings change (for example 20→2 or 2→20 mid-cooldown).
++ *
+  * <p>Skipped {@code moveTo} calls return {@link #SKIPPED_MOVE_TO_RESULT} ({@code true}) so a
+  * suppressed refresh is not reported as a pathfinding failure. When a call is allowed, the
+  * original boolean is returned unchanged.
+  *
+- * <p>State is two booleans and a cooldown in {@code 0 .. interval-1}. No entity/world
+- * references and no unbounded counters.
++ * <p>State is booleans, a cooldown in {@code 0 .. interval-1}, and the last observed settings
++ * pair. No entity/world references, no per-tick allocation, and no unbounded counters.
+  */
+ public final class AiMoveCadence {
+     /**
+@@ -28,6 +34,9 @@
+     private boolean allowThisTick;
+     private boolean throttlingActive;
+     private int interval = 1;
++    private boolean hasSettings;
++    private boolean lastThrottlingEnabled = true;
++    private int lastInterval = 1;
+ 
+     public void reset() {
+         this.armed = true;
+@@ -35,6 +44,20 @@
+         this.allowThisTick = false;
+         this.throttlingActive = false;
+         this.interval = 1;
++        // Keep last settings so a reload while stopped is still observed on the next beginTick.
++    }
++
++    /**
++     * Compute the single allow/deny decision for this goal tick from one atomic AI snapshot.
++     * Does not allocate.
++     *
++     * @param aiMoveSnapshot packed tuple from {@link PerformanceSettings#aiMoveSnapshot()}
++     */
++    public void beginTick(long aiMoveSnapshot) {
++        beginTick(
++                PerformanceSettings.aiMoveThrottlingEnabled(aiMoveSnapshot),
++                PerformanceSettings.aiMoveIntervalTicks(aiMoveSnapshot)
++        );
+     }
+ 
+     /**
+@@ -45,6 +68,16 @@
+      */
+     public void beginTick(boolean throttlingEnabled, int intervalTicks) {
+         int sanitizedInterval = intervalTicks < 1 ? 1 : intervalTicks;
++        if (this.hasSettings
++                && (this.lastThrottlingEnabled != throttlingEnabled
++                || this.lastInterval != sanitizedInterval)) {
++            // Effective AI settings changed: drop old cooldown and rearm under the new tuple.
++            this.armed = true;
++            this.cooldownRemaining = 0;
++        }
++        this.hasSettings = true;
++        this.lastThrottlingEnabled = throttlingEnabled;
++        this.lastInterval = sanitizedInterval;
+         this.interval = sanitizedInterval;
+         this.throttlingActive = throttlingEnabled && sanitizedInterval > 1;
+         if (!this.throttlingActive) {
+@@ -72,8 +105,8 @@
+ 
+     /**
+      * Marks that a gated request was issued on a due tick. The first such call after start
+-     * disarms the cadence and starts the tick cooldown. Later calls on the same due tick
+-     * are no-ops so every intended site may still run.
++     * or reload-rearm disarms the cadence and starts the tick cooldown. Later calls on the
++     * same due tick are no-ops so every intended site may still run.
+      */
+     public void noteRequest() {
+… omitted 10 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java
+@@ -16,9 +16,10 @@
+ /**
+  * Gates only the exact target-flight navigation request; target selection and flight state remain upstream.
+  *
+- * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
+- * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
+- * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} from a
++ * single atomic {@link PerformanceSettings#aiMoveSnapshot()} read and reused for every gated call
++ * in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the actual wrapped-goal
++ * start/stop transition. {@code canUse()} is not a reset point: vanilla
+  * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
+  * zero the cadence before each {@code tick()}.
+  *
+@@ -37,10 +38,7 @@
+ 
+     @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
+     private void vonix$beginAiMoveTick(CallbackInfo ci) {
+-        this.vonix$cadence.beginTick(
+-                PerformanceSettings.aiMoveThrottlingEnabled(),
+-                PerformanceSettings.aiMoveIntervalTicks()
+-        );
++        this.vonix$cadence.beginTick(PerformanceSettings.aiMoveSnapshot());
+     }
+ 
+     @Redirect(
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java
+@@ -15,9 +15,10 @@
+ /**
+  * Configurable gate for exact navigation requests in the follow-player goal.
+  *
+- * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
+- * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
+- * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} from a
++ * single atomic {@link PerformanceSettings#aiMoveSnapshot()} read and reused for every gated call
++ * in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the actual wrapped-goal
++ * start/stop transition. {@code canUse()} is not a reset point: vanilla
+  * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
+  * zero the cadence before each {@code tick()}.
+  *
+@@ -36,10 +37,7 @@
+ 
+     @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
+     private void vonix$beginAiMoveTick(CallbackInfo ci) {
+-        this.vonix$cadence.beginTick(
+-                PerformanceSettings.aiMoveThrottlingEnabled(),
+-                PerformanceSettings.aiMoveIntervalTicks()
+-        );
++        this.vonix$cadence.beginTick(PerformanceSettings.aiMoveSnapshot());
+     }
+ 
+     @Redirect(
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java
+@@ -16,9 +16,10 @@
+ /**
+  * Narrow gate for circle movement; random choice and circle state remain in the original method.
+  *
+- * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} and reused
+- * for every gated call in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the
+- * actual wrapped-goal start/stop transition. {@code canUse()} is not a reset point: vanilla
++ * <p>One allow/deny decision is computed at {@code tick()} HEAD via {@link AiMoveCadence} from a
++ * single atomic {@link PerformanceSettings#aiMoveSnapshot()} read and reused for every gated call
++ * in that goal tick. The cadence is reset by {@link WrappedGoalMixin} at the actual wrapped-goal
++ * start/stop transition. {@code canUse()} is not a reset point: vanilla
+  * {@code Goal.canContinueToUse()} delegates to {@code canUse()} on every running tick and would
+  * zero the cadence before each {@code tick()}.
+  *
+@@ -37,10 +38,7 @@
+ 
+     @Inject(method = "tick()V", at = @At("HEAD"), require = 1)
+     private void vonix$beginAiMoveTick(CallbackInfo ci) {
+-        this.vonix$cadence.beginTick(
+-                PerformanceSettings.aiMoveThrottlingEnabled(),
+-                PerformanceSettings.aiMoveIntervalTicks()
+-        );
++        this.vonix$cadence.beginTick(PerformanceSettings.aiMoveSnapshot());
+     }
+ 
+     @Redirect(
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java
+@@ -1,7 +1,7 @@
+ package network.vonix.isleofberkperformance.mixin;
+ 
+ import com.GACMD.isleofberk.entity.eggs.entity.base.ADragonEggBase;
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.injection.Constant;
+ import org.spongepowered.asm.mixin.injection.ModifyConstant;
+@@ -10,11 +10,14 @@
+  * Changes only the upstream hatch-check cadence constant; hatch side effects and state updates remain original.
+  * Pinned Isle of Berk 1.2.0 {@code ADragonEggBase.tick()} contains exactly one {@code bipush 20}
+  * ({@code tickCount % 20 == 0}). {@code ordinal = 0} pins that sole match.
++ *
++ * <p>Reads the reload-correct primitive from {@link PerformanceSettings}; ForgeConfigSpec.get()
++ * stays confined to the config load/reload path.
+  */
+ @Mixin(value = ADragonEggBase.class, remap = true)
+ public abstract class ADragonEggBaseMixin {
+     @ModifyConstant(method = "tick()V", constant = @Constant(intValue = 20, ordinal = 0), require = 1)
+     private int vonix$configureHatchCheckInterval(int upstreamInterval) {
+-        return PerformanceConfig.EGG_HATCH_CHECK_INTERVAL_TICKS.get();
++        return PerformanceSettings.eggHatchCheckIntervalTicks();
+     }
+ }
+  ┊ review diff
+a/src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java → b/src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java
+@@ -1,7 +1,7 @@
+ package network.vonix.isleofberkperformance.mixin;
+ 
+ import com.GACMD.isleofberk.effects.ShockEffect;
+-import network.vonix.isleofberkperformance.config.PerformanceConfig;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.injection.Constant;
+ import org.spongepowered.asm.mixin.injection.ModifyConstant;
+@@ -10,6 +10,9 @@
+  * Configures particle cadence only; the separate upstream damage constant remains 20 ticks.
+  * Pinned Isle of Berk 1.2.0 {@code ShockEffect.applyEffectTick} has {@code bipush 20} then {@code bipush 8}.
+  * This injector matches only {@code intValue = 8} ({@code ordinal = 0} among 8s), so the damage 20 is untouched.
++ *
++ * <p>Reads the reload-correct primitive from {@link PerformanceSettings}; ForgeConfigSpec.get()
++ * stays confined to the config load/reload path.
+  */
+ @Mixin(value = ShockEffect.class, remap = true)
+ public abstract class ShockEffectMixin {
+@@ -19,6 +22,6 @@
+             require = 1
+     )
+     private int vonix$configureParticleInterval(int upstreamInterval) {
+-        return PerformanceConfig.SHOCK_PARTICLE_INTERVAL_TICKS.get();
++        return PerformanceSettings.shockParticleIntervalTicks();
+     }
+ }
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java
+@@ -1,9 +1,10 @@
+ package network.vonix.isleofberkperformance.verification;
+ 
+ import network.vonix.isleofberkperformance.internal.AiMoveCadence;
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+ 
+ /**
+- * Deterministic checks for tick-HEAD AI movement cadence.
++ * Deterministic checks for tick-HEAD AI movement cadence, atomic AI snapshots, and reload rearm.
+  * Does not read Forge config values.
+  */
+ public final class AiMoveCadenceFixture {
+@@ -86,7 +87,89 @@
+                     "cooldown must stay in 0..interval-1 after tick " + i + " remaining=" + remaining);
+         }
+ 
+-        System.out.println("AiMoveCadenceFixture: PASS (tick-HEAD allow/deny, multi-call due tick, lifecycle, bounded state)");
++        // Atomic packed AI snapshot: one long carries a coherent enabled/interval tuple.
++        long packed = PerformanceSettings.packAiMove(true, 7);
++        require(PerformanceSettings.aiMoveThrottlingEnabled(packed), "packed enabled bit must be true");
++        require(PerformanceSettings.aiMoveIntervalTicks(packed) == 7, "packed interval must be 7");
++        long packedOff = PerformanceSettings.packAiMove(false, 3);
++        require(!PerformanceSettings.aiMoveThrottlingEnabled(packedOff), "packed enabled bit must be false");
++        require(PerformanceSettings.aiMoveIntervalTicks(packedOff) == 3, "packed disabled tuple keeps interval 3");
++
++        // beginTick(long) consumes one snapshot without splitting the tuple.
++        cadence.reset();
++        cadence.beginTick(PerformanceSettings.packAiMove(true, 4));
++        require(cadence.allowThisTick(), "packed snapshot beginTick must allow first request");
++        require(cadence.gateBoolean(true) == true, "packed snapshot first request must run");
++
++        // SOL-002: interval 20 -> 2 during cooldown rearms immediately under the new interval.
++        cadence.reset();
++        cadence.beginTick(true, 20);
++        require(cadence.allowThisTick(), "interval 20 first tick must allow");
++        require(cadence.gateBoolean(true) == true, "interval 20 first request must run");
++        cadence.beginTick(true, 20);
++        require(!cadence.allowThisTick(), "interval 20 tick 2 must be in cooldown");
++        require(cadence.cooldownRemaining() >= 1, "interval 20 cooldown must still be active");
++        // Live reload to interval 2 mid-cooldown.
++        cadence.beginTick(true, 2);
++        require(cadence.allowThisTick(), "20->2 reload must rearm and allow immediately");
++        require(cadence.armed(), "20->2 reload must leave cadence armed until first request");
++        require(cadence.gateBoolean(true) == true, "20->2 first eligible request must run under new interval");
++        require(!cadence.armed(), "20->2 first request must disarm");
++        cadence.beginTick(true, 2);
++        require(!cadence.allowThisTick(), "after 20->2 request, next tick must skip under interval 2");
++        cadence.beginTick(true, 2);
++        require(cadence.allowThisTick(), "after 20->2, due again at new interval spacing");
++
++        // SOL-002: interval 2 -> 20 during cooldown rearms immediately under the new interval.
++        cadence.reset();
++        cadence.beginTick(true, 2);
++        require(cadence.allowThisTick(), "interval 2 first tick must allow");
++        require(cadence.gateBoolean(true) == true, "interval 2 first request must run");
++        cadence.beginTick(true, 2);
++        require(!cadence.allowThisTick(), "interval 2 tick 2 must skip");
++        // Live reload to interval 20 mid-cooldown (old remaining would have been 0 next).
++        cadence.beginTick(true, 20);
++        require(cadence.allowThisTick(), "2->20 reload must rearm and allow immediately");
++        require(cadence.gateBoolean(true) == true, "2->20 first eligible request must run");
++        require(!cadence.armed(), "2->20 first request must disarm");
++        // Subsequent spacing uses the new interval 20 (skip 19 ticks).
++        for (int i = 0; i < 19; i++) {
++            cadence.beginTick(true, 20);
++            require(!cadence.allowThisTick(), "2->20 cooldown skip " + (i + 1) + " must deny");
++        }
++        cadence.beginTick(true, 20);
++        require(cadence.allowThisTick(), "2->20 must due again after new interval spacing");
++
++        // Enabled flip also rearms (throttling on -> off -> on).
++        cadence.reset();
++        cadence.beginTick(true, 4);
++        cadence.noteRequest();
++        cadence.beginTick(true, 4);
++        require(!cadence.allowThisTick(), "precondition: cooldown active before enabled flip");
++        cadence.beginTick(false, 4);
++        require(cadence.allowThisTick(), "enabled false must allow every tick");
++        cadence.beginTick(true, 4);
+… omitted 24 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java
+@@ -0,0 +1,118 @@
++package network.vonix.isleofberkperformance.verification;
++
++import java.lang.reflect.Method;
++import java.util.List;
++
++import network.vonix.isleofberkperformance.internal.PerformanceSettings;
++import network.vonix.isleofberkperformance.mixin.ADragonEggBaseMixin;
++import network.vonix.isleofberkperformance.mixin.ShockEffectMixin;
++
++/**
++ * Focused SOL-003 checks: egg/shock recurring handlers use PerformanceSettings primitives,
++ * and snapshot overwrite is visible to those accessors without Forge config objects.
++ */
++public final class PerformanceSettingsSnapshotFixture {
++    private PerformanceSettingsSnapshotFixture() {}
++
++    public static void main(String[] args) throws Exception {
++        // Defaults.
++        PerformanceSettings.overwrite(true, 4, 20, 8);
++        require(PerformanceSettings.eggHatchCheckIntervalTicks() == 20, "default egg interval");
++        require(PerformanceSettings.shockParticleIntervalTicks() == 8, "default shock interval");
++
++        // Coherent AI tuple via one packed snapshot.
++        long snap = PerformanceSettings.aiMoveSnapshot();
++        require(PerformanceSettings.aiMoveThrottlingEnabled(snap), "default AI enabled from snapshot");
++        require(PerformanceSettings.aiMoveIntervalTicks(snap) == 4, "default AI interval from snapshot");
++
++        // Reload all four keys; readers must observe new values.
++        PerformanceSettings.overwrite(false, 6, 15, 12);
++        long reloaded = PerformanceSettings.aiMoveSnapshot();
++        require(!PerformanceSettings.aiMoveThrottlingEnabled(reloaded), "reload AI enabled=false");
++        require(PerformanceSettings.aiMoveIntervalTicks(reloaded) == 6, "reload AI interval=6");
++        require(PerformanceSettings.eggHatchCheckIntervalTicks() == 15, "reload egg=15");
++        require(PerformanceSettings.shockParticleIntervalTicks() == 12, "reload shock=12");
++
++        // Unrelated "event" simulation: calling overwrite with same values must keep snapshots stable.
++        PerformanceSettings.overwrite(false, 6, 15, 12);
++        require(PerformanceSettings.aiMoveSnapshot() == reloaded
++                        || (PerformanceSettings.aiMoveIntervalTicks() == 6
++                        && !PerformanceSettings.aiMoveThrottlingEnabled()
++                        && PerformanceSettings.eggHatchCheckIntervalTicks() == 15
++                        && PerformanceSettings.shockParticleIntervalTicks() == 12),
++                "repeat overwrite must keep coherent values");
++
++        // Mixin methods exist and return PerformanceSettings primitives when invoked reflectively
++        // with dummy upstream constants (no Minecraft runtime required for the method body).
++        Method egg = ADragonEggBaseMixin.class.getDeclaredMethod("vonix$configureHatchCheckInterval", int.class);
++        egg.setAccessible(true);
++        ADragonEggBaseMixin eggMixin = (ADragonEggBaseMixin) unsafeAllocate(ADragonEggBaseMixin.class);
++        Object eggValue = egg.invoke(eggMixin, 20);
++        require(eggValue instanceof Integer && ((Integer) eggValue) == 15,
++                "egg mixin must return PerformanceSettings egg snapshot, got " + eggValue);
++
++        Method shock = ShockEffectMixin.class.getDeclaredMethod("vonix$configureParticleInterval", int.class);
++        shock.setAccessible(true);
++        ShockEffectMixin shockMixin = (ShockEffectMixin) unsafeAllocate(ShockEffectMixin.class);
++        Object shockValue = shock.invoke(shockMixin, 8);
++        require(shockValue instanceof Integer && ((Integer) shockValue) == 12,
++                "shock mixin must return PerformanceSettings shock snapshot, got " + shockValue);
++
++        // Restore defaults for subsequent fixtures in the same JVM if any.
++        PerformanceSettings.overwrite(true, 4, 20, 8);
++
++        // Bytecode of mixin classes must reference PerformanceSettings and must not contain
++        // ConfigValue get owner markers used by ForgeConfigSpec getters.
++        for (String className : List.of(
++                ADragonEggBaseMixin.class.getName(),
++                ShockEffectMixin.class.getName()
++        )) {
++            byte[] bytes = readClassBytes(className);
++            String latin1 = new String(bytes, java.nio.charset.StandardCharsets.ISO_8859_1);
++            require(latin1.contains("PerformanceSettings"), className + " must reference PerformanceSettings");
++            require(latin1.contains("eggHatchCheckIntervalTicks") || latin1.contains("shockParticleIntervalTicks"),
++                    className + " must call a PerformanceSettings interval accessor");
++            require(!latin1.contains("ForgeConfigSpec"), className + " must not reference ForgeConfigSpec");
++            require(!latin1.contains("ConfigValue"), className + " must not reference ConfigValue");
++        }
++
+… omitted 40 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -222,6 +222,8 @@
+     dependsOn 'aiMoveCadenceFixture'
+     dependsOn 'mixinLifecycleFixture'
+     dependsOn 'removedAiMovePredicateGate'
++    dependsOn 'mixinHotPathConfigGetGate'
++    dependsOn 'performanceSettingsSnapshotFixture'
+     dependsOn 'infoZipUxExtraFixture'
+ }
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -311,7 +311,7 @@
+ 
+ tasks.register('aiMoveCadenceFixture', JavaExec) {
+     group = 'verification'
+-    description = 'Checks tick-HEAD AiMoveCadence allow/deny, multi-call due ticks, lifecycle reset, and bounded state.'
++    description = 'Checks tick-HEAD AiMoveCadence allow/deny, multi-call due ticks, lifecycle reset, atomic snapshot, and reload rearm.'
+     classpath = sourceSets.test.runtimeClasspath
+     mainClass = 'network.vonix.isleofberkperformance.verification.AiMoveCadenceFixture'
+     dependsOn testClasses
+@@ -322,6 +322,14 @@
+     description = 'Checks that target canUse/start/stop methods remain untouched and reset stays in WrappedGoal.'
+     classpath = sourceSets.test.runtimeClasspath
+     mainClass = 'network.vonix.isleofberkperformance.verification.MixinLifecycleFixture'
++    dependsOn testClasses
++}
++
++tasks.register('performanceSettingsSnapshotFixture', JavaExec) {
++    group = 'verification'
++    description = 'Checks PerformanceSettings packed AI tuple and egg/shock snapshot handlers.'
++    classpath = sourceSets.test.runtimeClasspath
++    mainClass = 'network.vonix.isleofberkperformance.verification.PerformanceSettingsSnapshotFixture'
+     dependsOn testClasses
+ }
+ 
+@@ -391,6 +399,61 @@
+             throw new GradleException("removedAiMovePredicateGate BYTECODE FAIL:\n  - " + bytecodeHits.join('\n  - '))
+         }
+         logger.lifecycle('removedAiMovePredicateGate: PASS (no shouldRunAiMove/shouldRunThrottledAiMove in source or companion bytecode)')
++    }
++}
++
++/**
++ * SOL-003: reject ForgeConfigSpec.ConfigValue.get() from every active mixin method.
++ * Source and companion mixin bytecode must not call .get() on config values.
++ */
++tasks.register('mixinHotPathConfigGetGate') {
++    group = 'verification'
++    description = 'Fails if active mixins still call ForgeConfigSpec ConfigValue.get() on hot paths.'
++    dependsOn classes
++    doLast {
++        def mixinRoot = file("${projectDir}/src/main/java/network/vonix/isleofberkperformance/mixin")
++        def sourceHits = [] as List
++        if (mixinRoot.isDirectory()) {
++            mixinRoot.eachFileRecurse(groovy.io.FileType.FILES) { f ->
++                if (!f.name.endsWith('.java')) {
++                    return
++                }
++                def text = f.getText('UTF-8')
++                if (text.contains('PerformanceConfig.') && text.contains('.get()')) {
++                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: PerformanceConfig.*.get()"
++                }
++                if (text.contains('ForgeConfigSpec') || text.contains('ConfigValue')) {
++                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type reference"
++                }
++            }
++        }
++        if (!sourceHits.isEmpty()) {
++            throw new GradleException("mixinHotPathConfigGetGate SOURCE FAIL:\n  - " + sourceHits.join('\n  - '))
++        }
++
++        def classRoot = file("${buildDir}/classes/java/main/network/vonix/isleofberkperformance/mixin")
++        def bytecodeHits = [] as List
++        if (classRoot.isDirectory()) {
++            classRoot.eachFileRecurse(groovy.io.FileType.FILES) { f ->
++                if (!f.name.endsWith('.class')) {
++                    return
++                }
++                def latin1 = new String(f.bytes, 'ISO-8859-1')
++                // ForgeConfigSpec$ConfigValue.get descriptor fragments and owner names.
++                if (latin1.contains('ForgeConfigSpec') || latin1.contains('ConfigValue')) {
++                    bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type in bytecode"
++                }
++                // Direct PerformanceConfig field get on BooleanValue/IntValue shows as get()V-ish invoke.
++                if (latin1.contains('PerformanceConfig') && latin1.contains('()Ljava/lang/Object;')) {
++                    // Heuristic: ConfigValue.get() returns Object before unbox; PerformanceSettings returns primitives.
++                    bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: possible ConfigValue.get Object return"
++                }
++            }
++        }
+… omitted 7 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java → b/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java
+@@ -1,15 +1,13 @@
+ package network.vonix.isleofberkperformance.verification;
+ 
+-import java.lang.reflect.Method;
++import java.nio.charset.StandardCharsets;
+ import java.util.List;
+ 
+ import network.vonix.isleofberkperformance.internal.PerformanceSettings;
+-import network.vonix.isleofberkperformance.mixin.ADragonEggBaseMixin;
+-import network.vonix.isleofberkperformance.mixin.ShockEffectMixin;
+ 
+ /**
+- * Focused SOL-003 checks: egg/shock recurring handlers use PerformanceSettings primitives,
+- * and snapshot overwrite is visible to those accessors without Forge config objects.
++ * Focused SOL-002/003 checks for atomic AI snapshots and egg/shock primitive reloads.
++ * Does not construct Minecraft or Forge runtime objects.
+  */
+ public final class PerformanceSettingsSnapshotFixture {
+     private PerformanceSettingsSnapshotFixture() {}
+@@ -17,87 +15,72 @@
+     public static void main(String[] args) throws Exception {
+         // Defaults.
+         PerformanceSettings.overwrite(true, 4, 20, 8);
++        long defaults = PerformanceSettings.aiMoveSnapshot();
++        require(PerformanceSettings.aiMoveThrottlingEnabled(defaults), "default AI enabled");
++        require(PerformanceSettings.aiMoveIntervalTicks(defaults) == 4, "default AI interval");
+         require(PerformanceSettings.eggHatchCheckIntervalTicks() == 20, "default egg interval");
+         require(PerformanceSettings.shockParticleIntervalTicks() == 8, "default shock interval");
++        require(PerformanceSettings.aiMoveThrottlingEnabled() == PerformanceSettings.aiMoveThrottlingEnabled(defaults),
++                "enabled accessor matches packed snapshot");
++        require(PerformanceSettings.aiMoveIntervalTicks() == PerformanceSettings.aiMoveIntervalTicks(defaults),
++                "interval accessor matches packed snapshot");
+ 
+-        // Coherent AI tuple via one packed snapshot.
+-        long snap = PerformanceSettings.aiMoveSnapshot();
+-        require(PerformanceSettings.aiMoveThrottlingEnabled(snap), "default AI enabled from snapshot");
+-        require(PerformanceSettings.aiMoveIntervalTicks(snap) == 4, "default AI interval from snapshot");
+-
+-        // Reload all four keys; readers must observe new values.
++        // Reload all four keys; one packed AI read must stay coherent with accessors.
+         PerformanceSettings.overwrite(false, 6, 15, 12);
+         long reloaded = PerformanceSettings.aiMoveSnapshot();
+-        require(!PerformanceSettings.aiMoveThrottlingEnabled(reloaded), "reload AI enabled=false");
+-        require(PerformanceSettings.aiMoveIntervalTicks(reloaded) == 6, "reload AI interval=6");
++        require(!PerformanceSettings.aiMoveThrottlingEnabled(reloaded), "reload AI enabled=false in snapshot");
++        require(PerformanceSettings.aiMoveIntervalTicks(reloaded) == 6, "reload AI interval=6 in snapshot");
++        require(!PerformanceSettings.aiMoveThrottlingEnabled(), "reload AI enabled=false accessor");
++        require(PerformanceSettings.aiMoveIntervalTicks() == 6, "reload AI interval=6 accessor");
+         require(PerformanceSettings.eggHatchCheckIntervalTicks() == 15, "reload egg=15");
+         require(PerformanceSettings.shockParticleIntervalTicks() == 12, "reload shock=12");
+ 
+-        // Unrelated "event" simulation: calling overwrite with same values must keep snapshots stable.
++        // Unrelated repeated publish with same values keeps observable snapshots stable.
+         PerformanceSettings.overwrite(false, 6, 15, 12);
+-        require(PerformanceSettings.aiMoveSnapshot() == reloaded
+-                        || (PerformanceSettings.aiMoveIntervalTicks() == 6
+-                        && !PerformanceSettings.aiMoveThrottlingEnabled()
+-                        && PerformanceSettings.eggHatchCheckIntervalTicks() == 15
+-                        && PerformanceSettings.shockParticleIntervalTicks() == 12),
+-                "repeat overwrite must keep coherent values");
++        require(!PerformanceSettings.aiMoveThrottlingEnabled(), "stable enabled after repeat overwrite");
++        require(PerformanceSettings.aiMoveIntervalTicks() == 6, "stable interval after repeat overwrite");
++        require(PerformanceSettings.eggHatchCheckIntervalTicks() == 15, "stable egg after repeat overwrite");
++        require(PerformanceSettings.shockParticleIntervalTicks() == 12, "stable shock after repeat overwrite");
+ 
+-        // Mixin methods exist and return PerformanceSettings primitives when invoked reflectively
+-        // with dummy upstream constants (no Minecraft runtime required for the method body).
+-        Method egg = ADragonEggBaseMixin.class.getDeclaredMethod("vonix$configureHatchCheckInterval", int.class);
+-        egg.setAccessible(true);
+-        ADragonEggBaseMixin eggMixin = (ADragonEggBaseMixin) unsafeAllocate(ADragonEggBaseMixin.class);
+-        Object eggValue = egg.invoke(eggMixin, 20);
+-        require(eggValue instanceof Integer && ((Integer) eggValue) == 15,
+-                "egg mixin must return PerformanceSettings egg snapshot, got " + eggValue);
++        // Clamp behavior remains coherent in the packed tuple.
++        PerformanceSettings.overwrite(true, 0, 0, 0);
++        long clamped = PerformanceSettings.aiMoveSnapshot();
++        require(PerformanceSettings.aiMoveIntervalTicks(clamped) == 1, "AI interval clamps low to 1");
++        require(PerformanceSettings.eggHatchCheckIntervalTicks() == 1, "egg clamps low to 1");
++        require(PerformanceSettings.shockParticleIntervalTicks() == 1, "shock clamps low to 1");
+… omitted 74 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java → b//root/work/isleofberk-performance-patches/src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java
+@@ -75,7 +75,9 @@
+             if (className.endsWith("ShockEffectMixin")) {
+                 require(latin1.contains("shockParticleIntervalTicks"), className + " must call shockParticleIntervalTicks");
+             }
+-            if (className.contains("Dragon") || className.contains("Circle")) {
++            if (className.endsWith("DragonFlyAndAttackAirbourneTargetGoalMixin")
++                    || className.endsWith("DragonFollowPlayerFlyingMixin")
++                    || className.endsWith("UntamedDragonCircleFlightGoalMixin")) {
+                 require(latin1.contains("aiMoveSnapshot"), className + " must read aiMoveSnapshot once-path");
+             }
+         }
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -419,11 +419,15 @@
+                     return
+                 }
+                 def text = f.getText('UTF-8')
+-                if (text.contains('PerformanceConfig.') && text.contains('.get()')) {
++                // Strip block and line comments before scanning for live call sites.
++                def code = text
++                        .replaceAll(/(?s)\/\*.*?\*\//, ' ')
++                        .replaceAll(/\/\/.*/, ' ')
++                if (code =~ /PerformanceConfig\.[A-Za-z0-9_]+\s*\.\s*get\s*\(/) {
+                     sourceHits << "${f.toPath().toAbsolutePath().normalize()}: PerformanceConfig.*.get()"
+                 }
+-                if (text.contains('ForgeConfigSpec') || text.contains('ConfigValue')) {
+-                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type reference"
++                if (code.contains('ForgeConfigSpec') || code.contains('ConfigValue')) {
++                    sourceHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type reference in code"
+                 }
+             }
+         }
+@@ -439,13 +443,10 @@
+                     return
+                 }
+                 def latin1 = new String(f.bytes, 'ISO-8859-1')
+-                // ForgeConfigSpec$ConfigValue.get descriptor fragments and owner names.
+                 if (latin1.contains('ForgeConfigSpec') || latin1.contains('ConfigValue')) {
+                     bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: Forge config type in bytecode"
+                 }
+-                // Direct PerformanceConfig field get on BooleanValue/IntValue shows as get()V-ish invoke.
+                 if (latin1.contains('PerformanceConfig') && latin1.contains('()Ljava/lang/Object;')) {
+-                    // Heuristic: ConfigValue.get() returns Object before unbox; PerformanceSettings returns primitives.
+                     bytecodeHits << "${f.toPath().toAbsolutePath().normalize()}: possible ConfigValue.get Object return"
+                 }
+             }
+  ┊ review diff
+a/evidence/grok-sol-002-003-report.json → b/evidence/grok-sol-002-003-report.json
+@@ -0,0 +1,58 @@
++{
++  "status": "candidate_complete",
++  "findings": ["SOL-002", "SOL-003"],
++  "changed_paths": [
++    "src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java",
++    "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java",
++    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java",
++    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java",
++    "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java",
++    "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java",
++    "src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java",
++    "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java",
++    "src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java",
++    "build.gradle"
++  ],
++  "repairs": {
++    "SOL-002": {
++      "summary": "AI enabled/interval published as one packed long snapshot; mixins read aiMoveSnapshot once at tick HEAD; AiMoveCadence detects effective setting changes and rearms so the next eligible request runs immediately under the new interval.",
++      "details": [
++        "PerformanceSettings.aiMoveSnapshot packs enabled+interval in one volatile long",
++        "beginTick(long) / beginTick(boolean,int) compare last observed tuple and rearm on change",
++        "20->2 and 2->20 mid-cooldown covered by AiMoveCadenceFixture",
++        "no per-tick allocation; SOL-001 cadence/return/lifecycle semantics preserved"
++      ]
++    },
++    "SOL-003": {
++      "summary": "ADragonEggBaseMixin and ShockEffectMixin now return PerformanceSettings primitive snapshots; ForgeConfigSpec.get confined out of active mixins.",
++      "details": [
++        "egg uses PerformanceSettings.eggHatchCheckIntervalTicks()",
++        "shock particle uses PerformanceSettings.shockParticleIntervalTicks()",
++        "mixinHotPathConfigGetGate rejects PerformanceConfig.*.get and ForgeConfigSpec/ConfigValue in mixin source/bytecode",
++        "PerformanceSettingsSnapshotFixture proves reload of all four keys and mixin bytecode accessors"
++      ]
++    }
++  },
++  "commands": [
++    {
++      "command": "./gradlew aiMoveCadenceFixture performanceSettingsSnapshotFixture mixinHotPathConfigGetGate removedAiMovePredicateGate --offline --no-daemon --rerun-tasks",
++      "java": "17",
++      "cwd": "/root/work/isleofberk-performance-patches",
++      "outcome": "BUILD SUCCESSFUL",
++      "exit_code": 0,
++      "log": "evidence/grok-sol-002-003-tests.log",
++      "task_results": [
++        "AiMoveCadenceFixture: PASS (tick-HEAD, multi-call, lifecycle, atomic snapshot, 20<->2 reload rearm)",
++        "PerformanceSettingsSnapshotFixture: PASS (atomic AI tuple + egg/shock snapshot reload)",
++        "mixinHotPathConfigGetGate: PASS (no ForgeConfigSpec/ConfigValue.get in active mixins)",
++        "removedAiMovePredicateGate: PASS (no shouldRunAiMove/shouldRunThrottledAiMove in source or companion bytecode)"
++      ]
++    }
++  ],
++  "unresolved_blockers": [],
++  "effects": "none",
++  "notes": [
++    "Full clean check build not required by this focused SOL-002/003 task and was not rerun here.",
++    "No ARR base edits, deploy, publish, push, restart, or credential access."
++  ]
++}
+SOL-002 and SOL-003 complete.
+
+status: candidate_complete
+
+SOL-002
+- AI enabled/interval packed into one volatile long (`PerformanceSettings.aiMoveSnapshot`)
+- Mixins read that snapshot once at tick HEAD (`beginTick(snapshot)`)
+- `AiMoveCadence` rearms on effective enabled/interval change (drops old cooldown)
+- Fixture covers 20→2 and 2→20 mid-cooldown + coherent tuple
+
+SOL-003
+- Egg/shock mixins use `PerformanceSettings` primitives only
+- `mixinHotPathConfigGetGate` rejects ForgeConfigSpec/ConfigValue.get in active mixins
+- Snapshot fixture proves reload of all four keys + mixin bytecode accessors
+
+Focused tests (Java 17, offline):
+- aiMoveCadenceFixture PASS
+- performanceSettingsSnapshotFixture PASS
+- mixinHotPathConfigGetGate PASS
+- removedAiMovePredicateGate PASS
+- BUILD SUCCESSFUL
+
+report: /root/work/isleofberk-performance-patches/evidence/grok-sol-002-003-report.json
+effects: none
+unresolved_blockers: []
+
+session_id: 20260819_033657_f848ab

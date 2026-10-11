@@ -1,0 +1,58 @@
+{
+  "status": "candidate_complete",
+  "findings": ["SOL-002", "SOL-003"],
+  "changed_paths": [
+    "src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java",
+    "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java",
+    "build.gradle"
+  ],
+  "repairs": {
+    "SOL-002": {
+      "summary": "AI enabled/interval published as one packed long snapshot; mixins read aiMoveSnapshot once at tick HEAD; AiMoveCadence detects effective setting changes and rearms so the next eligible request runs immediately under the new interval.",
+      "details": [
+        "PerformanceSettings.aiMoveSnapshot packs enabled+interval in one volatile long",
+        "beginTick(long) / beginTick(boolean,int) compare last observed tuple and rearm on change",
+        "20->2 and 2->20 mid-cooldown covered by AiMoveCadenceFixture",
+        "no per-tick allocation; SOL-001 cadence/return/lifecycle semantics preserved"
+      ]
+    },
+    "SOL-003": {
+      "summary": "ADragonEggBaseMixin and ShockEffectMixin now return PerformanceSettings primitive snapshots; ForgeConfigSpec.get confined out of active mixins.",
+      "details": [
+        "egg uses PerformanceSettings.eggHatchCheckIntervalTicks()",
+        "shock particle uses PerformanceSettings.shockParticleIntervalTicks()",
+        "mixinHotPathConfigGetGate rejects PerformanceConfig.*.get and ForgeConfigSpec/ConfigValue in mixin source/bytecode",
+        "PerformanceSettingsSnapshotFixture proves reload of all four keys and mixin bytecode accessors"
+      ]
+    }
+  },
+  "commands": [
+    {
+      "command": "./gradlew aiMoveCadenceFixture performanceSettingsSnapshotFixture mixinHotPathConfigGetGate removedAiMovePredicateGate --offline --no-daemon --rerun-tasks",
+      "java": "17",
+      "cwd": "/root/work/isleofberk-performance-patches",
+      "outcome": "BUILD SUCCESSFUL",
+      "exit_code": 0,
+      "log": "evidence/grok-sol-002-003-tests.log",
+      "task_results": [
+        "AiMoveCadenceFixture: PASS (tick-HEAD, multi-call, lifecycle, atomic snapshot, 20<->2 reload rearm)",
+        "PerformanceSettingsSnapshotFixture: PASS (atomic AI tuple + egg/shock snapshot reload)",
+        "mixinHotPathConfigGetGate: PASS (no ForgeConfigSpec/ConfigValue.get in active mixins)",
+        "removedAiMovePredicateGate: PASS (no shouldRunAiMove/shouldRunThrottledAiMove in source or companion bytecode)"
+      ]
+    }
+  ],
+  "unresolved_blockers": [],
+  "effects": "none",
+  "notes": [
+    "Full clean check build not required by this focused SOL-002/003 task and was not rerun here.",
+    "No ARR base edits, deploy, publish, push, restart, or credential access."
+  ]
+}

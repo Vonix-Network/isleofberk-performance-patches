@@ -1,0 +1,82 @@
+[20Aug2026 01:02:29.603] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclient, --assetIndex, 1.18, --assetsDir, /root/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 40.3.12, --fml.mcVersion, 1.18.2, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20220404.173914, --mixin.config, isleofberkperformance.mixins.json]
+[20Aug2026 01:02:29.609] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 9.1.3+9.1.3+main.9b69c82a starting: java version 17.0.19 by Ubuntu
+[20Aug2026 01:02:29.625] [main/DEBUG] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[20Aug2026 01:02:29.644] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Found naming services : [srgtomcp]
+[20Aug2026 01:02:29.661] [main/DEBUG] [cpw.mods.modlauncher.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,eventbus,slf4jfixer,object_holder_definalize,runtime_enum_extender,capability_token_subclass,accesstransformer,runtimedistcleaner]
+[20Aug2026 01:02:29.675] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[20Aug2026 01:02:29.693] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: java.util.stream.ReferencePipeline$3@3300f4fd
+[20Aug2026 01:02:29.708] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[20Aug2026 01:02:29.708] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[20Aug2026 01:02:29.709] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[20Aug2026 01:02:29.710] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[20Aug2026 01:02:29.710] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[20Aug2026 01:02:29.714] [main/DEBUG] [net.minecraftforge.fml.loading.LauncherVersion/CORE]: Found FMLLauncher version 1.0
+[20Aug2026 01:02:29.714] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML 1.0 loading
+[20Aug2026 01:02:29.715] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found ModLauncher version : 9.1.3+9.1.3+main.9b69c82a
+[20Aug2026 01:02:29.715] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Requesting CoreMods to not apply the fix for ASMAPI.findFirstInstructionBefore by default
+[20Aug2026 01:02:29.716] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found AccessTransformer version : 8.0.4+66+master.c09db6d7
+[20Aug2026 01:02:29.717] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found EventBus version : 5.0.7+5.0.7+master.6d3407cc
+[20Aug2026 01:02:29.718] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[20Aug2026 01:02:29.720] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/]: CoreMods will preserve legacy behavior of ASMAPI.findFirstInstructionBefore for backwards-compatibility
+[20Aug2026 01:02:29.721] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found CoreMod version : 5.2.5
+[20Aug2026 01:02:29.722] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package implementation version 4.0.15-4.x+4.0.15-4.x+4.x.038e91c0
+[20Aug2026 01:02:29.722] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package specification 4
+[20Aug2026 01:02:29.724] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[20Aug2026 01:02:29.725] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[20Aug2026 01:02:29.737] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[20Aug2026 01:02:29.738] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[20Aug2026 01:02:29.768] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@42607a4f
+[20Aug2026 01:02:29.795] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/root/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%2324!/ Service=ModLauncher Env=CLIENT
+[20Aug2026 01:02:29.803] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[20Aug2026 01:02:29.803] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20Aug2026 01:02:29.805] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20Aug2026 01:02:29.806] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20Aug2026 01:02:29.807] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20Aug2026 01:02:29.808] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20Aug2026 01:02:29.813] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[20Aug2026 01:02:29.814] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[20Aug2026 01:02:29.814] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[20Aug2026 01:02:29.816] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing GAMEDIR directory : /root/work/iob-packaged-client-harness-20260820/run-srg-client2
+[20Aug2026 01:02:29.818] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path GAMEDIR is /root/work/iob-packaged-client-harness-20260820/run-srg-client2
+[20Aug2026 01:02:29.818] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing MODSDIR directory : /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods
+[20Aug2026 01:02:29.819] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path MODSDIR is /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods
+[20Aug2026 01:02:29.819] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing CONFIGDIR directory : /root/work/iob-packaged-client-harness-20260820/run-srg-client2/config
+[20Aug2026 01:02:29.819] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path CONFIGDIR is /root/work/iob-packaged-client-harness-20260820/run-srg-client2/config
+[20Aug2026 01:02:29.820] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path FMLCONFIG is /root/work/iob-packaged-client-harness-20260820/run-srg-client2/config/fml.toml
+[20Aug2026 01:02:29.820] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading configuration
+[20Aug2026 01:02:29.877] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Configuration file /root/work/iob-packaged-client-harness-20260820/run-srg-client2/config/fml.toml is not correct. Correcting
+[20Aug2026 01:02:29.888] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [defaultConfigPath] was corrected from null to defaultconfigs
+[20Aug2026 01:02:29.890] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [maxThreads] was corrected from null to -1
+[20Aug2026 01:02:29.897] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing default config directory directory : /root/work/iob-packaged-client-harness-20260820/run-srg-client2/defaultconfigs
+[20Aug2026 01:02:29.897] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing ModFile
+[20Aug2026 01:02:29.903] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing launch handler
+[20Aug2026 01:02:29.904] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Using forgeclient as launch service
+[20Aug2026 01:02:29.935] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Received command line version data  : VersionInfo[forgeVersion=40.3.12, mcVersion=1.18.2, mcpVersion=20220404.173914, forgeGroup=net.minecraftforge]
+[20Aug2026 01:02:29.938] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[20Aug2026 01:02:29.939] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Current naming domain is 'srg'
+[20Aug2026 01:02:29.940] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Identified name mapping providers {}
+[20Aug2026 01:02:29.941] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[20Aug2026 01:02:29.942] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[20Aug2026 01:02:29.942] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[20Aug2026 01:02:29.942] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[20Aug2026 01:02:29.943] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Initiating mod scan
+[20Aug2026 01:02:29.959] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModListHandler/CORE]: Found mod coordinates from lists: []
+[20Aug2026 01:02:29.961] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer/CORE]: Found Mod Locators : (mods folder:null),(maven libs:null),(exploded directory:null),(minecraft:null),(userdev classpath:null),(JarInJar:null)
+[20Aug2026 01:02:29.986] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/archipelagoadditions-2.5.5-1.18.2.jar
+[20Aug2026 01:02:30.052] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file archipelagoadditions-2.5.5-1.18.2.jar with {archipelagoadditions} mods - versions {2.5.5-1.18.2}
+[20Aug2026 01:02:30.055] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/dragon_fire_variants-1.6.1.jar
+[20Aug2026 01:02:30.059] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_fire_variants-1.6.1.jar with {dragon_fire} mods - versions {1.0.0}
+[20Aug2026 01:02:30.062] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/dragon_wars_variants-1.6.1.jar
+[20Aug2026 01:02:30.065] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_wars_variants-1.6.1.jar with {dragon_wars} mods - versions {1.7.0}
+[20Aug2026 01:02:30.070] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/geckolib-forge-1.18-3.0.57.jar
+[20Aug2026 01:02:30.075] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file geckolib-forge-1.18-3.0.57.jar with {geckolib3} mods - versions {3.0.57}
+[20Aug2026 01:02:30.078] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/iobvariantloader-2.6.4-all.jar
+[20Aug2026 01:02:30.080] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file iobvariantloader-2.6.4-all.jar with {iobvariantloader} mods - versions {2.6.4}
+[20Aug2026 01:02:30.082] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/isleof-berk-performance-patches-1.0.1-rc.1.jar
+[20Aug2026 01:02:30.084] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleof-berk-performance-patches-1.0.1-rc.1.jar with {isleofberkperformance} mods - versions {1.0.1-rc.1}
+[20Aug2026 01:02:30.088] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/isleofberk-1.2.0.jar
+[20Aug2026 01:02:30.090] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-1.2.0.jar with {isleofberk} mods - versions {1.2.0}
+[20Aug2026 01:02:30.092] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/isleofberk-deadlockfix-1.1.2.jar
+[20Aug2026 01:02:30.094] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-deadlockfix-1.1.2.jar with {isleofberkdeadlockfix} mods - versions {1.1.2}
+[20Aug2026 01:02:30.097] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-20260820/run-srg-client2/mods/leafsvariants-1.0.0.jar
+[20Aug2026 01:02:30.099] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file leafsvariants-1.0.0.jar with {leafsvariants} mods - versions {1.0.0}

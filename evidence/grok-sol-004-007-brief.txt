@@ -1,0 +1,35 @@
+Implement ONLY the remaining exact SOL findings SOL-004, SOL-005, SOL-006, SOL-007 from the current successor review. Candidate-only; preserve all existing edits; no reset/clean/deploy/publish/push/restart/credentials/ARR edits. Root: /root/work/isleofberk-performance-patches; target MC1.18.2 Forge40.3.0 Java17 IoB1.2.0 GeckoLib3.0.57. Do not fabricate absent runtime dependencies or profiling. If a required external runtime/dependency is unavailable, write a concrete blocked status rather than weakening the gate.
+
+SOL-004 P1 src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java; src/test/java/network/vonix/isleofberkperformance/verification/GameplayBytecodeFixture.java; src/test/java/network/vonix/isleofberkperformance/verification/MixinLifecycleFixture.java::main() fixtures
+EVIDENCE: AiMoveCadenceFixture now passes and tests the helper, but it does not invoke any redirect or transformed goal. GameplayBytecodeFixture only counts calls and literals in untransformed IoB bytecode, while MixinLifecycleFixture reflects untransformed mixin class shape. Direct inspection of the pinned IoB JAR shows all six moveTo results are immediately POPped and the two circle sites are mutually exclusive, but no deterministic regression test records that dataflow, constructor initialization of the new final cadence field, one transformed HEAD decision, zero skipped navigation calls, or actual WrappedGoal start/stop execution. The full clean gate has not passed; its latest attempt compiled main/test sources but later ended with StackOverflowError.
+FIX: Add digest-pinned ASM and post-Mixin fixtures against IoB 1.2.0. Inspect and execute the transformed goal and WrappedGoal classes, including cadence-field initialization, while preserving required injector counts and original branch/RNG structure.
+TESTS:
+ - ASM test requiring POP immediately after all six pinned moveTo calls, IREM dataflow for egg 20 and shock particle 8, and unchanged shock damage 20.
+ - Transformed/instrumented goal test covering zero, one, and multiple eligible calls per tick, proving skipped ticks call navigation zero times and due ticks execute every intended call.
+ - Transformed WrappedGoal start/stop/restart test proving both reset hooks execute and the first later eligible request runs immediately.
+ - Successful Java 17 clean `check build --offline --no-daemon --rerun-tasks` after the Forge build StackOverflowError is resolved.
+
+SOL-005 P2 evidence/sol-deep-001/source-manifest.json; settings.gradle; .offline-plugin-repo; release-download/isleof-berk-performance-patches-1.0.0.jar::candidate build-input and artifact identity
+EVIDENCE: The manifest pins the clean base tree, records obsolete source hashes, omits AiMoveCadence and PerformanceSettings, and omits five tracked wrapper/git files. settings.gradle now gives an untracked 83-file local repository precedence, but those build inputs and their provenance are absent from the manifest. The inherited 32,865-byte JAR with SHA-256 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2 contains neither new helper class and is not this dirty successor; no completed successor JAR exists.
+FIX: After source repairs, commit one clean candidate and generate a complete manifest covering tracked build inputs, wrapper files, pinned IoB/GeckoLib digests, and every local repository artifact actually consumed. Build and bind the canonical reobfuscated JAR, tree, version, size, digest, refmap, and class inventory to that identity; do not use unaudited untracked repository content as release provenance.
+TESTS:
+ - Manifest completeness and digest verification with explicit exclusions only.
+ - Two clean builds from the pinned commit producing byte-identical JARs.
+ - Package, mapping, refmap, dependency-range, version, and class-inventory audits proving AiMoveCadence and PerformanceSettings are present.
+
+SOL-006 P2 CANDIDATE-REPORT.md; README.md; config/isleofberkperformance.toml::release identity, verification claims, and AI cadence wording
+EVIDENCE: CANDIDATE-REPORT still identifies 0.3.1-rc.1, commit dcf712b, a 47,478-byte JAR with SHA-256 7238b7..., 36 fixed-resource methods, and unchanged predecessor bytecode. The successor changes gameplay bytecode and has no such artifact. README verification retains the historical 36-method result, while README and the deterministic config file describe later eligible-request intervals rather than one decision per goal tick.
+FIX: Archive the historical report and create a successor report only after the final artifact exists. Update README/config wording to the tested tick-HEAD cadence and current eight fixed-resource surface, separating historical evidence from exact-candidate compile, transform, runtime, and review evidence.
+TESTS:
+ - Documentation consistency gate comparing commit/tree, version, artifact size/hash, class inventory, mixin/resource counts, config defaults, and cadence wording with the final source and JAR.
+ - Verify every cited evidence path and digest exists and belongs to the final candidate.
+
+SOL-007 P2 src/main/resources/isleofberkperformance.mixins.json; src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java::client renderer mixins and multi-mod coexistence
+EVIDENCE: Client/common separation and removal of dynamic dragon/egg resource cancellations remain structurally sound, but the fixture only performs source exclusions and checks original IoB bodies. No fresh transformed-class or runtime evidence covers the successor artifact together with supported Variant Loader and the separate deadlock-fix JAR; twelve cancellable renderer HEAD injections still replace complete getRenderType bodies.
+FIX: Gate the exact final artifact with digest-pinned supported Variant Loader, deterministic variant assets, and the separate deadlock-fix artifact. Capture transformed-class and runtime evidence; defer any demonstrated collision instead of weakening required injections or editing Isle of Berk.
+TESTS:
+ - Client launch proving variant model, texture, animation, and egg remapping with no MixinApplyError, InvalidInjection, linkage failure, or visual fallback.
+ - Dedicated-server launch proving all common mixins and config load/reload hooks coexist with the deadlock-fix artifact.
+ - Exported transformed-class inspection proving both companions' intended injections coexist.
+
+Write evidence/grok-sol-004-007-report.json valid JSON: status candidate_complete|blocked|failed, changed_paths, commands/outcomes, unresolved_blockers, effects:none. Run only bounded focused checks; do not claim acceptance.

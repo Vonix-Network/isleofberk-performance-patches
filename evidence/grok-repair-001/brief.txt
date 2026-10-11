@@ -1,0 +1,31 @@
+You are the candidate-only implementation worker for Vonix-Network/isleofberk-performance-patches.
+
+Repository: /root/work/isleofberk-performance-patches
+Base HEAD: 515b9a677a39f72e9be12330355cbf765dbafcea (tag v1.0.0)
+Do not publish, push, deploy, restart, modify credentials, inspect unrelated workspaces, or claim acceptance. Preserve the repository's companion-only scope: do not bundle Isle of Berk or deadlock-fix classes/resources.
+
+Independent exact SOL deep review: /root/work/isleofberk-performance-patches/evidence/sol-deep-001/sol-review.json
+SOL verdict: REJECT. Repair these exact findings:
+
+F-001 P1: AI interval is counted per redirected invocation, not per goal tick. Locations: DragonFlyAndAttackAirbourneTargetGoalMixin.java, DragonFollowPlayerFlyingMixin.java, UntamedDragonCircleFlightGoalMixin.java, PerformanceConfig.java. Track cadence once at tick() HEAD and cache one allow/deny decision for the whole tick. Preserve first-eligible-request behavior with an armed/cooldown state, allow all intended calls on a due tick, reset at WrappedGoal start/stop, and keep state bounded. Do not merely rename the option; the documented option is tick-based.
+
+F-002 P1: Existing tests only test a modulo predicate/static invoke counts/reflection. Add deterministic tests/fixtures for zero/one/multiple calls per tick, first request, interval=1/disabled, start-stop-restart lifecycle, branch/exclusive calls, return-value behavior, and long-lived bounded state. Add transformed-bytecode or equivalent target-shape checks where feasible without requiring redistribution of ARR jars. Preserve exact target descriptors and Mixin require/expect/allow constraints.
+
+F-003 P2: ForgeConfigSpec get() reads occur in hot paths and duplicate interval reads happen per redirected request. Implement reload-correct primitive snapshots/caches updated through the supported Forge config event path, or snapshot once per goal tick. Avoid unsafe class-init-only caching. Test reload visibility. Egg/shock recurring paths must not add unnecessary config-object reads.
+
+F-004 P2: CANDIDATE-REPORT.md is stale and describes 0.3.1-rc.1/different commit/JAR/method counts. Replace/update it for exact current 1.0.0 HEAD/tree/artifact and current eight fixed-resource result. Clearly separate static evidence from runtime/performance evidence and do not invent fresh runtime evidence.
+
+F-005 P2: the candidate manifest omitted five tracked build-input files. Do not put generated evidence inside the repository candidate unless explicitly intended. Update documentation/provenance only if it belongs in source; ensure the final parent can generate a complete manifest including wrapper files.
+
+F-006 P2: current 1.0.0 coexistence with Variant Loader and separate isleofberk-deadlockfix lacks fresh runtime evidence. Add only deterministic structural/package checks or documentation of required runtime gate; do not fabricate a runtime pass. Preserve client-only list and no bundled ARR/deadlockfix classes.
+
+Additional requirements:
+- Analyze existing source before editing; preserve gameplay/compatibility boundaries.
+- True cadence semantics: for each goal tick, a due decision is computed once at tick HEAD. If due, all intended movement calls in that tick may execute; if not due, all are skipped. First tick after WrappedGoal start must be due. Start/stop resets the cadence state. Prevent integer overflow with a bounded counter or reset behavior.
+- Be careful with redirect return values: skipped moveTo calls must not accidentally change a caller branch in a way that breaks behavior; inspect exact target bytecode/source shape and document the chosen semantics.
+- Do not introduce async world/entity work, caches retaining entities/worlds, unbounded collections, or fake performance claims.
+- Update tests and docs coherently.
+- Run the strongest available deterministic gates. Host Java is 21 and Gradle 7.5.1 may fail before compile; if so, record the exact blocker honestly and still run any available static fixtures. Do not install or alter system Java.
+- Write a durable worker report at /root/work/isleofberk-performance-patches/evidence/grok-repair-001/worker-report.json containing status, exact changed paths, commands/outcomes, unresolved issues, and no-effects statement. The report must be valid JSON.
+
+Finish only after implementing and testing the candidate or report a concrete blocker. Worker output is advisory; parent will independently inspect, build, hash, and request fresh SOL verification.

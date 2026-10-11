@@ -1,15 +1,19 @@
-# Deterministic common-config reference for the 0.3.1-rc.1 release candidate.
+# Deterministic common-config reference for the current companion candidate.
 # Forge generates/updates this file from the registered COMMON spec at runtime.
 # The comments below intentionally mirror the generated comments and defaults.
 
 [performance]
-# Whether repeated AI movement/navigation requests are throttled.
-# Upstream/normal behavior: false (no throttle). Optimized default: true.
+# Whether repeated AI navigation movement requests are throttled.
+# Upstream/normal behavior: false (no throttle; movement requests may be issued every tick).
+# Optimized default: true. Tradeoff: navigation requests are less frequent and movement response can be less immediate.
 ai_move_throttling_enabled = true
 
+# AI movement-request interval in goal ticks when throttling is enabled.
 # Upstream/normal behavior: 1 tick. Optimized default: 4 ticks.
-# The first eligible request after a goal starts runs immediately; later eligible requests use this interval.
-# 1 disables cadence optimization; larger values reduce navigation work but can reduce responsiveness.
+# One allow/deny decision is computed at each goal tick() HEAD.
+# The first eligible request after a goal starts runs immediately; later due decisions use this interval.
+# On a due tick every intended movement/circle call may run; on a skip tick all of them are skipped.
+# 1 disables cadence optimization for this control.
 ai_move_interval_ticks = 4
 
 # Upstream/normal behavior in Isle of Berk 1.2.0: 20 ticks. Optimized default: 20 ticks.

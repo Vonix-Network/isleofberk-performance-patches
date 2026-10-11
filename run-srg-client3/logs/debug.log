@@ -1,0 +1,689 @@
+[22Aug2026 02:55:06.407] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclient, --assetIndex, 1.18, --assetsDir, /root/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 40.3.12, --fml.mcVersion, 1.18.2, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20220404.173914, --mixin.config, isleofberkperformance.mixins.json]
+[22Aug2026 02:55:06.413] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 9.1.3+9.1.3+main.9b69c82a starting: java version 17.0.19 by Ubuntu
+[22Aug2026 02:55:06.429] [main/DEBUG] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[22Aug2026 02:55:06.450] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Found naming services : [srgtomcp]
+[22Aug2026 02:55:06.466] [main/DEBUG] [cpw.mods.modlauncher.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,eventbus,slf4jfixer,object_holder_definalize,runtime_enum_extender,capability_token_subclass,accesstransformer,runtimedistcleaner]
+[22Aug2026 02:55:06.477] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[22Aug2026 02:55:06.492] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: java.util.stream.ReferencePipeline$3@37052337
+[22Aug2026 02:55:06.508] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[22Aug2026 02:55:06.508] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[22Aug2026 02:55:06.509] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[22Aug2026 02:55:06.510] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[22Aug2026 02:55:06.510] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[22Aug2026 02:55:06.513] [main/DEBUG] [net.minecraftforge.fml.loading.LauncherVersion/CORE]: Found FMLLauncher version 1.0
+[22Aug2026 02:55:06.513] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML 1.0 loading
+[22Aug2026 02:55:06.513] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found ModLauncher version : 9.1.3+9.1.3+main.9b69c82a
+[22Aug2026 02:55:06.514] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Requesting CoreMods to not apply the fix for ASMAPI.findFirstInstructionBefore by default
+[22Aug2026 02:55:06.515] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found AccessTransformer version : 8.0.4+66+master.c09db6d7
+[22Aug2026 02:55:06.515] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found EventBus version : 5.0.7+5.0.7+master.6d3407cc
+[22Aug2026 02:55:06.515] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[22Aug2026 02:55:06.518] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/]: CoreMods will preserve legacy behavior of ASMAPI.findFirstInstructionBefore for backwards-compatibility
+[22Aug2026 02:55:06.518] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found CoreMod version : 5.2.5
+[22Aug2026 02:55:06.519] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package implementation version 4.0.15-4.x+4.0.15-4.x+4.x.038e91c0
+[22Aug2026 02:55:06.519] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package specification 4
+[22Aug2026 02:55:06.521] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[22Aug2026 02:55:06.522] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[22Aug2026 02:55:06.530] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[22Aug2026 02:55:06.531] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[22Aug2026 02:55:06.552] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@4fb64261
+[22Aug2026 02:55:06.572] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/root/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%2324!/ Service=ModLauncher Env=CLIENT
+[22Aug2026 02:55:06.577] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[22Aug2026 02:55:06.577] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[22Aug2026 02:55:06.579] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[22Aug2026 02:55:06.579] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[22Aug2026 02:55:06.580] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[22Aug2026 02:55:06.580] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[22Aug2026 02:55:06.583] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[22Aug2026 02:55:06.584] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[22Aug2026 02:55:06.584] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[22Aug2026 02:55:06.585] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing GAMEDIR directory : /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3
+[22Aug2026 02:55:06.586] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path GAMEDIR is /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3
+[22Aug2026 02:55:06.586] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing MODSDIR directory : /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods
+[22Aug2026 02:55:06.586] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path MODSDIR is /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods
+[22Aug2026 02:55:06.587] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing CONFIGDIR directory : /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/config
+[22Aug2026 02:55:06.587] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path CONFIGDIR is /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/config
+[22Aug2026 02:55:06.587] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path FMLCONFIG is /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/config/fml.toml
+[22Aug2026 02:55:06.587] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading configuration
+[22Aug2026 02:55:06.633] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing default config directory directory : /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/defaultconfigs
+[22Aug2026 02:55:06.634] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing ModFile
+[22Aug2026 02:55:06.637] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing launch handler
+[22Aug2026 02:55:06.638] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Using forgeclient as launch service
+[22Aug2026 02:55:06.662] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Received command line version data  : VersionInfo[forgeVersion=40.3.12, mcVersion=1.18.2, mcpVersion=20220404.173914, forgeGroup=net.minecraftforge]
+[22Aug2026 02:55:06.664] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[22Aug2026 02:55:06.665] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Current naming domain is 'srg'
+[22Aug2026 02:55:06.666] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Identified name mapping providers {}
+[22Aug2026 02:55:06.666] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[22Aug2026 02:55:06.667] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[22Aug2026 02:55:06.667] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[22Aug2026 02:55:06.668] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[22Aug2026 02:55:06.668] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Initiating mod scan
+[22Aug2026 02:55:06.681] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModListHandler/CORE]: Found mod coordinates from lists: []
+[22Aug2026 02:55:06.683] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer/CORE]: Found Mod Locators : (mods folder:null),(maven libs:null),(exploded directory:null),(minecraft:null),(userdev classpath:null),(JarInJar:null)
+[22Aug2026 02:55:06.699] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/archipelagoadditions-2.5.5-1.18.2.jar
+[22Aug2026 02:55:06.743] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file archipelagoadditions-2.5.5-1.18.2.jar with {archipelagoadditions} mods - versions {2.5.5-1.18.2}
+[22Aug2026 02:55:06.745] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_fire_variants-1.6.1.jar
+[22Aug2026 02:55:06.748] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_fire_variants-1.6.1.jar with {dragon_fire} mods - versions {1.0.0}
+[22Aug2026 02:55:06.750] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_wars_variants-1.6.1.jar
+[22Aug2026 02:55:06.752] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_wars_variants-1.6.1.jar with {dragon_wars} mods - versions {1.7.0}
+[22Aug2026 02:55:06.755] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/geckolib-forge-1.18-3.0.57.jar
+[22Aug2026 02:55:06.758] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file geckolib-forge-1.18-3.0.57.jar with {geckolib3} mods - versions {3.0.57}
+[22Aug2026 02:55:06.760] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/iobvariantloader-2.7.0-all.jar
+[22Aug2026 02:55:06.761] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file iobvariantloader-2.7.0-all.jar with {iobvariantloader} mods - versions {2.7.0}
+[22Aug2026 02:55:06.763] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleof-berk-performance-patches-1.3.jar
+[22Aug2026 02:55:06.765] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleof-berk-performance-patches-1.3.jar with {isleofberkperformance} mods - versions {1.3}
+[22Aug2026 02:55:06.767] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-1.2.0.jar
+[22Aug2026 02:55:06.769] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-1.2.0.jar with {isleofberk} mods - versions {1.2.0}
+[22Aug2026 02:55:06.771] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-deadlockfix-1.1.2.jar
+[22Aug2026 02:55:06.773] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-deadlockfix-1.1.2.jar with {isleofberkdeadlockfix} mods - versions {1.1.2}
+[22Aug2026 02:55:06.775] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/leafsvariants-1.0.0.jar
+[22Aug2026 02:55:06.777] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file leafsvariants-1.0.0.jar with {leafsvariants} mods - versions {1.0.0}
+[22Aug2026 02:55:06.779] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar
+[22Aug2026 02:55:06.780] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar with {threadedhorizons} mods - versions {0.1.0-alpha.5}
+[22Aug2026 02:55:07.018] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file client-1.18.2-20220404.173914-srg.jar with {minecraft} mods - versions {1.18.2}
+[22Aug2026 02:55:07.022] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/fmlcore/1.18.2-40.3.12/fmlcore-1.18.2-40.3.12.jar
+[22Aug2026 02:55:07.023] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/fmlcore/1.18.2-40.3.12/fmlcore-1.18.2-40.3.12.jar is missing mods.toml file
+[22Aug2026 02:55:07.024] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/javafmllanguage/1.18.2-40.3.12/javafmllanguage-1.18.2-40.3.12.jar
+[22Aug2026 02:55:07.025] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/javafmllanguage/1.18.2-40.3.12/javafmllanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[22Aug2026 02:55:07.026] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/lowcodelanguage/1.18.2-40.3.12/lowcodelanguage-1.18.2-40.3.12.jar
+[22Aug2026 02:55:07.026] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/lowcodelanguage/1.18.2-40.3.12/lowcodelanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[22Aug2026 02:55:07.028] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/mclanguage/1.18.2-40.3.12/mclanguage-1.18.2-40.3.12.jar
+[22Aug2026 02:55:07.028] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/mclanguage/1.18.2-40.3.12/mclanguage-1.18.2-40.3.12.jar is missing mods.toml file
+[22Aug2026 02:55:07.072] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/forge/1.18.2-40.3.12/forge-1.18.2-40.3.12-universal.jar
+[22Aug2026 02:55:07.074] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.18.2-40.3.12-universal.jar with {forge} mods - versions {40.3.12}
+[22Aug2026 02:55:07.105] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from client-1.18.2-20220404.173914-srg.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.106] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from isleofberk-deadlockfix-1.1.2.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.106] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from isleofberk-1.2.0.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.107] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.107] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from archipelagoadditions-2.5.5-1.18.2.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.107] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from forge-1.18.2-40.3.12-universal.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.107] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from dragon_fire_variants-1.6.1.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.108] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from leafsvariants-1.0.0.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.108] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from isleof-berk-performance-patches-1.3.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.108] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from geckolib-forge-1.18-3.0.57.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.108] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from dragon_wars_variants-1.6.1.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.109] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from mclanguage-1.18.2-40.3.12.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.109] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from javafmllanguage-1.18.2-40.3.12.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.109] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from fmlcore-1.18.2-40.3.12.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.110] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from lowcodelanguage-1.18.2-40.3.12.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.201] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from MixinExtras-0.5.0.jar, it does not contain dependency information.
+[22Aug2026 02:55:07.259] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[22Aug2026 02:55:07.262] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file client-1.18.2-20220404.173914-srg.jar with {minecraft} mods - versions {1.18.2}
+[22Aug2026 02:55:07.267] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraft/client/1.18.2-20220404.173914/client-1.18.2-20220404.173914-srg.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+[22Aug2026 02:55:07.269] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar
+[22Aug2026 02:55:07.270] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar with {threadedhorizons} mods - versions {0.1.0-alpha.5}
+[22Aug2026 02:55:07.271] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.271] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/archipelagoadditions-2.5.5-1.18.2.jar
+[22Aug2026 02:55:07.273] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file archipelagoadditions-2.5.5-1.18.2.jar with {archipelagoadditions} mods - versions {2.5.5-1.18.2}
+[22Aug2026 02:55:07.274] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/archipelagoadditions-2.5.5-1.18.2.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.274] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_fire_variants-1.6.1.jar
+[22Aug2026 02:55:07.276] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_fire_variants-1.6.1.jar with {dragon_fire} mods - versions {1.0.0}
+[22Aug2026 02:55:07.276] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_fire_variants-1.6.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.276] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/leafsvariants-1.0.0.jar
+[22Aug2026 02:55:07.278] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file leafsvariants-1.0.0.jar with {leafsvariants} mods - versions {1.0.0}
+[22Aug2026 02:55:07.278] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/leafsvariants-1.0.0.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.279] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-1.2.0.jar
+[22Aug2026 02:55:07.280] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-1.2.0.jar with {isleofberk} mods - versions {1.2.0}
+[22Aug2026 02:55:07.280] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-1.2.0.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[39,)]]
+[22Aug2026 02:55:07.280] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-deadlockfix-1.1.2.jar
+[22Aug2026 02:55:07.282] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleofberk-deadlockfix-1.1.2.jar with {isleofberkdeadlockfix} mods - versions {1.1.2}
+[22Aug2026 02:55:07.282] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleofberk-deadlockfix-1.1.2.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.282] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/forge/1.18.2-40.3.12/forge-1.18.2-40.3.12-universal.jar
+[22Aug2026 02:55:07.283] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.18.2-40.3.12-universal.jar with {forge} mods - versions {40.3.12}
+[22Aug2026 02:55:07.283] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-sol007-runtime-20260819/libraries/net/minecraftforge/forge/1.18.2-40.3.12/forge-1.18.2-40.3.12-universal.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[24,]]]
+[22Aug2026 02:55:07.287] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod field_to_method with Javascript path coremods/field_to_method.js
+[22Aug2026 02:55:07.288] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod field_to_instanceof with Javascript path coremods/field_to_instanceof.js
+[22Aug2026 02:55:07.288] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod add_bouncer_method with Javascript path coremods/add_bouncer_method.js
+[22Aug2026 02:55:07.288] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod registry_object_binary_compat with Javascript path coremods/registry_object_binary_compat.js
+[22Aug2026 02:55:07.288] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/field_to_method.js
+[22Aug2026 02:55:07.288] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/field_to_instanceof.js
+[22Aug2026 02:55:07.289] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/add_bouncer_method.js
+[22Aug2026 02:55:07.289] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/registry_object_binary_compat.js
+[22Aug2026 02:55:07.289] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/geckolib-forge-1.18-3.0.57.jar
+[22Aug2026 02:55:07.290] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file geckolib-forge-1.18-3.0.57.jar with {geckolib3} mods - versions {3.0.57}
+[22Aug2026 02:55:07.291] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/geckolib-forge-1.18-3.0.57.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.291] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleof-berk-performance-patches-1.3.jar
+[22Aug2026 02:55:07.292] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file isleof-berk-performance-patches-1.3.jar with {isleofberkperformance} mods - versions {1.3}
+[22Aug2026 02:55:07.292] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/isleof-berk-performance-patches-1.3.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.293] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_wars_variants-1.6.1.jar
+[22Aug2026 02:55:07.294] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file dragon_wars_variants-1.6.1.jar with {dragon_wars} mods - versions {1.7.0}
+[22Aug2026 02:55:07.295] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/dragon_wars_variants-1.6.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.295] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/iobvariantloader-2.7.0-all.jar
+[22Aug2026 02:55:07.296] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file iobvariantloader-2.7.0-all.jar with {iobvariantloader} mods - versions {2.7.0}
+[22Aug2026 02:55:07.296] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file /root/work/iob-packaged-client-harness-r3-vl27-th-20260822/run-srg-client3/mods/iobvariantloader-2.7.0-all.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[40,)]]
+[22Aug2026 02:55:07.297] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file  with languages []
+[22Aug2026 02:55:07.297] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file  with languages []
+[22Aug2026 02:55:07.299] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service fml
+[22Aug2026 02:55:07.317] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found 3 language providers
+[22Aug2026 02:55:07.319] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider minecraft, version 1.0
+[22Aug2026 02:55:07.320] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider lowcodefml, version 40
+[22Aug2026 02:55:07.321] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider javafml, version 40
+[22Aug2026 02:55:07.327] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Configured system mods: [minecraft, forge]
+[22Aug2026 02:55:07.328] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Found system mod: minecraft
+[22Aug2026 02:55:07.328] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Found system mod: forge
+[22Aug2026 02:55:07.331] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 40 mod requirements (35 mandatory, 5 optional)
+[22Aug2026 02:55:07.333] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 0 mod requirements missing (0 mandatory, 0 optional)
+[22Aug2026 02:55:07.969] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading transformers
+[22Aug2026 02:55:07.970] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[22Aug2026 02:55:07.971] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[22Aug2026 02:55:07.971] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service fml
+[22Aug2026 02:55:07.971] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading coremod transformers
+[22Aug2026 02:55:07.972] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/field_to_method.js
+[22Aug2026 02:55:08.214] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[22Aug2026 02:55:08.215] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/field_to_instanceof.js
+[22Aug2026 02:55:08.300] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[22Aug2026 02:55:08.300] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/add_bouncer_method.js
+[22Aug2026 02:55:08.355] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[22Aug2026 02:55:08.355] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/registry_object_binary_compat.js
+[22Aug2026 02:55:08.391] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[22Aug2026 02:55:08.400] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2938127d to Target : CLASS {Lnet/minecraft/world/effect/MobEffectInstance;} {} {V}
+[22Aug2026 02:55:08.402] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@74ea46e2 to Target : CLASS {Lnet/minecraft/world/level/block/LiquidBlock;} {} {V}
+[22Aug2026 02:55:08.402] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@6f911326 to Target : CLASS {Lnet/minecraft/world/item/BucketItem;} {} {V}
+[22Aug2026 02:55:08.402] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@f1d0004 to Target : CLASS {Lnet/minecraft/world/level/block/StairBlock;} {} {V}
+[22Aug2026 02:55:08.403] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@6e4f263e to Target : CLASS {Lnet/minecraft/world/level/block/FlowerPotBlock;} {} {V}
+[22Aug2026 02:55:08.403] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@48b4a043 to Target : CLASS {Lnet/minecraft/world/item/ItemStack;} {} {V}
+[22Aug2026 02:55:08.403] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2f5b8250 to Target : CLASS {Lnet/minecraft/network/play/client/CClientSettingsPacket;} {} {V}
+[22Aug2026 02:55:08.403] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@4821aa9f to Target : CLASS {Lnet/minecraftforge/registries/RegistryObject;} {} {V}
+[22Aug2026 02:55:08.403] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service fml
+[22Aug2026 02:55:08.949] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[22Aug2026 02:55:08.950] [main/DEBUG] [mixin/]: Registering mixin config: isleofberkperformance.mixins.json
+[22Aug2026 02:55:08.979] [main/DEBUG] [mixin/]: Compatibility level JAVA_17 specified by isleofberkperformance.mixins.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[22Aug2026 02:55:08.988] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[22Aug2026 02:55:08.989] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[22Aug2026 02:55:08.990] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(threadedhorizons)
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(threadedhorizons)
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(threadedhorizons)
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(threadedhorizons)
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(threadedhorizons)
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(threadedhorizons)]
+[22Aug2026 02:55:08.991] [main/DEBUG] [mixin/]: Registering mixin config: threadedhorizons.mixins.json
+[22Aug2026 02:55:08.994] [main/DEBUG] [mixin/]: Registering mixin config: threadedhorizons-asm.mixins.json
+[22Aug2026 02:55:08.995] [main/DEBUG] [mixin/]: Registering mixin config: threadedhorizons-compat.mixins.json
+[22Aug2026 02:55:08.997] [main/DEBUG] [mixin/]: Registering mixin config: threadedhorizons.client.mixins.json
+[22Aug2026 02:55:09.000] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(archipelagoadditions)
+[22Aug2026 02:55:09.000] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(archipelagoadditions)
+[22Aug2026 02:55:09.001] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(archipelagoadditions)
+[22Aug2026 02:55:09.001] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(archipelagoadditions)
+[22Aug2026 02:55:09.001] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(archipelagoadditions)
+[22Aug2026 02:55:09.001] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(archipelagoadditions)]
+[22Aug2026 02:55:09.002] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(dragon_fire)
+[22Aug2026 02:55:09.002] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(dragon_fire)
+[22Aug2026 02:55:09.002] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(dragon_fire)
+[22Aug2026 02:55:09.002] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(dragon_fire)
+[22Aug2026 02:55:09.003] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(dragon_fire)
+[22Aug2026 02:55:09.003] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(dragon_fire)]
+[22Aug2026 02:55:09.003] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(leafsvariants)
+[22Aug2026 02:55:09.003] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(leafsvariants)
+[22Aug2026 02:55:09.004] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(leafsvariants)
+[22Aug2026 02:55:09.004] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(leafsvariants)
+[22Aug2026 02:55:09.004] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(leafsvariants)
+[22Aug2026 02:55:09.004] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(leafsvariants)]
+[22Aug2026 02:55:09.005] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(isleofberk)
+[22Aug2026 02:55:09.005] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(isleofberk)
+[22Aug2026 02:55:09.005] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(isleofberk)
+[22Aug2026 02:55:09.005] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(isleofberk)
+[22Aug2026 02:55:09.005] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(isleofberk)
+[22Aug2026 02:55:09.006] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberk)]
+[22Aug2026 02:55:09.006] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(isleofberkdeadlockfix)
+[22Aug2026 02:55:09.006] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(isleofberkdeadlockfix)
+[22Aug2026 02:55:09.006] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(isleofberkdeadlockfix)
+[22Aug2026 02:55:09.006] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(isleofberkdeadlockfix)
+[22Aug2026 02:55:09.007] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(isleofberkdeadlockfix)
+[22Aug2026 02:55:09.007] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberkdeadlockfix)]
+[22Aug2026 02:55:09.007] [main/DEBUG] [mixin/]: Registering mixin config: isleofberkdeadlockfix.mixins.json
+[22Aug2026 02:55:09.009] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
+[22Aug2026 02:55:09.010] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
+[22Aug2026 02:55:09.010] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
+[22Aug2026 02:55:09.010] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
+[22Aug2026 02:55:09.010] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(geckolib3)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(geckolib3)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(geckolib3)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(geckolib3)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(geckolib3)
+[22Aug2026 02:55:09.011] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(geckolib3)]
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(isleofberkperformance)
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(isleofberkperformance)
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(isleofberkperformance)
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(isleofberkperformance)
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(isleofberkperformance)
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberkperformance)]
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Registering mixin config: isleofberkperformance.mixins.json
+[22Aug2026 02:55:09.012] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(dragon_wars)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(dragon_wars)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(dragon_wars)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(dragon_wars)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(dragon_wars)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(dragon_wars)]
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(iobvariantloader)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(iobvariantloader)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(iobvariantloader)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(iobvariantloader)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(iobvariantloader)
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(iobvariantloader)]
+[22Aug2026 02:55:09.013] [main/DEBUG] [mixin/]: Registering mixin config: iobvariantloader.mixins.json
+[22Aug2026 02:55:09.015] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(mixinextras)
+[22Aug2026 02:55:09.015] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(mixinextras)
+[22Aug2026 02:55:09.015] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(mixinextras)
+[22Aug2026 02:55:09.015] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(mixinextras)
+[22Aug2026 02:55:09.015] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(mixinextras)
+[22Aug2026 02:55:09.016] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras)]
+[22Aug2026 02:55:09.016] [main/DEBUG] [mixin/]: Registering mixin config: mixinextras.init.mixins.json
+[22Aug2026 02:55:09.017] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(MixinExtras)
+[22Aug2026 02:55:09.017] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(MixinExtras)
+[22Aug2026 02:55:09.017] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(MixinExtras)
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(MixinExtras)
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(MixinExtras)
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(MixinExtras)]
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: inject() running with 15 agents
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(threadedhorizons)]
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(archipelagoadditions)]
+[22Aug2026 02:55:09.018] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(dragon_fire)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(leafsvariants)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberk)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberkdeadlockfix)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(geckolib3)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(isleofberkperformance)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(dragon_wars)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(iobvariantloader)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras)]
+[22Aug2026 02:55:09.019] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(MixinExtras)]
+[22Aug2026 02:55:09.064] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[22Aug2026 02:55:09.066] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[PREINIT]
+[22Aug2026 02:55:09.075] [main/INFO] [mixin/]: Successfully loaded Mixin Connector [network.vonix.threadedhorizons.ThreadedHorizonsMixinConnector]
+[22Aug2026 02:55:09.075] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclient' with arguments [--gameDir, ., --assetsDir, /root/.gradle/caches/forge_gradle/assets, --assetIndex, 1.18]
+[22Aug2026 02:55:09.081] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[22Aug2026 02:55:09.081] [main/DEBUG] [mixin/]: Selecting config isleofberkperformance.mixins.json
+[22Aug2026 02:55:09.089] [main/DEBUG] [mixin/]: Selecting config threadedhorizons.mixins.json
+[22Aug2026 02:55:09.142] [main/DEBUG] [io.netty.util.internal.logging.InternalLoggerFactory/]: Using SLF4J as the default logging framework
+[22Aug2026 02:55:09.145] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: -Dio.netty.noUnsafe: false
+[22Aug2026 02:55:09.145] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: Java version: 17
+[22Aug2026 02:55:09.146] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: sun.misc.Unsafe.theUnsafe: available
+[22Aug2026 02:55:09.147] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: sun.misc.Unsafe.copyMemory: available
+[22Aug2026 02:55:09.147] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.Buffer.address: available
+[22Aug2026 02:55:09.147] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:253) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at java.security.AccessController.doPrivileged(AccessController.java:318) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:247) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:294) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:88) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.getDefaultParallelismCPU(ThreadedHorizonsConfig.java:71) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.getDefaultGlobalExecutorParallelism(ThreadedHorizonsConfig.java:67) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at com.google.common.base.Suppliers$NonSerializableMemoizingSupplier.get(Suppliers.java:183) ~[guava-31.0.1-jre.jar%233!/:?]
+	at network.vonix.threadedhorizons.common.config.ConfigUtils.getValue0(ConfigUtils.java:44) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ConfigUtils.getValue(ConfigUtils.java:25) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.<clinit>(ThreadedHorizonsConfig.java:52) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.mixin.ThreadedHorizonsMixinPlugin.onLoad(ThreadedHorizonsMixinPlugin.java:23) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at org.spongepowered.asm.mixin.transformer.PluginHandle.onLoad(PluginHandle.java:119) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinConfig.onSelect(MixinConfig.java:707) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.selectConfigs(MixinProcessor.java:498) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.select(MixinProcessor.java:460) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.checkSelect(MixinProcessor.java:438) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:290) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:250) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.service.modlauncher.MixinTransformationHandler.processClass(MixinTransformationHandler.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.launch.MixinLaunchPluginLegacy.processClass(MixinLaunchPluginLegacy.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at cpw.mods.modlauncher.serviceapi.ILaunchPluginService.processClassWithFlags(ILaunchPluginService.java:156) ~[modlauncher-9.1.3.jar:9.1.3+9.1.3+main.9b69c82a]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:88) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:120) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.maybeTransformClassBytes(TransformingClassLoader.java:50) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:113) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:637) ~[?:?]
+	at java.lang.Class.forName(Class.java:547) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$launchService$0(CommonClientLaunchHandler.java:31) ~[fmlloader-1.18.2-40.3.12.jar%230!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:37) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:106) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:77) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:149) [bootstraplauncher-1.0.0.jar:?]
+[22Aug2026 02:55:09.192] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.Bits.unaligned: available, true
+[22Aug2026 02:55:09.194] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$6 (in module io.netty.all) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.all
+	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?]
+	at java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:674) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:561) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:375) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at java.security.AccessController.doPrivileged(AccessController.java:318) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:366) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:294) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:88) ~[netty-all-4.1.68.Final.jar%2336!/:4.1.68.Final]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.getDefaultParallelismCPU(ThreadedHorizonsConfig.java:71) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.getDefaultGlobalExecutorParallelism(ThreadedHorizonsConfig.java:67) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at com.google.common.base.Suppliers$NonSerializableMemoizingSupplier.get(Suppliers.java:183) ~[guava-31.0.1-jre.jar%233!/:?]
+	at network.vonix.threadedhorizons.common.config.ConfigUtils.getValue0(ConfigUtils.java:44) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ConfigUtils.getValue(ConfigUtils.java:25) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.common.config.ThreadedHorizonsConfig.<clinit>(ThreadedHorizonsConfig.java:52) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at network.vonix.threadedhorizons.mixin.ThreadedHorizonsMixinPlugin.onLoad(ThreadedHorizonsMixinPlugin.java:23) ~[threaded-horizons-mc1.18.2-0.1.0-alpha.5.jar%2388!/:0.1.0-alpha.5]
+	at org.spongepowered.asm.mixin.transformer.PluginHandle.onLoad(PluginHandle.java:119) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinConfig.onSelect(MixinConfig.java:707) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.selectConfigs(MixinProcessor.java:498) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.select(MixinProcessor.java:460) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.checkSelect(MixinProcessor.java:438) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:290) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:250) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.service.modlauncher.MixinTransformationHandler.processClass(MixinTransformationHandler.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.launch.MixinLaunchPluginLegacy.processClass(MixinLaunchPluginLegacy.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at cpw.mods.modlauncher.serviceapi.ILaunchPluginService.processClassWithFlags(ILaunchPluginService.java:156) ~[modlauncher-9.1.3.jar:9.1.3+9.1.3+main.9b69c82a]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:88) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:120) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.maybeTransformClassBytes(TransformingClassLoader.java:50) ~[modlauncher-9.1.3.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:113) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-1.0.8.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-1.0.8.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:637) ~[?:?]
+	at java.lang.Class.forName(Class.java:547) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$launchService$0(CommonClientLaunchHandler.java:31) ~[fmlloader-1.18.2-40.3.12.jar%230!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:37) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:106) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:77) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) [modlauncher-9.1.3.jar%2311!/:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:149) [bootstraplauncher-1.0.0.jar:?]
+[22Aug2026 02:55:09.197] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.DirectByteBuffer.<init>(long, int): unavailable
+[22Aug2026 02:55:09.197] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: sun.misc.Unsafe: available
+[22Aug2026 02:55:09.197] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: maxDirectMemory: 6299844608 bytes (maybe)
+[22Aug2026 02:55:09.198] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+[22Aug2026 02:55:09.198] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.bitMode: 64 (sun.arch.data.model)
+[22Aug2026 02:55:09.199] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.maxDirectMemory: -1 bytes
+[22Aug2026 02:55:09.199] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.uninitializedArrayAllocationThreshold: -1
+[22Aug2026 02:55:09.201] [main/DEBUG] [io.netty.util.internal.CleanerJava9/]: java.nio.ByteBuffer.cleaner(): available
+[22Aug2026 02:55:09.201] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.noPreferDirect: false
+[22Aug2026 02:55:09.234] [main/INFO] [Threaded Horizons Config/]: Configuration loaded successfully after 139.167673ms
+[22Aug2026 02:55:09.235] [main/INFO] [Threaded Horizons Mixin/]: Successfully loaded configuration for Threaded Horizons
+[22Aug2026 02:55:09.239] [main/DEBUG] [mixin/]: Selecting config threadedhorizons-asm.mixins.json
+[22Aug2026 02:55:09.246] [main/DEBUG] [mixin/]: Selecting config threadedhorizons-compat.mixins.json
+[22Aug2026 02:55:09.249] [main/INFO] [Threaded Horizons Compatibility Module/]: Initializing Threaded Horizons Compatibility Module
+[22Aug2026 02:55:09.251] [main/INFO] [Threaded Horizons Compatibility Module/]: Adding compatibility module for iobvariantloader@unknown(>=2.7.0)
+[22Aug2026 02:55:09.252] [main/INFO] [Threaded Horizons Compatibility Module/]: Adding compatibility module for isleofberk@unknown(>=1.2.0)
+[22Aug2026 02:55:09.258] [main/DEBUG] [mixin/]: Selecting config threadedhorizons.client.mixins.json
+[22Aug2026 02:55:09.260] [main/INFO] [Threaded Horizons Client Mixin/]: TH_CLIENT_MIXIN_PLUGIN distClient=true
+[22Aug2026 02:55:09.264] [main/DEBUG] [mixin/]: Selecting config isleofberkdeadlockfix.mixins.json
+[22Aug2026 02:55:09.265] [main/DEBUG] [mixin/]: Selecting config iobvariantloader.mixins.json
+[22Aug2026 02:55:09.267] [main/DEBUG] [mixin/]: Selecting config mixinextras.init.mixins.json
+[22Aug2026 02:55:09.324] [main/DEBUG] [MixinExtras|Service/]: com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0) is taking over from null
+[22Aug2026 02:55:09.373] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[22Aug2026 02:55:09.375] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[22Aug2026 02:55:09.377] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[22Aug2026 02:55:09.379] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[22Aug2026 02:55:09.381] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[22Aug2026 02:55:09.383] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[22Aug2026 02:55:09.395] [main/DEBUG] [mixin/]: Preparing isleofberkperformance.mixins.json (45)
+[22Aug2026 02:55:09.420] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/ai/goal/WrappedGoal (java.lang.ClassNotFoundException: net.minecraft.world.entity.ai.goal.WrappedGoal)
+[22Aug2026 02:55:09.420] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.entity.ai.goal.WrappedGoal was not found isleofberkperformance.mixins.json:WrappedGoalMixin
+[22Aug2026 02:55:09.475] [main/DEBUG] [mixin/]: Preparing threadedhorizons.mixins.json (118)
+[22Aug2026 02:55:09.485] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.chunkio.MixinEntityChunkDataAccess -> net.minecraft.world.level.chunk.storage.EntityStorage
+[22Aug2026 02:55:09.486] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.chunkio.MixinSerializingRegionBasedStorage -> net.minecraft.world.level.chunk.storage.SectionStorage
+[22Aug2026 02:55:09.487] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.chunkio.MixinStorageIoWorker -> net.minecraft.world.level.chunk.storage.IOWorker
+[22Aug2026 02:55:09.488] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.chunkio.MixinVersionedChunkStorage -> net.minecraft.world.level.chunk.storage.ChunkStorage
+[22Aug2026 02:55:09.512] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.optimization.chunkaccess.async_chunk_request.MixinServerChunkManager -> net.minecraft.server.level.ServerChunkCache
+[22Aug2026 02:55:09.514] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.optimization.chunkio.compression.modify_default_chunk_compression.MixinRegionFile -> net.minecraft.world.level.chunk.storage.RegionFile
+[22Aug2026 02:55:09.548] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.optimization.worldgen.global_biome_cache.MixinBiomeSource -> net.minecraft.world.level.biome.BiomeSource
+[22Aug2026 02:55:09.549] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.optimization.worldgen.global_biome_cache.MixinMultiNoiseBiomeSourcePreset -> net.minecraft.world.level.biome.MultiNoiseBiomeSource$Preset
+[22Aug2026 02:55:09.551] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.optimization.worldgen.global_biome_cache.MixinThreadedChunkAnvilStorage -> net.minecraft.server.level.ChunkMap
+[22Aug2026 02:55:09.560] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.async_scheduling.MixinThreadedAnvilChunkStorage -> net.minecraft.server.level.ChunkMap
+[22Aug2026 02:55:09.569] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinChunkRegion -> net.minecraft.server.level.WorldGenRegion
+[22Aug2026 02:55:09.570] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinChunkStatus -> net.minecraft.world.level.chunk.ChunkStatus
+[22Aug2026 02:55:09.571] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinChunkTicketManager -> net.minecraft.server.level.DistanceManager
+[22Aug2026 02:55:09.571] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinChunkTicketManagerDistanceFromNearestPlayerTracker -> net.minecraft.server.level.DistanceManager$FixedPlayerDistanceChunkTracker
+[22Aug2026 02:55:09.572] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinNoiseChunkGenerator -> net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator
+[22Aug2026 02:55:09.572] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinServerWorld -> net.minecraft.server.level.ServerLevel
+[22Aug2026 02:55:09.573] [main/INFO] [Threaded Horizons Mixin/]: TH_MIXIN_SKIPPED network.vonix.threadedhorizons.mixin.threading.worldgen.MixinThreadedAnvilChunkStorage -> net.minecraft.server.level.ChunkMap
+[22Aug2026 02:55:09.576] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/LegacyRandomSource$LegacyPositionalRandomFactory (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.LegacyRandomSource$LegacyPositionalRandomFactory)
+[22Aug2026 02:55:09.576] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.LegacyRandomSource$LegacyPositionalRandomFactory was not found threadedhorizons.mixins.json:access.IAtomicSimpleRandomDeriver
+[22Aug2026 02:55:09.591] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/biome/MultiNoiseBiomeSource (java.lang.ClassNotFoundException: net.minecraft.world.level.biome.MultiNoiseBiomeSource)
+[22Aug2026 02:55:09.591] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.biome.MultiNoiseBiomeSource was not found threadedhorizons.mixins.json:access.IMultiNoiseBiomeSource
+[22Aug2026 02:55:09.598] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/SingleThreadedRandomSource (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.SingleThreadedRandomSource)
+[22Aug2026 02:55:09.598] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.SingleThreadedRandomSource was not found threadedhorizons.mixins.json:access.ISimpleRandom
+[22Aug2026 02:55:09.609] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/XoroshiroRandomSource (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.XoroshiroRandomSource)
+[22Aug2026 02:55:09.609] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.XoroshiroRandomSource was not found threadedhorizons.mixins.json:access.IXoroshiro128PlusPlusRandom
+[22Aug2026 02:55:09.610] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/XoroshiroRandomSource$XoroshiroPositionalRandomFactory (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.XoroshiroRandomSource$XoroshiroPositionalRandomFactory)
+[22Aug2026 02:55:09.610] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.XoroshiroRandomSource$XoroshiroPositionalRandomFactory was not found threadedhorizons.mixins.json:access.IXoroshiro128PlusPlusRandomDeriver
+[22Aug2026 02:55:09.611] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/Xoroshiro128PlusPlus (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.Xoroshiro128PlusPlus)
+[22Aug2026 02:55:09.612] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.Xoroshiro128PlusPlus was not found threadedhorizons.mixins.json:access.IXoroshiro128PlusPlusRandomImpl
+[22Aug2026 02:55:09.615] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement)
+[22Aug2026 02:55:09.615] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement was not found threadedhorizons.mixins.json:failsafe.MixinSinglePoolElement
+[22Aug2026 02:55:09.617] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/pools/StructurePoolElement (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement)
+[22Aug2026 02:55:09.617] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement was not found threadedhorizons.mixins.json:fixes.chunkio.threading.MixinStructurePoolElement
+[22Aug2026 02:55:09.624] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/placement/PlacedFeature (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.placement.PlacedFeature)
+[22Aug2026 02:55:09.624] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.placement.PlacedFeature was not found threadedhorizons.mixins.json:fixes.worldgen.graal.MixinPlacedFeature
+[22Aug2026 02:55:09.628] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/ChunkGenerator (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.ChunkGenerator)
+[22Aug2026 02:55:09.628] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.ChunkGenerator was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinChunkGenerator
+[22Aug2026 02:55:09.630] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/DesertPyramidPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.DesertPyramidPiece)
+[22Aug2026 02:55:09.630] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.DesertPyramidPiece was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinDesertTempleGenerator
+[22Aug2026 02:55:09.631] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/JunglePyramidPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.JunglePyramidPiece)
+[22Aug2026 02:55:09.631] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.JunglePyramidPiece was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinJungleTempleGenerator
+[22Aug2026 02:55:09.632] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/MineShaftPieces$MineShaftRoom (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftRoom)
+[22Aug2026 02:55:09.632] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftRoom was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinMineshaftGeneratorMineshaftRoom
+[22Aug2026 02:55:09.634] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$NetherBridgePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$NetherBridgePiece)
+[22Aug2026 02:55:09.634] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$NetherBridgePiece was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinNetherFortressGeneratorPiece
+[22Aug2026 02:55:09.635] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$PieceWeight (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$PieceWeight)
+[22Aug2026 02:55:09.635] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$PieceWeight was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinNetherFortressGeneratorPieceData
+[22Aug2026 02:55:09.636] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece)
+[22Aug2026 02:55:09.636] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinNetherFortressGeneratorStart
+[22Aug2026 02:55:09.638] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/ai/behavior/GateBehavior$OrderPolicy (java.lang.ClassNotFoundException: net.minecraft.world.entity.ai.behavior.GateBehavior$OrderPolicy)
+[22Aug2026 02:55:09.638] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.entity.ai.behavior.GateBehavior$OrderPolicy was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinOrder
+[22Aug2026 02:55:09.639] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/feature/stateproviders/RandomizedIntStateProvider (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.feature.stateproviders.RandomizedIntStateProvider)
+[22Aug2026 02:55:09.639] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.feature.stateproviders.RandomizedIntStateProvider was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinRandomizedIntBlockStateProvider
+[22Aug2026 02:55:09.641] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces)
+[22Aug2026 02:55:09.641] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinStrongholdGenerator
+[22Aug2026 02:55:09.642] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StairsDown (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StairsDown)
+[22Aug2026 02:55:09.642] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces$StairsDown was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinStrongholdGeneratorSpiralStaircase
+[22Aug2026 02:55:09.644] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece)
+[22Aug2026 02:55:09.644] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinStrongholdGeneratorStart
+[22Aug2026 02:55:09.649] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StructureCheck (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StructureCheck)
+[22Aug2026 02:55:09.649] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StructureCheck was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinStructureChecker
+[22Aug2026 02:55:09.651] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings)
+[22Aug2026 02:55:09.652] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinStructurePlacementData
+[22Aug2026 02:55:09.655] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/ai/behavior/ShufflingList (java.lang.ClassNotFoundException: net.minecraft.world.entity.ai.behavior.ShufflingList)
+[22Aug2026 02:55:09.655] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.entity.ai.behavior.ShufflingList was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinWeightedList
+[22Aug2026 02:55:09.656] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/WoodlandMansionPieces$MansionGrid (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$MansionGrid)
+[22Aug2026 02:55:09.657] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$MansionGrid was not found threadedhorizons.mixins.json:fixes.worldgen.threading.MixinWoodlandMansionGeneratorMansionParameters
+[22Aug2026 02:55:09.659] [main/WARN] [mixin/]: Error loading class: com/mojang/math/OctahedralGroup (java.lang.ClassNotFoundException: com.mojang.math.OctahedralGroup)
+[22Aug2026 02:55:09.659] [main/WARN] [mixin/]: @Mixin target com.mojang.math.OctahedralGroup was not found threadedhorizons.mixins.json:fixes.worldgen.threading.math.MixinDirectionTransformation
+[22Aug2026 02:55:09.667] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/RegionFileVersion (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.RegionFileVersion)
+[22Aug2026 02:55:09.667] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.RegionFileVersion was not found threadedhorizons.mixins.json:optimization.chunkio.compression.increase_buffer_size.MixinChunkStreamVersion
+[22Aug2026 02:55:09.668] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/RegionFileStorage (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.RegionFileStorage)
+[22Aug2026 02:55:09.668] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.RegionFileStorage was not found threadedhorizons.mixins.json:optimization.chunkio.hide_sync_disk_writes_behind_flag.MixinRegionBasedStorage
+[22Aug2026 02:55:09.670] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/IOWorker (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.IOWorker)
+[22Aug2026 02:55:09.670] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.IOWorker was not found threadedhorizons.mixins.json:optimization.chunkio.limit_nbt_cache.MixinStorageIoWorker
+[22Aug2026 02:55:09.693] [main/WARN] [mixin/]: Error loading class: net/minecraft/util/thread/BlockableEventLoop (java.lang.ClassNotFoundException: net.minecraft.util.thread.BlockableEventLoop)
+[22Aug2026 02:55:09.694] [main/WARN] [mixin/]: @Mixin target net.minecraft.util.thread.BlockableEventLoop was not found threadedhorizons.mixins.json:optimization.chunkscheduling.task_scheduling.MixinThreadExecutor
+[22Aug2026 02:55:09.695] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/synth/PerlinNoise (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.synth.PerlinNoise)
+[22Aug2026 02:55:09.695] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.synth.PerlinNoise was not found threadedhorizons.mixins.json:optimization.math.MixinOctavePerlinNoiseSampler
+[22Aug2026 02:55:09.696] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/synth/ImprovedNoise (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.synth.ImprovedNoise)
+[22Aug2026 02:55:09.697] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.synth.ImprovedNoise was not found threadedhorizons.mixins.json:optimization.math.MixinPerlinNoiseSampler
+[22Aug2026 02:55:09.704] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/ListTag (java.lang.ClassNotFoundException: net.minecraft.nbt.ListTag)
+[22Aug2026 02:55:09.704] [main/WARN] [mixin/]: @Mixin target net.minecraft.nbt.ListTag was not found threadedhorizons.mixins.json:optimization.reduce_allocs.MixinNbtList
+[22Aug2026 02:55:09.705] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/ListTag$1 (java.lang.ClassNotFoundException: net.minecraft.nbt.ListTag$1)
+[22Aug2026 02:55:09.705] [main/WARN] [mixin/]: @Mixin target net/minecraft/nbt/ListTag$1 was not found threadedhorizons.mixins.json:optimization.reduce_allocs.MixinNbtList1
+[22Aug2026 02:55:09.709] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/material/MaterialRuleList (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.material.MaterialRuleList)
+[22Aug2026 02:55:09.710] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.material.MaterialRuleList was not found threadedhorizons.mixins.json:optimization.reduce_allocs.noise.MixinChainedBlockSource
+[22Aug2026 02:55:09.711] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/feature/ConfiguredFeature (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.feature.ConfiguredFeature)
+[22Aug2026 02:55:09.711] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.feature.ConfiguredFeature was not found threadedhorizons.mixins.json:optimization.reduce_allocs.object_pooling_caching.MixinConfiguredFeature
+[22Aug2026 02:55:09.712] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/feature/OreFeature (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.feature.OreFeature)
+[22Aug2026 02:55:09.712] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.feature.OreFeature was not found threadedhorizons.mixins.json:optimization.reduce_allocs.object_pooling_caching.MixinOreFeature
+[22Aug2026 02:55:09.713] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/SurfaceRules$Context (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.SurfaceRules$Context)
+[22Aug2026 02:55:09.713] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.SurfaceRules$Context was not found threadedhorizons.mixins.json:optimization.reduce_allocs.surfacebuilder.MixinMaterialRuleContext
+[22Aug2026 02:55:09.715] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/SurfaceRules$SequenceRule (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.SurfaceRules$SequenceRule)
+[22Aug2026 02:55:09.715] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.SurfaceRules$SequenceRule was not found threadedhorizons.mixins.json:optimization.reduce_allocs.surfacebuilder.MixinMaterialRulesSequenceBlockStateRule
+[22Aug2026 02:55:09.716] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/SurfaceRules$SequenceRuleSource (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.SurfaceRules$SequenceRuleSource)
+[22Aug2026 02:55:09.716] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.SurfaceRules$SequenceRuleSource was not found threadedhorizons.mixins.json:optimization.reduce_allocs.surfacebuilder.MixinMaterialRulesSequenceMaterialRule
+[22Aug2026 02:55:09.717] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/LegacyRandomSource$LegacyPositionalRandomFactory (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.LegacyRandomSource$LegacyPositionalRandomFactory)
+[22Aug2026 02:55:09.717] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.LegacyRandomSource$LegacyPositionalRandomFactory was not found threadedhorizons.mixins.json:optimization.worldgen.random_instances.MixinAtomicSimpleRandomFactory
+[22Aug2026 02:55:09.718] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator)
+[22Aug2026 02:55:09.719] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator was not found threadedhorizons.mixins.json:optimization.worldgen.random_instances.MixinRedirectAtomicSimpleRandom
+[22Aug2026 02:55:09.719] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/feature/GeodeFeature (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.feature.GeodeFeature)
+[22Aug2026 02:55:09.720] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.feature.GeodeFeature was not found threadedhorizons.mixins.json:optimization.worldgen.random_instances.MixinRedirectAtomicSimpleRandom
+[22Aug2026 02:55:09.721] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement)
+[22Aug2026 02:55:09.721] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement was not found threadedhorizons.mixins.json:optimization.worldgen.random_instances.MixinRedirectAtomicSimpleRandomStatic
+[22Aug2026 02:55:09.722] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/biome/MultiNoiseBiomeSource$Preset (java.lang.ClassNotFoundException: net.minecraft.world.level.biome.MultiNoiseBiomeSource$Preset)
+[22Aug2026 02:55:09.722] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.biome.MultiNoiseBiomeSource$Preset was not found threadedhorizons.mixins.json:optimization.worldgen.thread_local_biome_cache.MixinMultiNoiseBiomeSourcePreset
+[22Aug2026 02:55:09.723] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/Aquifer$NoiseBasedAquifer (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.Aquifer$NoiseBasedAquifer)
+[22Aug2026 02:55:09.723] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.Aquifer$NoiseBasedAquifer was not found threadedhorizons.mixins.json:optimization.worldgen.vanilla_optimization.aquifer.MixinAquiferSamplerImpl
+[22Aug2026 02:55:09.724] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator)
+[22Aug2026 02:55:09.724] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator was not found threadedhorizons.mixins.json:optimization.worldgen.vanilla_optimization.aquifer.MixinNoiseChunkGenerator
+[22Aug2026 02:55:09.725] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/biome/TheEndBiomeSource (java.lang.ClassNotFoundException: net.minecraft.world.level.biome.TheEndBiomeSource)
+[22Aug2026 02:55:09.725] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.biome.TheEndBiomeSource was not found threadedhorizons.mixins.json:optimization.worldgen.vanilla_optimization.the_end_biome_cache.MixinTheEndBiomeSource
+[22Aug2026 02:55:09.729] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/SectionStorage (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.SectionStorage)
+[22Aug2026 02:55:09.729] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.SectionStorage was not found threadedhorizons.mixins.json:threading.chunkio.MixinSerializingRegionBasedStorage
+[22Aug2026 02:55:09.730] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/IOWorker (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.IOWorker)
+[22Aug2026 02:55:09.730] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.IOWorker was not found threadedhorizons.mixins.json:threading.chunkio.MixinStorageIoWorker
+[22Aug2026 02:55:09.731] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/chunk/storage/ChunkStorage (java.lang.ClassNotFoundException: net.minecraft.world.level.chunk.storage.ChunkStorage)
+[22Aug2026 02:55:09.731] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.chunk.storage.ChunkStorage was not found threadedhorizons.mixins.json:threading.chunkio.MixinVersionedChunkStorage
+[22Aug2026 02:55:09.732] [main/WARN] [mixin/]: Error loading class: net/minecraft/server/level/ThreadedLevelLightEngine (java.lang.ClassNotFoundException: net.minecraft.server.level.ThreadedLevelLightEngine)
+[22Aug2026 02:55:09.732] [main/WARN] [mixin/]: @Mixin target net.minecraft.server.level.ThreadedLevelLightEngine was not found threadedhorizons.mixins.json:threading.lighting.MixinServerLightingProvider
+[22Aug2026 02:55:09.738] [main/WARN] [mixin/]: Error loading class: net/minecraft/server/level/progress/LoggerChunkProgressListener (java.lang.ClassNotFoundException: net.minecraft.server.level.progress.LoggerChunkProgressListener)
+[22Aug2026 02:55:09.738] [main/WARN] [mixin/]: @Mixin target net.minecraft.server.level.progress.LoggerChunkProgressListener was not found threadedhorizons.mixins.json:util.progresslogger.MixinWorldGenerationProgressLogger
+[22Aug2026 02:55:09.738] [main/DEBUG] [mixin/]: Preparing threadedhorizons-asm.mixins.json (1)
+[22Aug2026 02:55:09.740] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/MineShaftPieces$MineShaftCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftCorridor)
+[22Aug2026 02:55:09.740] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftCorridor was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.741] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$MonsterThrone (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$MonsterThrone)
+[22Aug2026 02:55:09.741] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$MonsterThrone was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.742] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorLeftTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorLeftTurnPiece)
+[22Aug2026 02:55:09.742] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorLeftTurnPiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.743] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorRightTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorRightTurnPiece)
+[22Aug2026 02:55:09.743] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorRightTurnPiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.744] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece)
+[22Aug2026 02:55:09.744] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.745] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$RoomDefinition (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$RoomDefinition)
+[22Aug2026 02:55:09.745] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$RoomDefinition was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.747] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$MonumentBuilding (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$MonumentBuilding)
+[22Aug2026 02:55:09.747] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$MonumentBuilding was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.748] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/PoolElementStructurePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece)
+[22Aug2026 02:55:09.748] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.749] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$ChestCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$ChestCorridor)
+[22Aug2026 02:55:09.749] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces$ChestCorridor was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.750] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$PortalRoom (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$PortalRoom)
+[22Aug2026 02:55:09.750] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces$PortalRoom was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.751] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece)
+[22Aug2026 02:55:09.751] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.752] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/ScatteredFeaturePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.ScatteredFeaturePiece)
+[22Aug2026 02:55:09.752] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.ScatteredFeaturePiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.753] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/SwamplandHutPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.SwamplandHutPiece)
+[22Aug2026 02:55:09.753] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.SwamplandHutPiece was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.754] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/WoodlandMansionPieces$PlacementData (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$PlacementData)
+[22Aug2026 02:55:09.754] [main/WARN] [mixin/]: @Mixin target net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$PlacementData was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.755] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/NbtOps$NbtRecordBuilder (java.lang.ClassNotFoundException: net.minecraft.nbt.NbtOps$NbtRecordBuilder)
+[22Aug2026 02:55:09.755] [main/WARN] [mixin/]: @Mixin target net.minecraft.nbt.NbtOps$NbtRecordBuilder was not found threadedhorizons-asm.mixins.json:ASMMixinTargets
+[22Aug2026 02:55:09.755] [main/DEBUG] [mixin/]: Preparing threadedhorizons-compat.mixins.json (1)
+[22Aug2026 02:55:09.757] [main/DEBUG] [mixin/]: Preparing threadedhorizons.client.mixins.json (3)
+[22Aug2026 02:55:09.765] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/Option (java.lang.ClassNotFoundException: net.minecraft.client.Option)
+[22Aug2026 02:55:09.765] [main/WARN] [mixin/]: @Mixin target net.minecraft.client.Option was not found threadedhorizons.client.mixins.json:uncapvd.MixinOption
+[22Aug2026 02:55:09.767] [main/WARN] [mixin/]: Error loading class: me/jellysquid/mods/sodium/client/gui/SodiumGameOptionPages (java.lang.ClassNotFoundException: me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages)
+[22Aug2026 02:55:09.767] [main/DEBUG] [mixin/]: Skipping virtual target me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages for threadedhorizons.client.mixins.json:uncapvd.MixinSodiumGameOptionPages
+[22Aug2026 02:55:09.767] [main/DEBUG] [mixin/]: Preparing isleofberkdeadlockfix.mixins.json (1)
+[22Aug2026 02:55:09.772] [main/DEBUG] [mixin/]: Preparing iobvariantloader.mixins.json (63)
+[22Aug2026 02:55:09.930] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/ResourceLoadStateTracker (java.lang.ClassNotFoundException: net.minecraft.client.ResourceLoadStateTracker)
+[22Aug2026 02:55:09.931] [main/WARN] [mixin/]: @Mixin target net.minecraft.client.ResourceLoadStateTracker was not found iobvariantloader.mixins.json:client.minecraft.ResourceLoadStateTrackerMixin
+[22Aug2026 02:55:09.931] [main/DEBUG] [mixin/]: Preparing mixinextras.init.mixins.json (0)
+[22Aug2026 02:55:09.942] [main/WARN] [mixin/]: Error loading class: net/minecraft/core/BlockPos$MutableBlockPos (java.lang.ClassNotFoundException: net.minecraft.core.BlockPos$MutableBlockPos)
+[22Aug2026 02:55:09.979] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/MineShaftPieces$MineShaftCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftCorridor)
+[22Aug2026 02:55:09.980] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$MonsterThrone (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$MonsterThrone)
+[22Aug2026 02:55:09.981] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorLeftTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorLeftTurnPiece)
+[22Aug2026 02:55:09.983] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorRightTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorRightTurnPiece)
+[22Aug2026 02:55:09.998] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece)
+[22Aug2026 02:55:09.999] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$RoomDefinition (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$RoomDefinition)
+[22Aug2026 02:55:10.000] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$MonumentBuilding (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$MonumentBuilding)
+[22Aug2026 02:55:10.001] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/PoolElementStructurePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece)
+[22Aug2026 02:55:10.002] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$ChestCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$ChestCorridor)
+[22Aug2026 02:55:10.003] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$PortalRoom (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$PortalRoom)
+[22Aug2026 02:55:10.004] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece)
+[22Aug2026 02:55:10.005] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/ScatteredFeaturePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.ScatteredFeaturePiece)
+[22Aug2026 02:55:10.005] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/SwamplandHutPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.SwamplandHutPiece)
+[22Aug2026 02:55:10.006] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/WoodlandMansionPieces$PlacementData (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$PlacementData)
+[22Aug2026 02:55:10.007] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/NbtOps$NbtRecordBuilder (java.lang.ClassNotFoundException: net.minecraft.nbt.NbtOps$NbtRecordBuilder)
+[22Aug2026 02:55:10.008] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/MineShaftPieces$MineShaftCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftCorridor)
+[22Aug2026 02:55:10.008] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$MonsterThrone (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$MonsterThrone)
+[22Aug2026 02:55:10.009] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorLeftTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorLeftTurnPiece)
+[22Aug2026 02:55:10.010] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorRightTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorRightTurnPiece)
+[22Aug2026 02:55:10.010] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece)
+[22Aug2026 02:55:10.011] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$RoomDefinition (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$RoomDefinition)
+[22Aug2026 02:55:10.012] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$MonumentBuilding (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$MonumentBuilding)
+[22Aug2026 02:55:10.013] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$ChestCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$ChestCorridor)
+[22Aug2026 02:55:10.013] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$PortalRoom (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$PortalRoom)
+[22Aug2026 02:55:10.014] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece)
+[22Aug2026 02:55:10.015] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/WoodlandMansionPieces$PlacementData (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$PlacementData)
+[22Aug2026 02:55:10.015] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/NbtOps$NbtRecordBuilder (java.lang.ClassNotFoundException: net.minecraft.nbt.NbtOps$NbtRecordBuilder)
+[22Aug2026 02:55:10.016] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/MineShaftPieces$MineShaftCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.MineShaftPieces$MineShaftCorridor)
+[22Aug2026 02:55:10.017] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$MonsterThrone (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$MonsterThrone)
+[22Aug2026 02:55:10.017] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorLeftTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorLeftTurnPiece)
+[22Aug2026 02:55:10.018] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$CastleSmallCorridorRightTurnPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$CastleSmallCorridorRightTurnPiece)
+[22Aug2026 02:55:10.019] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/NetherBridgePieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.NetherBridgePieces$StartPiece)
+[22Aug2026 02:55:10.020] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$RoomDefinition (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$RoomDefinition)
+[22Aug2026 02:55:10.020] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/OceanMonumentPieces$MonumentBuilding (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.OceanMonumentPieces$MonumentBuilding)
+[22Aug2026 02:55:10.021] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/PoolElementStructurePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece)
+[22Aug2026 02:55:10.022] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$ChestCorridor (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$ChestCorridor)
+[22Aug2026 02:55:10.022] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$PortalRoom (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$PortalRoom)
+[22Aug2026 02:55:10.023] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/StrongholdPieces$StartPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.StrongholdPieces$StartPiece)
+[22Aug2026 02:55:10.024] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/ScatteredFeaturePiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.ScatteredFeaturePiece)
+[22Aug2026 02:55:10.024] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/SwamplandHutPiece (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.SwamplandHutPiece)
+[22Aug2026 02:55:10.025] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/levelgen/structure/WoodlandMansionPieces$PlacementData (java.lang.ClassNotFoundException: net.minecraft.world.level.levelgen.structure.WoodlandMansionPieces$PlacementData)
+[22Aug2026 02:55:10.026] [main/WARN] [mixin/]: Error loading class: net/minecraft/nbt/NbtOps$NbtRecordBuilder (java.lang.ClassNotFoundException: net.minecraft.nbt.NbtOps$NbtRecordBuilder)
+[22Aug2026 02:55:10.027] [main/INFO] [Threaded Horizons Compatibility Module/]: Adding mixins: 
+[22Aug2026 02:55:10.027] [main/INFO] [Threaded Horizons Compatibility Module/]: - isleofberk.MixinADragonBaseIsWaterBelow
+[22Aug2026 02:55:10.027] [main/INFO] [Threaded Horizons Compatibility Module/]: - iobvariantloader.MixinSurfaceRestriction
+[22Aug2026 02:55:10.028] [main/INFO] [Threaded Horizons Compatibility Module/]: - iobvariantloader.MixinDragonVariantSpawnerUtil
+[22Aug2026 02:55:10.030] [main/INFO] [Threaded Horizons Compatibility Module/]: Injecting refmap invalid
+[22Aug2026 02:55:10.041] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.042] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.044] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.045] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.046] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.047] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.051] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/ai/attributes/AttributeModifier$Operation (java.lang.ClassNotFoundException: net.minecraft.world.entity.ai.attributes.AttributeModifier$Operation)
+[22Aug2026 02:55:10.052] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.056] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.058] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.059] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.061] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.062] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.064] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.065] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.066] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.068] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.069] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.070] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.073] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.074] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.075] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.077] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.079] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.080] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/level/GameRules$Key (java.lang.ClassNotFoundException: net.minecraft.world.level.GameRules$Key)
+[22Aug2026 02:55:10.082] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.087] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.088] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.089] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.091] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.091] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.092] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.094] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.095] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.096] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.097] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.098] [main/WARN] [mixin/]: Error loading class: net/minecraft/world/entity/AgeableMob (java.lang.ClassNotFoundException: net.minecraft.world.entity.AgeableMob)
+[22Aug2026 02:55:10.099] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/renderer/entity/EntityRendererProvider$Context (java.lang.ClassNotFoundException: net.minecraft.client.renderer.entity.EntityRendererProvider$Context)
+[22Aug2026 02:55:10.104] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/renderer/entity/EntityRendererProvider$Context (java.lang.ClassNotFoundException: net.minecraft.client.renderer.entity.EntityRendererProvider$Context)
+[22Aug2026 02:55:10.106] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/renderer/entity/EntityRendererProvider$Context (java.lang.ClassNotFoundException: net.minecraft.client.renderer.entity.EntityRendererProvider$Context)
+[22Aug2026 02:55:10.107] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/renderer/entity/EntityRendererProvider$Context (java.lang.ClassNotFoundException: net.minecraft.client.renderer.entity.EntityRendererProvider$Context)
+[22Aug2026 02:55:10.108] [main/WARN] [mixin/]: Error loading class: net/minecraft/client/renderer/entity/EntityRendererProvider$Context (java.lang.ClassNotFoundException: net.minecraft.client.renderer.entity.EntityRendererProvider$Context)
+[22Aug2026 02:55:10.115] [main/DEBUG] [mixin/]: Prepared 146 mixins in 1.034 sec (7.1ms avg) (0ms load, 0ms transform, 0ms plugin)

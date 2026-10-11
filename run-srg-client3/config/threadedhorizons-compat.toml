@@ -1,0 +1,5 @@
+# (Default: true) Compatibility module for iobvariantloader@unknown(>=2.7.0)
+iobvariantloader = true
+# (Default: true) Compatibility module for isleofberk@unknown(>=1.2.0)
+isleofberk = true
+
