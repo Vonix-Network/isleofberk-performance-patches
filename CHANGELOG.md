@@ -29,6 +29,7 @@ V1.3 is a successor candidate and a targeted safe port of remaining historical V
 - Isle of Berk 1.2.0 and GeckoLib 3.0.57 remain required separate dependencies.
 - The original Isle of Berk JAR remains required. This release does not replace or redistribute Isle of Berk.
 - The Isle of Berk Deadlock Fix remains a separate companion mod and is not included in this JAR.
+- When `iobvariantloader` is installed, the 13 overlapping dragon model-resource Mixins are skipped automatically so Variant Loader keeps resource selection. Those Mixins stay active when Variant Loader is absent, and when FML `LoadingModList` is null or lookup fails (fail closed). Glow, renderer, particle, packet, pathfinder, egg, saddle, and other non-overlapping Mixins are unchanged.
 
 ## 1.2.0 — Remaining verified client render-resource patches after 1.1
 

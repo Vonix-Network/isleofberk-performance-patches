@@ -13,6 +13,7 @@ V1.3 is a successor candidate and a targeted safe port of remaining historical V
 - Isle of Berk exactly 1.2.0
 - GeckoLib 3.0.57
 - Java 17 target; the V1.3 build and verification gates run under JDK 17
+- Variant Loader (`iobvariantloader`): the 13 dragon model-resource Mixins are skipped automatically when that mod is installed. All other V1.3 Mixins remain active. Without Variant Loader, or if FML `LoadingModList` is unavailable, the 13 Mixins stay enabled.
 
 Install the same V1.3 performance-patch JAR on both client and server for multiplayer. Client rendering mixins are client-only; common performance mixins load on both sides. Install it on the client for the render-resource changes to affect client rendering.
 
