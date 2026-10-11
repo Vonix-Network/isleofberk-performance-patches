@@ -1,0 +1,261 @@
+↻ Resumed session 20260819_033657_f848ab "Complete SOL-001 AI cadence conversion" (6 user messages, 198 total messages)
+Model restored from session: xai/grok-4.6
+[33m⚠ Deprecated .env settings detected:[0m
+  [33m⚠[0m TERMINAL_CWD=/root found in .env — this is deprecated.
+  [2mMove to config.yaml instead:  terminal:\n    cwd: /your/project/path[0m
+  [2mThen remove the old entries from ~/.hermes/.env[0m
+
+  ┊ review diff
+a/gradle.properties → b/gradle.properties
+@@ -1,4 +1,4 @@
+-version=1.0.0
++version=1.0.1-rc.1
+ forgeVersion=40.3.0
+ iobVersion=1.2.0
+ org.gradle.jvmargs=-Xmx2G
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/build.gradle → b//root/work/isleofberk-performance-patches/build.gradle
+@@ -1147,7 +1147,7 @@
+ 
+ tasks.register('candidateIdentityFixture') {
+     group = 'verification'
+-    description = 'Manifest completeness, dependency digests, and successor JAR class inventory identity.'
++    description = 'Hashed source-to-artifact provenance: every build input digest, deps, exclusions, distinct successor version, JAR match.'
+     dependsOn canonicalizeReobfJar
+     doLast {
+         def root = projectDir
+@@ -1156,61 +1156,177 @@
+             throw new GradleException("candidateIdentityFixture: missing ${manifestPath}")
+         }
+         def manifest = new groovy.json.JsonSlurper().parse(manifestPath)
++        def sha256 = { File f ->
++            java.security.MessageDigest.getInstance('SHA-256').digest(f.bytes).encodeHex().toString()
++        }
+         def jar = file("${buildDir}/libs/${archivesBaseName}-${project.version}.jar")
+         if (!jar.isFile()) {
+             throw new GradleException("candidateIdentityFixture: missing jar ${jar}")
+         }
+-        def sha = java.security.MessageDigest.getInstance('SHA-256').digest(jar.bytes).encodeHex().toString()
+-        if (manifest.artifact?.sha256 != sha) {
+-            throw new GradleException("candidateIdentityFixture: manifest sha256 ${manifest.artifact?.sha256} != jar ${sha}")
++        if (project.version == '1.0.0') {
++            throw new GradleException('candidateIdentityFixture: successor must not reuse published 1.0.0 coordinate')
++        }
++        if (manifest.version != project.version.toString()) {
++            throw new GradleException("candidateIdentityFixture: manifest.version ${manifest.version} != project.version ${project.version}")
++        }
++        if (manifest.artifact?.file != jar.name) {
++            throw new GradleException("candidateIdentityFixture: manifest artifact file ${manifest.artifact?.file} != ${jar.name}")
++        }
++        def jarSha = sha256(jar)
++        if (manifest.artifact?.sha256 != jarSha) {
++            throw new GradleException("candidateIdentityFixture: manifest sha256 ${manifest.artifact?.sha256} != jar ${jarSha}")
+         }
+         if ((manifest.artifact?.size as Long) != jar.length()) {
+             throw new GradleException("candidateIdentityFixture: manifest size mismatch")
+         }
++
++        // Predecessor published 1.0.0 evidence must remain untouched and distinct.
++        def predecessor = file("${root}/release-download/isleof-berk-performance-patches-1.0.0.jar")
++        if (!predecessor.isFile()) {
++            throw new GradleException('candidateIdentityFixture: missing untouched predecessor release-download/1.0.0 jar')
++        }
++        def predSha = sha256(predecessor)
++        def expectedPred = '15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2'
++        if (predSha != expectedPred) {
++            throw new GradleException("candidateIdentityFixture: predecessor jar hash changed (${predSha}); must remain ${expectedPred}")
++        }
++        if (predSha == jarSha) {
++            throw new GradleException('candidateIdentityFixture: successor jar hash must differ from predecessor 1.0.0')
++        }
++        if (manifest.predecessor?.sha256 != expectedPred) {
++            throw new GradleException('candidateIdentityFixture: manifest.predecessor.sha256 must pin published 1.0.0')
++        }
++
++        // Required packaged classes for this successor.
+         def requiredClasses = [
+                 'network/vonix/isleofberkperformance/internal/AiMoveCadence.class',
+                 'network/vonix/isleofberkperformance/internal/PerformanceSettings.class'
+-        ]
++        ] as Set
+         def found = [] as Set
++        def modsTomlText = null
+         new java.util.zip.ZipFile(jar).withCloseable { zip ->
+-            zip.entries().each { e -> found << e.name.replace('\\', '/') }
++            zip.entries().each { e ->
++                def n = e.name.replace('\\', '/')
++                found << n
++                if (n == 'META-INF/mods.toml') {
++                    modsTomlText = zip.getInputStream(e).getText('UTF-8')
++                }
++            }
+         }
+         requiredClasses.each { c ->
+             if (!found.contains(c)) {
+                 throw new GradleException("candidateIdentityFixture: jar missing ${c}")
+             }
+… omitted 199 diff line(s) across 1 additional file(s)/section(s)
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -17,13 +17,24 @@
+ 
+ ### 1.0.0 artifact integrity
+ 
+-Stable promotion of the current companion. Forge compile pin remains 40.3.0. Earlier `0.3.x` tags stay immutable.
++Stable published companion **before** the cadence-conversion successor. Retain this hash as predecessor identity only.
+ 
+ ```text
+ File:   isleof-berk-performance-patches-1.0.0.jar
+ Size:   32,865 bytes
+ SHA256: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
+ ```
++
++### 1.0.1-rc.1 successor candidate identity
++
++Unpublished dirty/prerelease successor with `AiMoveCadence` / `PerformanceSettings`, tick-HEAD AI decisions, and egg/shock snapshot hot paths. **Not** the published 1.0.0 coordinate. Bind exact size/hash from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a local clean build.
++
++```text
++File:   isleof-berk-performance-patches-1.0.1-rc.1.jar
++Coord:  version=1.0.1-rc.1 (gradle.properties / mods.toml Implementation-Version)
++```
++
++Do not install a jar named `isleof-berk-performance-patches-1.0.0.jar` and treat it as this successor.
+ 
+ ### 0.3.1-rc.3 release-candidate integrity
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -81,7 +81,7 @@
+ 1. Install Forge 40.3.x for Minecraft 1.18.2. The companion is compiled against 40.3.0 and accepts `[40.3.0,40.4.0)`.
+ 2. Install the original `isleofberk-1.2.0.jar`.
+ 3. Install GeckoLib Forge 3.0.57.
+-4. For the stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. Latest is 1.0.0. Install the same jar on both client and server.
++4. For the published stable release, put `isleof-berk-performance-patches-1.0.0.jar` in the same `mods` directory. For the unpublished `1.0.1-rc.1` successor candidate, use `isleof-berk-performance-patches-1.0.1-rc.1.jar` from a local clean build and the successor manifest — not a renamed 1.0.0 jar. Install the same jar on both client and server.
+ 5. Start the game once to generate `config/isleofberkperformance.toml`.
+ 6. For multiplayer, install the same companion version on the client and server.
+ 
+  ┊ review diff
+a//root/work/isleofberk-performance-patches/README.md → b//root/work/isleofberk-performance-patches/README.md
+@@ -128,7 +128,7 @@
+ 
+ ## Verification
+ 
+-The published 1.0.0 GitHub asset is the pre-cadence-conversion companion. The current dirty successor adds `AiMoveCadence` / `PerformanceSettings`, tick-HEAD AI decisions, and egg/shock snapshot hot paths; bind its identity from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a successful local build — do not treat the historical 1.0.0 or 0.3.1-rc.1 JAR hashes as this successor.
++The published 1.0.0 GitHub asset is the pre-cadence-conversion companion (`SHA256 15df9183...`). The current prerelease successor coordinate is **`1.0.1-rc.1`** with a distinct artifact filename and hash; bind identity from `CANDIDATE-REPORT.successor.md` and `evidence/candidate-manifest.json` after a successful local build — do not treat the historical 1.0.0 or 0.3.1-rc.1 JAR hashes as this successor.
+ 
+ Historical 0.3.0/1.0.0 evidence against the pinned original dependency with Java 17 and Gradle 7.5.1 (pre-successor bytecode):
+ 
+  ┊ review diff
+a/evidence/grok-final-identity-report.json → b/evidence/grok-final-identity-report.json
+@@ -0,0 +1,129 @@
++{
++  "status": "candidate_complete",
++  "finding": "IDENTITY-001",
++  "summary": "Successor coordinate moved to distinct prerelease 1.0.1-rc.1 with hashed source-to-artifact provenance. Two clean Java17 offline check builds produced byte-identical jars. Published 1.0.0 predecessor evidence remains untouched. SOL-007 runtime launch evidence remains unresolved; acceptance not claimed.",
++  "changed_paths": [
++    "gradle.properties",
++    "build.gradle",
++    "README.md",
++    "CANDIDATE-REPORT.successor.md",
++    "evidence/candidate-manifest.json",
++    "evidence/successor-jar-classes.txt",
++    "evidence/identity-build-jar.log",
++    "evidence/identity-repro/build-a.log",
++    "evidence/identity-repro/build-b.log",
++    "evidence/identity-repro/a.jar",
++    "evidence/identity-repro/b.jar",
++    "evidence/identity-repro/a.sha",
++    "evidence/identity-repro/b.sha",
++    "evidence/grok-final-identity-report.json"
++  ],
++  "artifact": {
++    "version": "1.0.1-rc.1",
++    "file": "isleof-berk-performance-patches-1.0.1-rc.1.jar",
++    "path": "build/libs/isleof-berk-performance-patches-1.0.1-rc.1.jar",
++    "size": 36200,
++    "sha256": "72d91f1709baf27c3e3007e662fa657e5eb8348e924c094027af9a94ec2b01c2",
++    "embedded_mods_toml_version": "1.0.1-rc.1",
++    "base_head": "515b9a677a39f72e9be12330355cbf765dbafcea",
++    "dirty_successor": true,
++    "required_classes_present": [
++      "network/vonix/isleofberkperformance/internal/AiMoveCadence.class",
++      "network/vonix/isleofberkperformance/internal/PerformanceSettings.class"
++    ]
++  },
++  "predecessor": {
++    "path": "release-download/isleof-berk-performance-patches-1.0.0.jar",
++    "sha256": "15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2",
++    "untouched": true,
++    "distinct_from_successor": true
++  },
++  "provenance": {
++    "manifest": "evidence/candidate-manifest.json",
++    "schema": "iob-performance-candidate-manifest-v2",
++    "hashed_inputs_count": 51,
++    "includes": [
++      "all src/main/java",
++      "all src/main/resources",
++      "all src/test/java",
++      "build.gradle",
++      "settings.gradle",
++      "gradle.properties",
++      "gradlew",
++      "gradlew.bat",
++      "gradle/wrapper/*",
++      "config/isleofberkperformance.toml",
++      "README.md",
++      "CHANGELOG.md",
++      "CANDIDATE-REPORT.md",
++      "CANDIDATE-REPORT.successor.md"
++    ],
++    "exclusions": [
++      "evidence/**",
++      ".offline-plugin-repo/**",
++      "release-download/**",
++      "build/**",
++      ".gradle/**",
++      "libs/**"
++    ],
++    "dependency_digests_pinned": [
++      "isleofberk",
++      "geckolib",
++      "variant_loader",
++      "deadlock_fix"
++    ],
++    "gates": [
++      "candidateIdentityFixture PASS (version + jar hash match + every input hash + predecessor pin + mods.toml version)",
++      "documentationConsistencyGate PASS (1.0.1-rc.1 identity + predecessor hash retained)"
++    ]
+… omitted 51 diff line(s) across 1 additional file(s)/section(s)
+IDENTITY-001 complete.
+
+status: candidate_complete
+
+identity
+- version: 1.0.1-rc.1 (no longer reuses published 1.0.0)
+- jar: build/libs/isleof-berk-performance-patches-1.0.1-rc.1.jar
+- size: 36200
+- sha256: 72d91f1709baf27c3e3007e662fa657e5eb8348e924c094027af9a94ec2b01c2
+- mods.toml embedded version: 1.0.1-rc.1
+- predecessor release-download/1.0.0 untouched: 15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2
+
+provenance
+- evidence/candidate-manifest.json v2
+- 51 hashed inputs (all main/test/resources + build/wrapper/docs used for identity)
+- dep digests + exclusions + predecessor pin
+- candidateIdentityFixture PASS
+- documentationConsistencyGate PASS
+
+builds
+- two clean Java17 offline check build --rerun-tasks: BUILD SUCCESSFUL
+- cmp PASS (byte-identical)
+
+report: /root/work/isleofberk-performance-patches/evidence/grok-final-identity-report.json
+effects: none
+acceptance: not claimed
+
+unresolved
+- SOL-007 runtime client/server multi-mod launch still open
+- dirty tree still uncommitted
+
+session_id: 20260819_033657_f848ab

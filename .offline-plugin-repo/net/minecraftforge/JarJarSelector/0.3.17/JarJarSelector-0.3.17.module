@@ -1,0 +1,175 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "net.minecraftforge",
+    "module": "JarJarSelector",
+    "version": "0.3.17",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "net.minecraftforge",
+          "module": "JarJarMetadata",
+          "version": {
+            "requires": "0.3.17"
+          }
+        },
+        {
+          "group": "org.apache.maven",
+          "module": "maven-artifact",
+          "version": {
+            "requires": "3.8.1"
+          }
+        },
+        {
+          "group": "com.google.code.gson",
+          "module": "gson",
+          "version": {
+            "requires": "2.8.5"
+          }
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "31.0.1-jre"
+          }
+        },
+        {
+          "group": "com.machinezoo.noexception",
+          "module": "noexception",
+          "version": {
+            "requires": "1.7.1"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "1.7.30"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "JarJarSelector-0.3.17.jar",
+          "url": "JarJarSelector-0.3.17.jar",
+          "size": 17374,
+          "sha512": "4d29fcb61354e34cd5f4e7c94a78a7a91eec9b38798564629c71a7c313329db8fb23b0169dad8a5563fe44756a13fa30ebb51b216c2de0c7554db851cb4921b1",
+          "sha256": "bc26087e1cf09c5b18d1cfc337b9af502eb7465c1847c03f74492e97ea0b70b3",
+          "sha1": "65385d801a2c64aced6adfab049c79d00e460e60",
+          "md5": "7b0011577a308ccd61a35f9358410195"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "net.minecraftforge",
+          "module": "JarJarMetadata",
+          "version": {
+            "requires": "0.3.17"
+          }
+        },
+        {
+          "group": "org.apache.maven",
+          "module": "maven-artifact",
+          "version": {
+            "requires": "3.8.1"
+          }
+        },
+        {
+          "group": "com.google.code.gson",
+          "module": "gson",
+          "version": {
+            "requires": "2.8.5"
+          }
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "31.0.1-jre"
+          }
+        },
+        {
+          "group": "com.machinezoo.noexception",
+          "module": "noexception",
+          "version": {
+            "requires": "1.7.1"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "1.7.30"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-simple",
+          "version": {
+            "requires": "1.7.30"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "JarJarSelector-0.3.17.jar",
+          "url": "JarJarSelector-0.3.17.jar",
+          "size": 17374,
+          "sha512": "4d29fcb61354e34cd5f4e7c94a78a7a91eec9b38798564629c71a7c313329db8fb23b0169dad8a5563fe44756a13fa30ebb51b216c2de0c7554db851cb4921b1",
+          "sha256": "bc26087e1cf09c5b18d1cfc337b9af502eb7465c1847c03f74492e97ea0b70b3",
+          "sha1": "65385d801a2c64aced6adfab049c79d00e460e60",
+          "md5": "7b0011577a308ccd61a35f9358410195"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "JarJarSelector-0.3.17-sources.jar",
+          "url": "JarJarSelector-0.3.17-sources.jar",
+          "size": 5422,
+          "sha512": "11abac2ecbd20b78d6cab7156a04cdc81f052af1ae0e6ec9b47440fee3327472abc2da5961f2d6a0c9e573c0a96261065e4a646a99e1c19cc3978d289f5f3fcd",
+          "sha256": "838a3378acb92299992cbf47f2bf86e396cf88641761f104320fef1da3301a2a",
+          "sha1": "2509d434e3315da9c9db36c961b15742f25590a4",
+          "md5": "d77f026bf4670969c033df02b0000451"
+        }
+      ]
+    }
+  ]
+}

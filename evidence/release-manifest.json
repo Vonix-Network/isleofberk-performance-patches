@@ -1,0 +1,105 @@
+{
+  "artifact": {
+    "file": "isleof-berk-performance-patches-1.0.1.jar",
+    "path": "build/libs/isleof-berk-performance-patches-1.0.1.jar",
+    "sha256": "df44f3788408f903df9e86dc25248220f1089504261e46a7190dcb3e8845f20a",
+    "size": 37550
+  },
+  "dependencies": {
+    "deadlock_fix": {
+      "path": "libs/isleofberk-deadlockfix-1.1.2.jar",
+      "sha256": "75789526f3e13f24d30bb817b66ae68f029799cb59bf83c01c8e8760085d3452",
+      "size": 4153
+    },
+    "geckolib": {
+      "path": "libs/geckolib-forge-1.18-3.0.57.jar",
+      "sha256": "b6d0954f7b777b43e72f202116c8ccbb1e37757a1142759303ab636a9077b8ba",
+      "size": 2927832
+    },
+    "isleofberk": {
+      "path": "libs/isleofberk-1.2.0.jar",
+      "sha256": "a4b17befb1350d6d4cd07d7fdfcb2b3cec37a5c501e1f4fb811946f3e971dfc0",
+      "size": 6700878
+    },
+    "variant_loader": {
+      "path": "libs/iobvariantloader-2.6.4-all.jar",
+      "sha256": "666f47962912e332494b0331640cefad252d60fcf01d33fcc092ef0ac9a27f4a",
+      "size": 962194
+    }
+  },
+  "exclusions": [
+    "release-download/**",
+    "evidence/**",
+    ".offline-plugin-repo/**",
+    ".gradle/**",
+    "build/**",
+    "run/**",
+    "libs/**"
+  ],
+  "inputs": {
+    "CANDIDATE-REPORT.md": "e169fd30f12a54d1e212dbe6e33b2ae5dbdc11c8f5686e86d52c7e024e140ec3",
+    "CHANGELOG.md": "433d0642f165cbf5eccf2501f7657e6a0b9d802b5668dc88cadafe7ec4754a1c",
+    "PERFORMANCE-WAVE-20260819.md": "8181784710f48dfb90adda215a7765062995af5ec4cf7b8ad370e5e5254b3818",
+    "README.md": "679cf5d3a900a9eabe00bdf3ba212b0cda1afe9399782d5ce3f2f486a9556e29",
+    "RELEASE-REPORT.md": "f327e0a2560fde157d8a1d0ce1f045a26fe039dffe7a106c9b534275e016ecbb",
+    "build.gradle": "91713523500f276f1d2ad49f04657d29ae65b70d8b78b681de9b3b41696869a9",
+    "config/isleofberkperformance.toml": "7f80217a624d5d6c64b3868a24d4b96fba79f7f1f5b5ef33ac50ed088a848f09",
+    "gradle.properties": "1a4296423623f9181d537894a15940db81d796ae92ca2ad120e5eac8a5fb1236",
+    "gradle/wrapper/gradle-wrapper.jar": "91a239400bb638f36a1795d8fdf7939d532cdc7d794d1119b7261aac158b1e60",
+    "gradle/wrapper/gradle-wrapper.properties": "6ae1cac1d336e9df8a9d74dc8a365a09e3de8750e47d884d1d6e6a57e01ad190",
+    "gradlew": "8deee7d70dd19cf8180712bd9a4fc2f957ad4ce81f64ce825aec066275fdf761",
+    "gradlew.bat": "fbc50a5a441b0917ea1bfba260c0717a8416fd54505338f074ccd3f03241ec09",
+    "settings.gradle": "cbb26b8c37af1c42b5a4f880471743140869011e95840585d1b7aac514d06558",
+    "src/main/java/network/vonix/isleofberkperformance/IsleOfBerkPerformance.java": "7b15d7eb90ba4ea38ecb5dfe262507ea4a21a76d9b2a0d22b3209ee9fd5e3b06",
+    "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java": "1d6fda1bdca1c5f9d6fb7a98d66b33ef57765856dc181cb4549ac7d177a844ca",
+    "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java": "a9e05f11d78792cbd9e0ee528778dcf0f089730a43cf47ec133b7f77532200be",
+    "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveLifecycle.java": "ab4a99ded73a4abde9366c52afd0a0f1ef3c58e2372f12a7a30cb9e07ec06024",
+    "src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java": "fdd52e98220c94afdb4fe0dd9351afe8dcbe26d2f3bb92579437310d9641ef85",
+    "src/main/java/network/vonix/isleofberkperformance/internal/TailingDragonLifecycle.java": "e2afe7a0a3048d4036abad133383f6d02cdf18a19e5641e90bc013c88a3a4937",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonBaseBaseFlyingRideableGoalMixin.java": "d518fda5bf608060c0212013a8a1987b73f389f3762d0314620fc9ee9a811b5e",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ADragonEggBaseMixin.java": "7d5c3b8d200c19e7df10a2fe4d0178cf6cabc149325c044f9c20729e02430703",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java": "1dd663c94b446f44104d15ea9f03b9f38cc9ce8e4e0b0268a3b22ece17470471",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java": "2e543ec99367217ebc350d4395b315772c993c93cb7b38cb2db394730be5aaf1",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/FireBoltModelMixin.java": "2683e3deefcc14aeaf01752b1f268bc7337b7d2969a2029ca2f9358e06efe99d",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/FuryBoltModelMixin.java": "a86230949c1fc88682f043b130fcb91994913a3df20fbc71ae8d46c5d7c817c8",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/GronckleRenderMixin.java": "061c5679e87fbcb485ddf3d561b0c93c9b8bc59cb88196ccb9ad263622ee495c",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/LargeEggModelMixin.java": "2fe04fbd9fdc73539fab63565465d98dc7df6ed45d267e557e7253ec2c7675e2",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/LightFuryRenderMixin.java": "429a446e5825bbd2af564538db152a504e0d94108c99899012f726ea44c0f5b5",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/MediumEggModelMixin.java": "539c92ee1bd2e207c8c0c96ff86c4a3749ce448c8c0c812cf665f43ab3ecdd11",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/MonstrousNightmareRenderMixin.java": "93febbd71c1236e349340cfafebbafb9d86b04dbb3e1117d92695db51311adb2",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/NightFuryRenderMixin.java": "ab4f02689ab216bc528fccade82a8dca8c406f96388fd4ebc72f688c5af6f678",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/NightLightRenderMixin.java": "ca86863fe403168bb7aab54c86e11f9ab2b8a51346605f59981f25497c1eee69",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ShockEffectMixin.java": "52a853d3a7ed20d02e458fa17f457accad3fb728f04469b58c51c9efdf3875ff",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/SkrillRendererMixin.java": "39ef852ca75d270fda199a3692be41410d10adef8dd7a9283dd819259fe7d405",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/SmallEggModelMixin.java": "5fa70cddb83a6393093a7f8d9f71a275fa9df57addf9f888ab4e6fa9966a20ec",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/SpeedStingerLeaderRenderMixin.java": "a6961d8fc8f84009afef10f31ec401dd16617b83a0ce8d7be1243891359f7835",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/SpeedStingerRenderMixin.java": "46bbdf721e1af70255ea8fcdbccf18f21fe7438590a51f27d9c52e048fe8588a",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/StingerRenderMixin.java": "20f968abfdde68d4887b4f0104729f15d704398e9c68b5044ae7b617ae9d25a5",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/TerribleTerrorRenderMixin.java": "1f140d24b03a7fe73650b9199e014e13646274b341a92afb08195f578396b5de",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/TripleStrykeRendererMixin.java": "18cce0a9a8f2b020aa6629d8227dd58fc5ba4f463c619ec92de4e3c0412afab9",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java": "ef5eea8419401386d0618655855290ad16593f12b9ca0db5515d2f136be7e121",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/WrappedGoalMixin.java": "892b34c9be110ae36069313621fb61aa995548fb67239744c3e47c5c2b01c9d0",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/ZippleBackRendererMixin.java": "1a425c592ef7f626b6684c5449adc740382144946bb323a91694dfbab54a09a5",
+    "src/main/resources/META-INF/mods.toml": "605e59c49678475d1a48f48c81eca0d42b4cc6181c043d43539d6864628da621",
+    "src/main/resources/isleofberkperformance.mixins.json": "7edc515a886282f194693be0dd52145ee5aba7f9bf508eb5a0c8723e66ae5154",
+    "src/main/resources/pack.mcmeta": "2f30f8e48285d034b9f0a30bd10f56c42d5a5bd372c0d3d8fb9408bdd79686e9",
+    "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java": "f901294f7f2a1a3b8454f53c725284643605468a7bef3fe0f108b734a83194b0",
+    "src/test/java/network/vonix/isleofberkperformance/verification/GameplayBytecodeFixture.java": "a1719a31520f5e1742f763b55d2abd07b06ff7e57a14617a7afa095426d9071b",
+    "src/test/java/network/vonix/isleofberkperformance/verification/GameplayDataflowFixture.java": "5a3d59f87a8f36462d82cd23fc110e5ed9b1410066c5ae89434c7939652d576e",
+    "src/test/java/network/vonix/isleofberkperformance/verification/InstrumentedAiGoalFixture.java": "f550c4ec08e333dfd719b5ea14887af4f2f28c3d36c25f6aa49fa067c1bd8c80",
+    "src/test/java/network/vonix/isleofberkperformance/verification/MixinLifecycleFixture.java": "f8715c07e698ab3e54790a62e542301142006d5adbd55a56d6e9f4173ce7385f",
+    "src/test/java/network/vonix/isleofberkperformance/verification/MultiModCoexistenceFixture.java": "0b15d2412f21b65dd022940e1b288ed07c5050acc89a3ab6ca9a6d7199192f68",
+    "src/test/java/network/vonix/isleofberkperformance/verification/PerformanceSettingsSnapshotFixture.java": "ce6fdf72a0429699113f347140a2acbc7fe10b59e37d54b485a7f388cd26b4d7",
+    "src/test/java/network/vonix/isleofberkperformance/verification/PerformanceWaveFixture.java": "b15ca76144216e98bef8b941a4ff4ef988d9633039b2aa35666c9719d662e718",
+    "src/test/java/network/vonix/isleofberkperformance/verification/RendererBytecodeFixture.java": "0dfd56a51a9c661426e12cdc0c3c812051d2fde6ab32686de1f5fa79c61c5dd9"
+  },
+  "predecessor": {
+    "file": "isleof-berk-performance-patches-1.0.0.jar",
+    "path": "release-download/isleof-berk-performance-patches-1.0.0.jar",
+    "sha256": "15df9183a49e4d83a9d5e0583cec61a5a90549d873e5a64bb0116401988667e2",
+    "size": 32865
+  },
+  "schema": "isleofberk-release-manifest-v1",
+  "source_commit": "918c5a559d0c472e92441ef2f7bab57761b276c7",
+  "version": "1.0.1"
+}

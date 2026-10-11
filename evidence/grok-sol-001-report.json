@@ -1,0 +1,40 @@
+{
+  "status": "candidate_complete",
+  "finding": "SOL-001",
+  "changed_paths": [
+    "src/main/java/network/vonix/isleofberkperformance/internal/AiMoveCadence.java",
+    "src/main/java/network/vonix/isleofberkperformance/internal/PerformanceSettings.java",
+    "src/main/java/network/vonix/isleofberkperformance/config/PerformanceConfig.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFlyAndAttackAirbourneTargetGoalMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/DragonFollowPlayerFlyingMixin.java",
+    "src/main/java/network/vonix/isleofberkperformance/mixin/UntamedDragonCircleFlightGoalMixin.java",
+    "src/test/java/network/vonix/isleofberkperformance/verification/AiMoveCadenceFixture.java",
+    "build.gradle"
+  ],
+  "commands": [
+    {
+      "command": "./gradlew aiMoveCadenceFixture --offline --no-daemon --rerun-tasks",
+      "java": "17",
+      "cwd": "/root/work/isleofberk-performance-patches",
+      "outcome": "BUILD SUCCESSFUL",
+      "exit_code": 0,
+      "log": "evidence/grok-sol-001-fixture.log",
+      "stdout_pass": "AiMoveCadenceFixture: PASS (tick-HEAD allow/deny, multi-call due tick, lifecycle, bounded state)"
+    }
+  ],
+  "repair": {
+    "issue": "Fixture expected next due tick at tick 4; cadence correctly allows tick 1 then next at tick 5 (1+interval) for interval 4.",
+    "fix": "Updated AiMoveCadenceFixture expectations to skip ticks 2-4 and allow tick 5. AiMoveCadence cooldown (interval-1 after first request) left unchanged.",
+    "preserved": [
+      "one allow/deny decision at goal tick HEAD",
+      "first eligible request immediate after reset",
+      "later due every interval goal ticks",
+      "multi-call due tick all allowed",
+      "lifecycle reset via vonix$resetAiMoveTick",
+      "SKIPPED_MOVE_TO_RESULT=true on skip",
+      "no request-count predicate restored"
+    ]
+  },
+  "unresolved_blockers": [],
+  "effects": "none"
+}
